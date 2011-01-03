@@ -1,34 +1,8 @@
 ;;; elite-for-emacs-commander.el - Elite for EMACS commander functions
 
-;; Elite for EMACS is based on Elite series by Ian Bell and David Braben.
-;; Original Elite, (C) 1984 Ian Bell and David Braben.
-;; Elite for EMACS uses code from original Elite and it is (C) 1984 Ian Bell and David Braben.
-;; Additional code
-;; Author: Sami Salkosuo (sami@roguemail.net)
-
-;; This file is not part of GNU Emacs.
-
-;; GNU Emacs is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
-
-;; GNU Emacs is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
-
-;; Commentary:
-
 ;; Player and AI commander functions. Idea is that player and AI commander have
 ;; exactly the same attributes
 ;; All game variables should be in commander struct
-
 
 ;;state constants are internal indicators of commander state
 ;;different situations may have different state, for example
@@ -79,7 +53,7 @@
   trade-history-current;;current trade items in cargo hold, update when buying
   trade-history;;overall cargo history, update when selling
   ;;todo mates;list of mates
-)
+  )
 
 (defvar elite-for-emacs-commander-list nil
   "Elite for EMACS commanders. First in list is player")
@@ -88,45 +62,34 @@
   "Saved commanders");;used to easily upgrade commander struct
 
 (defun elite-for-emacs-generate-commander (name id gender current-planet current-galaxy day)
-
-  (let (
-
-	)
-
+  (let ()
     (setq elite-for-emacs-commander-list 
 	  (append 
 	   elite-for-emacs-commander-list 
 	   (list (make-elite-for-emacs-commander
-	    :id id
-	    :name name
-	    :gender gender
-	    :elite-score 0;one kill, one point
-	    :legal-status 0
-	    :condition CONDITION_DOCKED
-	    :current-state STATE_DOCKED
-	    :reputation 0;reputation, more the better
-	    :credits 1000
-	    ;;:credits 100000
-	    :current-planet current-planet
-	    :current-galaxy current-galaxy
-	    :hyperspace-system current-planet
-;;(aref (elite-for-emacs-get-galaxy 0) 7)
-	    :fuel 70
-	    :cargo-capacity 20
-	    :max-cargo-capacity 20
-	    :current-cargo (make-vector (+ lasttrade 1) 0)
-	    :lastrand (mysrand 12345)
-	    :current-day day
-	    :auto-refuel t;;set nil to switch autorefuel off
-	    :home-system current-planet
-	    :home-galaxy current-galaxy
-	    )
-		 )
-	   )
-	  )
-    )
-  )
+		  :id id
+		  :name name
+		  :gender gender
+		  :elite-score 0;one kill, one point
+		  :legal-status 0
+		  :condition CONDITION_DOCKED
+		  :current-state STATE_DOCKED
+		  :reputation 0;reputation, more the better
+		  :credits 1000
+		  ;;:credits 100000
+		  :current-planet current-planet
+		  :current-galaxy current-galaxy
+		  :hyperspace-system current-planet
+		  ;;(aref (elite-for-emacs-get-galaxy 0) 7)
+		  :fuel 70
+		  :cargo-capacity 20
+		  :max-cargo-capacity 20
+		  :current-cargo (make-vector (+ lasttrade 1) 0)
+		  :lastrand (mysrand 12345)
+		  :current-day day
+		  :auto-refuel t;;set nil to switch autorefuel off
+		  :home-system current-planet
+		  :home-galaxy current-galaxy))))))
 
 (defun elite-for-emacs-get-commander (index)
-  (nth index elite-for-emacs-commander-list)
-)
+  (nth index elite-for-emacs-commander-list))

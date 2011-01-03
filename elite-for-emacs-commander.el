@@ -13,13 +13,13 @@
 (defconst STATE_COMBAT 3)
 (defconst STATE_BAZAAR 4)
 
+;;additional fields MUST be included at the end of struct
+;;when deployed: do NOT make new fields so that they have to be available from
+;;the start of game
+
+;;todo mates;list of mates
 (defstruct elite-for-emacs-commander
-  ;;additional fields MUST be included at the end of struct
-  ;;when deployed: do NOT make new fields so that they have to be available from
-  ;;the start of game
-  id
-  name
-  gender
+  id name gender
   elite-score;one kill, one point
   legal-status
   reputation;reputation, more the better
@@ -52,7 +52,6 @@
   character-dd;;dungeons and dragons character description
   trade-history-current;;current trade items in cargo hold, update when buying
   trade-history;;overall cargo history, update when selling
-  ;;todo mates;list of mates
   )
 
 (defvar elite-for-emacs-commander-list nil
@@ -70,13 +69,12 @@
 		  :id id
 		  :name name
 		  :gender gender
-		  :elite-score 0;one kill, one point
+		  :elite-score 0 ;one kill, one point
 		  :legal-status 0
 		  :condition CONDITION_DOCKED
 		  :current-state STATE_DOCKED
-		  :reputation 0;reputation, more the better
+		  :reputation 0 ;reputation, more the better
 		  :credits 1000
-		  ;;:credits 100000
 		  :current-planet current-planet
 		  :current-galaxy current-galaxy
 		  :hyperspace-system current-planet
@@ -87,7 +85,7 @@
 		  :current-cargo (make-vector (+ lasttrade 1) 0)
 		  :lastrand (mysrand 12345)
 		  :current-day day
-		  :auto-refuel t;;set nil to switch autorefuel off
+		  :auto-refuel t ;;set nil to switch autorefuel off
 		  :home-system current-planet
 		  :home-galaxy current-galaxy))))))
 

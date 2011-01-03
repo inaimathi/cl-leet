@@ -24,16 +24,13 @@
 (load "elite-for-emacs-bazaar")
 
 (defvar elite-for-emacs-current-command nil)
-
 (defvar elite-for-emacs-original-frame-title-format nil)
-
 (defvar elite-for-emacs-command-history nil)
-
 (defvar elite-for-emacs-command "")
-
 (defvar elite-for-emacs-buffer-name "*Elite for EMACS*")
 (defvar elite-for-emacs-buffer-name-offline "*Elite for EMACS*")
 (defvar elite-for-emacs-buffer-name-online "*Elite for EMACS (online)*")
+
 ;;Functions for prompt, modeline title.
 (defvar elite-for-emacs-prompt-function 'elite-for-emacs-prompt)
 (defvar elite-for-emacs-mode-line-function 'elite-for-emacs-mode-line)
@@ -58,7 +55,6 @@
 	(list "exit" 'elite-for-emacs-exit)
 	(list "quit" 'elite-for-emacs-exit)
 	(list "script" 'elite-for-emacs-script-execute)))
-
 
 ;;todo: save history variable
 
@@ -189,8 +185,7 @@
 	  (if (eq this-command 'newline)
 	      (progn
 		(if (< (point) (point-max))
-		    (progn
-		      ;;for some reason pre-command-hook newline (goto-char (point-max))
+		    (progn ;;for some reason pre-command-hook newline (goto-char (point-max))
 		      ;;does not work if we are not at the end of buffer
 		      (delete-backward-char 1)
 		      (goto-char (point-max))
@@ -198,24 +193,6 @@
 		(if (not elite-for-emacs-suppress-default-newline-command)
 		    (progn
 		      ;;todo (documentation 'forward-char)
-
-		      ;;do command
-		      ;;(setq cmd (assoc elite-for-emacs-current-command elite-for-emacs-command-list))
-		      ;;(setq cmd (cadr (assoc (car (split-string elite-for-emacs-command)) elite-for-emacs-command-list)))
-		      ;;(setq cmd (cadr (assoc  elite-for-emacs-command-list)))
-		      ;; 		    (setq temp (car (split-string elite-for-emacs-command)))
-		      ;; 		    ;;(setq temp "versi")
-		      ;; 		    (if temp
-		      ;; 			(progn
-		      ;; 			  (setq cmd (cadr (assoc (try-completion temp elite-for-emacs-command-list) elite-for-emacs-command-list)))
-		      ;; 			  (if (not cmd)
-		      ;; 			      (setq cmd (cadr (assoc (car (split-string elite-for-emacs-command)) elite-for-emacs-command-list)))
-		      ;; 			    )
-		      ;; 		    )
-		      ;; 		      (progn
-		      ;; 			(setq cmd "")
-		      ;; 			)
-		      ;; 		      )
 
 		      ;;get first match
 		      (setq cmd (elite-for-emacs-get-first-command-match (car (split-string elite-for-emacs-command))))
@@ -232,10 +209,6 @@
 				     (progn (insert (current-message))
 					    (if elite-for-emacs-suppress-message
 						(message nil))))
-				 ;;(setq elite-for-emacs-command-history (remove elite-for-emacs-command elite-for-emacs-command-history))
-				 ;;(setq elite-for-emacs-command-history (append elite-for-emacs-command-history (list elite-for-emacs-command)))
-
-				 ;;(setq elite-for-emacs-current-command nil)
 				 (if (not (eq cmd 'elite-for-emacs-clear))
 				     (insert "\n")))
 			(progn
@@ -260,7 +233,7 @@
 	  
 	  (if (functionp elite-for-emacs-custom-post-command-function)
 	      (funcall elite-for-emacs-custom-post-command-function)))
-
+      
       (error
        (insert (error-message-string error) "\n")
        (setq elite-for-emacs-command "")
@@ -282,15 +255,14 @@
     (setq command "")
     ;;(setq cmd "")
     (if cmd
-	(progn
-	  (setq command-list elite-for-emacs-command-list)
-	  (while command-list
-	    (setq temp (caar command-list))
-	    (setq index (string-match cmd temp))
-	    (if (and index (= index 0))
-		(progn (setq command-list nil)
-		       (setq command temp)))
-	    (setq command-list (cdr command-list)))))
+	(progn (setq command-list elite-for-emacs-command-list)
+	       (while command-list
+		 (setq temp (caar command-list))
+		 (setq index (string-match cmd temp))
+		 (if (and index (= index 0))
+		     (progn (setq command-list nil)
+			    (setq command temp)))
+		 (setq command-list (cdr command-list)))))
     command))
 
 (defvar elite-for-emacs-tab-index 0)
@@ -381,7 +353,6 @@
 	(progn
 	  (setq mode-line-format
 		(funcall elite-for-emacs-mode-line-function))
-
 	  ;;remember to use force at the end of mode-line function
 	  (force-mode-line-update)))))
 
@@ -426,7 +397,6 @@
   "Help."
   (let ((temp))
     (setq temp (split-string elite-for-emacs-command))
-    ;;(insert  "Commands:\nhelp This help\nhelp <command> Command help\n" )
     (insert  "Commands:\n" )
     (setq command-list elite-for-emacs-command-list)
     (while command-list
@@ -441,11 +411,7 @@
       (if temp
 	  (insert (documentation (cadr cmd)) "\n")
 	(insert "\n"))
-      (setq command-list (cdr command-list)))
-    ;;(setq elite-for-emacs-command-history (remove elite-for-emacs-command elite-for-emacs-command-history))
-    ;;(setq elite-for-emacs-command-history (append elite-for-emacs-command-history (list elite-for-emacs-command)))
-    ))
-
+      (setq command-list (cdr command-list)))))
 
 (defgroup elite-for-emacs nil
   "Elite for EMACS."
@@ -454,96 +420,9 @@
   :version "21.2.1"
   :group 'games)
 
-;;custom variables: colors (online/offline)?
-
-
 (defcustom elite-for-emacs-save-confirmation-when-exit t
   "*If non-nil user is asked to save commander when killing Elite for EMACS buffer."
   :type 'boolean
   :group 'elite-for-emacs)
-
-
-;;Online customization
-;; (defgroup elite-for-emacs-online nil
-;;   "Elite for EMACS."
-;;   :tag "Elite for EMACS Online"
-;;   :prefix "elite-for-emacs-online"
-;;   :version "21.2.1"
-;;   :group 'elite-for-emacs)
-;; 
-;; 
-;;  (defcustom elite-for-emacs-online-autosave-dock nil
-;;    "*Non-nil saves commander when docking station."
-;;    :type 'boolean
-;;    :group 'elite-for-emacs-online)
-;; 
-;;  (defcustom elite-for-emacs-online-autosave-undock nil
-;;    "*Non-nil saves commander when undocking station."
-;;    :type 'boolean
-;;    :group 'elite-for-emacs-online)
-;; 
-;;  (defcustom elite-for-emacs-online-proxy-host nil
-;;    "*HTTP proxy host."
-;;    :type 'string
-;;    :group 'elite-for-emacs-online)
-;; 
-;;  (defcustom elite-for-emacs-online-proxy-port nil
-;;    "*HTTP proxy port."
-;;    :type 'string
-;;    :group 'elite-for-emacs-online)
-
-;; (defcustom elite-for-emacs-buffer-name "*Elite for EMACS*"
-;;   "*Simple Shell buffer name."
-;;   :type 'string
-;;   :group 'elite-for-emacs)
-;;
-;;
-;; (defcustom elite-for-emacs-prompt-function 'elite-for-emacs-default-prompt
-;;   "*Simple Shell prompt function name. Function must return a string that will be used
-;; as shell prompt. Prompt function is called after calling function 'newline (normally after pressing
-;; ENTER). Use 'ignore'-function to disable feature."
-;;   :type 'function
-;;   :group 'elite-for-emacs)
-;;
-;; (defcustom elite-for-emacs-mode-line-function 'elite-for-emacs-default-mode-line
-;;   "*Simple Shell mode line function name. Function must return a list of mode line options, see
-;; GNU Emacs (21.2) Lisp Reference Manual section 23.3 Mode Line Format.
-;; Mode line function is called after calling function 'newline (normally after pressing
-;; ENTER). Use 'ignore'-function to disable feature."
-;;   :type 'function
-;;   :group 'elite-for-emacs)
-;;
-;; (defcustom elite-for-emacs-frame-title-function 'elite-for-emacs-default-frame-title
-;;   "*Simple Shell frame title function name. Function must return a string that will be used as
-;; a new frame title.
-;; Frame title function is called after calling function 'newline (normally after pressing
-;; ENTER). Use 'ignore'-function to disable feature."
-;;   :type 'function
-;;   :group 'elite-for-emacs)
-;;
-;; (defcustom elite-for-emacs-custom-post-command-function 'ignore
-;;   "*Function is added to post-command-hook and is executed after executing simple shell command. Use 'ignore'-function to disable feature."
-;;   :type 'function
-;;   :group 'elite-for-emacs)
-;;
-;; (defcustom elite-for-emacs-custom-pre-command-function 'ignore
-;;   "*Function is added to pre-command-hook and is executed before executing simple shell command. Use 'ignore'-function to disable feature."
-;;   :type 'function
-;;   :group 'elite-for-emacs)
-;;
-;;
-;; (defcustom elite-for-emacs-command-list '(("version" emacs-version))
-;;   "*Simple Shell command list. Key is shell command and value is function. If function displays something
-;; in the mini buffer it is inserted in the mini buffer and message is not show in the mini buffer if
-;; elite-for-emacs-suppress-message is t. Functions should use insert-function to insert messages in the shell
-;; buffer. "
-;;
-;;   :type 'alist;(alist :key-type string :value-type symbol)
-;;   :group 'elite-for-emacs)
-;;
-;; (defcustom elite-for-emacs-suppress-message t
-;;   "*Suppress message in mini buffer."
-;;   :type 'boolean
-;;   :group 'elite-for-emacs)
 
 (provide 'elite-for-emacs)

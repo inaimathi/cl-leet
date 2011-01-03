@@ -2,11 +2,7 @@
 
 (defvar elite-for-emacs-game-is-on nil "")
 
-;;(defvar elite-for-emacs-current-state nil
-;;  "what state are we")
-
 (defvar elite-for-emacs-pilot-welcome-message
-  ;;;(setq elite-pilot-welcome-message
   "Welcome to the Elite Federation of Pilots. You are now one of The Few in The Eight Galaxies. All pilots strive to Elite, few succeed and most die.\nPilot your Cobra MkIII with honor.\nQ'Apla!")
 
 (defun elite-for-emacs-prompt ()
@@ -14,15 +10,12 @@
 	(cmdr))
     (if elite-for-emacs-game-is-on
 	(progn (setq cmdr (car elite-for-emacs-commander-list))
-	       
 	       (if (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list))  STATE_BAZAAR)
 		   (progn (setq prompt (elite-for-emacs-bazaar-prompt)))
 		 (progn (setq prompt
 			      (concat (elite-for-emacs-get-system-name 
 				       (elite-for-emacs-commander-current-galaxy cmdr) 
 				       (elite-for-emacs-commander-current-planet cmdr))
-				      " "
-				      (format "%.1f" (/ (elite-for-emacs-commander-credits cmdr) 10.0))
 				      ">")))))
       (progn (setq prompt "Elite>"))) prompt))
 
@@ -30,21 +23,22 @@
   (let ((modeline))
     (if elite-for-emacs-game-is-on
 	(progn (setq cmdr (car elite-for-emacs-commander-list))
-	       (setq modeline (list "---"
-				    ;;'elite-for-emacs-command
-				    ;;"Elite for EMACS "
-				    ;;'elite-for-emacs-version
+	       (setq modeline (list "--- "
+				    "Credits: "
+				    (format "%.1f " (/ (elite-for-emacs-commander-credits cmdr) 10.0))
 				    "Condition: "
 				    (elite-for-emacs-commander-condition (car elite-for-emacs-commander-list))
 				    " "
 				    "Day: "
 				    (number-to-string (elite-for-emacs-commander-current-day cmdr))
 				    " "
-				    (elite-for-emacs-short-local-system-info (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr) t))))
-      (progn (setq modeline (list "---"
-				  ;;'elite-for-emacs-command
-				  "Elite for EMACS "
-				  'elite-for-emacs-version))))
+				    (elite-for-emacs-short-local-system-info 
+				     (elite-for-emacs-commander-current-galaxy cmdr) 
+				     (elite-for-emacs-commander-current-planet cmdr) t)
+				    " ")))
+      (setq modeline (list "---"
+			   "Elite for EMACS "
+			   'elite-for-emacs-version)))
 
     (if elite-for-emacs-online
 	(progn (append modeline (list
@@ -136,8 +130,7 @@
     (insert "Elite for EMACS " elite-for-emacs-version "\n")
     (insert "Based on Elite (c) 1984 Ian Bell and David Braben.\n")
     (insert "Elite for EMACS by Sami Salkosuo.")
-    ;;(insert elite-for-emacs-logo)
-    ))
+    (insert elite-for-emacs-logo)))
 
 (defun elite-for-emacs-logo ()
   (insert elite-for-emacs-logo))
@@ -150,7 +143,6 @@
   (let ()
     (insert "
 Elite for EMACS changes
-
 version 0.1")))
 
 (defun elite-for-emacs-load-commander ()
@@ -792,7 +784,6 @@ version 0.1")))
 	     (setq galaxy (aref elite-for-emacs-galaxies-in-universe (elite-for-emacs-commander-current-galaxy cmdr)))
 	     (setq fuel (elite-for-emacs-commander-fuel cmdr))
 	     (setq target-index (elite-for-emacs-get-system-index (elite-for-emacs-commander-current-galaxy cmdr) planet-name t))
-	     ;;(setq target-index (elite-for-emacs-get-system-index (elite-for-emacs-commander-current-galaxy cmdr) "ZAON" t))
 	     (if galactic-jump
 		 (insert "Galactic hyperspace to galaxy " (number-to-string (1+ (elite-for-emacs-commander-current-galaxy cmdr))) " system " (elite-for-emacs-get-system-name (elite-for-emacs-commander-current-galaxy cmdr) target-index))
 	       (insert "Hyperspace to " (elite-for-emacs-get-system-name (elite-for-emacs-commander-current-galaxy cmdr) target-index)))

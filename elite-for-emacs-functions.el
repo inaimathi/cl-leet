@@ -14,53 +14,38 @@
 
 (defun elite-for-emacs-get-system-name (galaxy-index system-index)
   "Returns system name of planet in galaxy."
-					;(elite-get-system-name 41)
   (plansys-name (aref (elite-for-emacs-get-galaxy galaxy-index) system-index)))
 
 (defun elite-for-emacs-get-current-system-name ()
   "Returns system name of planet in galaxy."
-					;(elite-get-system-name 41)
-  (plansys-name (aref (elite-for-emacs-get-galaxy (elite-for-emacs-commander-current-galaxy (car elite-for-emacs-commander-list))) (elite-for-emacs-commander-current-planet (car elite-for-emacs-commander-list)))))
+  (elite-for-emacs-get-system-name (elite-for-emacs-commander-current-galaxy (car elite-for-emacs-commander-list))
+				   (elite-for-emacs-commander-current-planet (car elite-for-emacs-commander-list))))
 
 (defun elite-for-emacs-get-plansys (galaxy-index system-index)
   "Returns system plansys struct."
-					;(elite-get-system-name 41)
   (aref (elite-for-emacs-get-galaxy galaxy-index) system-index))
-
 
 (defun elite-for-emacs-get-system-index (galaxy-index system-name &optional within-jump)
   "Return index of system-name in galaxy."
-  (let ((syscount)
+  (let ((syscount 0)
 	(d 9999)
-	(p)
-	(temp)
-	(cmdr)
-	(galaxy))
-    (setq syscount 0)
-    (setq cmdr (car elite-for-emacs-commander-list))
-    (setq p (elite-for-emacs-commander-current-planet cmdr))
-    (setq galaxy (aref elite-for-emacs-galaxies-in-universe (elite-for-emacs-commander-current-galaxy cmdr)))
+	(p (elite-for-emacs-commander-current-planet cmdr))
+	(cmdr (car elite-for-emacs-commander-list))
+	(galaxy (aref elite-for-emacs-galaxies-in-universe (elite-for-emacs-commander-current-galaxy cmdr))))
     (while (< syscount galsize)
-      (setq temp (string-match (upcase system-name) (elite-for-emacs-get-system-name galaxy-index syscount)))
-      (if temp
-	  (if (= temp 0)  ;(plansys-name (aref galaxy syscount)))
-	      (progn (if (and within-jump (<= (distance (aref galaxy syscount) (aref galaxy (elite-for-emacs-commander-current-planet cmdr))) maxfuel))
-			 (progn (setq p syscount)
-				(setq syscount 99999))
-		       (progn
-			 (if (not within-jump)
-			     (progn (setq p syscount)
-				    (setq syscount 99999))))))))
-      (setq syscount (1+ syscount)))	
+      (let ((temp (string-match (upcase system-name) (elite-for-emacs-get-system-name galaxy-index syscount))))
+	(when (and temp 
+		   (= temp 0)
+		   within-jump 
+		   (<= (distance (aref galaxy syscount) (aref galaxy (elite-for-emacs-commander-current-planet cmdr))) maxfuel))
+	      (setq p syscount))
+	(setq syscount (1+ syscount))))
     p))
-
 
 (defun elite-for-emacs-short-local-system-info (galaxy-index system-index &optional no-format)
   "Return short local system description."
-  (let ((planet-index)
-	(galaxy))
-    (setq planet-index system-index)
-    (setq galaxy (elite-for-emacs-get-galaxy galaxy-index))
+  (let ((planet-index system-index)
+	(galaxy (elite-for-emacs-get-galaxy galaxy-index)))
     (if no-format
 	(concat (plansys-name (aref galaxy planet-index))
 		" TL: "
@@ -69,15 +54,11 @@
 		(aref econnames (plansys-economy (aref galaxy planet-index)))
 		" "
 		(aref govnames (plansys-govtype (aref galaxy planet-index))))
-      (concat (format "%10s" (plansys-name (aref galaxy planet-index)))
-	      (format " TL: %2i " (1+ (plansys-techlevel (aref galaxy planet-index))))
-	      (format "%12s" (aref econnames (plansys-economy (aref galaxy planet-index))))
-	      (format " %15s" (aref govnames (plansys-govtype (aref galaxy planet-index))))))
-    ;; 	  printf("%10s",plsy.name);
-    ;;   	printf(" TL: %2i ",(plsy.techlev)+1);
-    ;;   	printf("%12s",econnames[plsy.economy]);
-    ;;   	printf(" %15s",govnames[plsy.govtype]);
-    ))
+      (concat (format "%10s TL: %2i %12s %15s"
+		      (plansys-name (aref galaxy planet-index))
+		      (1+ (plansys-techlevel (aref galaxy planet-index)))
+		      (aref econnames (plansys-economy (aref galaxy planet-index)))
+		      (aref govnames (plansys-govtype (aref galaxy planet-index))))))))
 
 (defun prisys (plan-s &optional compressed)
   "Returns system info as string on specified system."
@@ -108,8 +89,6 @@
 		      (format "\nGross Productivity: %5d M CR" (plansys-productivity plan-s))
 		      (format "\nRadius: %i " (plansys-radius plan-s))
 		      (format "\nPopulation: %i Billion" (lsh (plansys-population plan-s) -3))
-		      ;;(format "\nPopulation: %i Billion" (plansys-population plan-s))
-		      ;;" (" ")"
 		      "\n"
 		      (elite-for-emacs-planet-description (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-get-system-index (elite-for-emacs-commander-current-galaxy cmdr) (plansys-name plan-s)))))))
     sys-info))
@@ -142,7 +121,6 @@
       (setq i (1+ i)))
     (catch 'found)))
 
-
 (defun elite-for-emacs-get-first-equipment-match (equipment-name)
   "Return first equipment struct where name matches."
   (let ((equipment-list)
@@ -160,34 +138,8 @@
       (setq equipment-list (cdr equipment-list)))
     equip))
 
-
 (defun elite-for-emacs-insert ()
   "Inserts elite-for-emacs in buffer"
   (interactive)
   (insert "elite-for-emacs-"))
 (define-key emacs-lisp-mode-map "\C-c\C-l" 'elite-for-emacs-insert)
-
-(defun elite-for-emacs-insert-defun-skeleton ()
-  (interactive)
-  (let ((pnt))
-    (insert "(defun elite-for-emacs-")
-    (setq pnt (point))
-    (insert " ()\n")
-    (lisp-indent-line)
-    (insert "\"\"\n")
-    (lisp-indent-line)
-    (insert "(let (\n")
-    (lisp-indent-line)
-    (insert "(cmdr)")
-    (insert "\n")
-    (lisp-indent-line)
-    (insert ")\n")
-    (lisp-indent-line)
-    (insert "(setq cmdr (car elite-for-emacs-commander-list))\n\n")
-    (lisp-indent-line)
-    (insert ")\n")
-    (lisp-indent-line)
-    (insert ")\n")
-    (goto-char pnt)))
-
-(define-key emacs-lisp-mode-map "\C-c\C-d" 'elite-for-emacs-insert-defun-skeleton)

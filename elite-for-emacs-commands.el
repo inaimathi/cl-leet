@@ -219,44 +219,24 @@ version 0.1")))
 
 (defun elite-for-emacs-new-commander ()
   "Create new Elite commander. Usage: new <commander name> <male|female> [no-random]. If no-random parameter is present commander's home system is Lave."
-  (let ((params)
+  (let ((params (cdr (split-string elite-for-emacs-command)))
 	(temp)
 	(current-planet))
-    (setq params (cdr (split-string elite-for-emacs-command)))
     (if (and (/= (length params) 2) (/= (length params) 3))
 	(insert "Usage: new <commander name> <male|female> [no-random].")
-      (progn (elite-for-emacs-reset)
+      (progn 
+	(elite-for-emacs-reset)
+	(elite-for-emacs-create-new-commander (nth 0 params) (nth 1 params) (nth 2 params))
+	;;(insert (concat "Incoming message: Greetings Commander " (nth 0 params) ".\n"))
+	;;(insert elite-for-emacs-pilot-welcome-message )
+	(setf (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_DOCKED)
+	(setq current-planet (elite-for-emacs-commander-current-planet (car elite-for-emacs-commander-list)))
 
-	     (elite-for-emacs-create-new-commander (nth 0 params) (nth 1 params) (nth 2 params))
-
-	     ;;(insert (concat "Incoming message: Greetings Commander " (nth 0 params) ".\n"))
-	     ;;(insert elite-for-emacs-pilot-welcome-message )
-	     (setf (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_DOCKED)
-	     (setq current-planet (elite-for-emacs-commander-current-planet (car elite-for-emacs-commander-list)))
-	     (if elite-for-emacs-online
-		 (progn ;;check commander name. if it is taken return error
-
-		   ;;(prin1-to-string (car elite-for-emacs-commander-list))
-		   (setq temp (elite-for-emacs-online-check-name (car elite-for-emacs-commander-list)))
-		   (if (not (string= temp "OK"))
-		       (error (concat "Commander name " (nth 0 params) " already taken. Please choose another.")))
-		   ;;get fluct from server
-		   ;;no need because fluct is for market and all market info is fetched from server
-		   ;;(setq temp (elite-for-emacs-online-fluct))
-		   ;;(setf (elite-for-emacs-commander-fluct (car elite-for-emacs-commander-list)) temp)
-
-		   ;;local market fetched from server when executing market,buy or sell
-		   ;;(setf (elite-for-emacs-commander-local-market (car elite-for-emacs-commander-list))
-		   ;;(genmarket temp (aref (elite-for-emacs-get-galaxy 0) current-planet)) )
-
-		   ;;(prin1 (car elite-for-emacs-commander-list))
-		   )
-	       (progn (setf (elite-for-emacs-commander-local-market (car elite-for-emacs-commander-list))
-			    (genmarket 0 (aref (elite-for-emacs-get-galaxy 0) current-planet)))
-		      (setf (elite-for-emacs-commander-fluct (car elite-for-emacs-commander-list)) 0)))
-	     (insert "Welcome to Elite for EMACS Commander " (nth 0 params) ".")
-
-	     (setq elite-for-emacs-game-is-on t)))))
+	(setf (elite-for-emacs-commander-local-market (car elite-for-emacs-commander-list))
+	      (genmarket 0 (aref (elite-for-emacs-get-galaxy 0) current-planet))) ;;; ERROR HERE
+	(setf (elite-for-emacs-commander-fluct (car elite-for-emacs-commander-list)) 0)
+	(insert "Welcome to Elite for EMACS Commander " (nth 0 params) ".")
+	(setq elite-for-emacs-game-is-on t)))))
 
 (defun elite-for-emacs-reset ()
   (let ()

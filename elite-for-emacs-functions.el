@@ -1,12 +1,9 @@
 ;;; elite-for-emacs-functions.el - Elite for EMACS functions
 
 (defun elite-for-emacs-create-new-commander (name gender no-random-home)
-  (let ()
-    ;;(setq name "Sami")
-    ;;(setq gender "male")
     (if no-random-home
 	(elite-for-emacs-generate-commander name -1 gender 7 0 0)
-      (elite-for-emacs-generate-commander name -1 gender (random galsize) 0 0))))
+      (elite-for-emacs-generate-commander name -1 gender (random galsize) 0 0)))
 
 (defun elite-for-emacs-get-galaxy (num)
   "Returns galaxy array of galaxy <num>"

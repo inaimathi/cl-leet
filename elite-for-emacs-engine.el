@@ -17,8 +17,7 @@
     next-random))
 
 (defun randbyte ()
-  (let ()
-    (logand (myrand) 255)))
+  (logand (myrand) 255))
 
 (defun genmarket (fluct p);p is plansys struct
   " Prices and availabilities are influenced by the planet's economy type
@@ -36,18 +35,19 @@
    The player's cash is held in four bytes."
    (let ((lmarket (make-markettype
 		   :quantity (make-vector (1+ lasttrade) 0)
+
 		   :price (make-vector (1+ lasttrade) 0)))
 	 (i 0)
 	 (q)
 	 (product)
 	 (changing)
 	 (commodity))
-     (setq i 0)
+
      (while (<= i lasttrade)
-       (let ((commodity (aref commodities i))
-	     (product (* (plansys-economy p) (tradegood-gradient commodity)))
-	     (changing (logand fluct (tradegood-maskbyte commodity)))
-	     (q (logand (+ (tradegood-basequant commodity) changing (- product)) 255)))
+       (let* ((commodity (aref commodities i))
+	      (product (* (plansys-economy p) (tradegood-gradient commodity)))
+	      (changing (logand fluct (tradegood-maskbyte commodity)))
+	      (q (logand (+ (tradegood-basequant commodity) changing (- product)) 255)))
 	 (if (/= (logand q ?\x80) 0)
 	     (setq q 0)) ;clip to positive 8-bit
 			 ;error in q...
@@ -61,6 +61,7 @@
 	 (setq i (1+ i)))
        (aset (markettype-quantity lmarket) AlienItems 0) ;Override to force nonavailability, change..
        (copy-markettype lmarket))))
+
 
 (defun distance (a b)
   ;;  "Seperation between two planets (4*sqrt(X*X+Y*Y/4))."

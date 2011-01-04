@@ -61,33 +61,31 @@
   "Saved commanders");;used to easily upgrade commander struct
 
 (defun elite-for-emacs-generate-commander (name id gender current-planet current-galaxy day)
-  (let ()
-    (setq elite-for-emacs-commander-list 
-	  (append 
-	   elite-for-emacs-commander-list 
-	   (list (make-elite-for-emacs-commander
-		  :id id
-		  :name name
-		  :gender gender
-		  :elite-score 0 ;one kill, one point
-		  :legal-status 0
-		  :condition CONDITION_DOCKED
-		  :current-state STATE_DOCKED
-		  :reputation 0 ;reputation, more the better
-		  :credits 1000
-		  :current-planet current-planet
-		  :current-galaxy current-galaxy
-		  :hyperspace-system current-planet
-		  ;;(aref (elite-for-emacs-get-galaxy 0) 7)
-		  :fuel 70
-		  :cargo-capacity 20
-		  :max-cargo-capacity 20
-		  :current-cargo (make-vector (+ lasttrade 1) 0)
-		  :lastrand (mysrand 12345)
-		  :current-day day
-		  :auto-refuel t ;;set nil to switch autorefuel off
-		  :home-system current-planet
-		  :home-galaxy current-galaxy))))))
+  (setq elite-for-emacs-commander-list 
+	(append 
+	 elite-for-emacs-commander-list 
+	 (list (make-elite-for-emacs-commander
+		:id id
+		:name name
+		:gender gender
+		:elite-score 0 ;one kill, one point
+		:legal-status 0
+		:condition CONDITION_DOCKED
+		:current-state STATE_DOCKED
+		:reputation 0 ;reputation, more the better
+		:credits 1000
+		:current-planet current-planet
+		:current-galaxy current-galaxy
+		:hyperspace-system current-planet
+		:fuel 70
+		:cargo-capacity 20
+		:max-cargo-capacity 20
+		:current-cargo (make-vector (+ lasttrade 1) 0)
+		:lastrand (mysrand 12345)
+		:current-day day
+		:auto-refuel t ;;set nil to switch autorefuel off
+		:home-system current-planet
+		:home-galaxy current-galaxy)))))
 
 (defun elite-for-emacs-get-commander (index)
   (nth index elite-for-emacs-commander-list))

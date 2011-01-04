@@ -662,84 +662,34 @@
 (defun makesystem (s)
   "Generate system from seed.
    Return plansys structure."
-  (let ((longnameflag)
-	(govtype)
-	(economy)
-	(techlevel)
-	(population)
-	(radius)
-	(productivity)
+  (let* ((longnameflag (logand (seedtype-w0 s) 64))
+	(govtype (logand (lsh (seedtype-w1 s) -3) 7))
+	(economy (if (<= govtype 1) (logior economy 2) (logand (lsh (seedtype-w0 s) -8) 7)))
+	(techlevel (+ (logand (lsh (seedtype-w1 s) -8) 3) (logxor economy 7) (lsh govtype -1)))
+	(population (+ (* 4 techlevel) economy govtype 1))
+	(radius (+ (* 256 (+ (logand (lsh (seedtype-w2 s) -8) 15) 11) ) (plansys-x thissys) ))
+	(productivity (* (+ (logxor economy 7) 3) (+ govtype 4) population 8))
 	(planet-name)
 	(thissys)
 	(pair1)
 	(pair2)
 	(pair3)
 	(pair4))
-					;(setq s seed)
-    (setq longnameflag (logand (seedtype-w0 s) 64))
-    
-					;(insert "x: " (number-to-string  (logand (lsh (seedtype-w1 s) -8) 255)) "\n")
-					;(insert "y: " (number-to-string (logand (lsh (seedtype-w0 s) -8) 255)) "\n")
 
-					;instantiate thissys
     (setq thissys	
 	  (make-plansys
 	   :x (logand (lsh (seedtype-w1 s) -8) 255);and operation because x and y are lowest two bytes only
-	   :y (logand (lsh (seedtype-w0 s) -8) 255)
-					;other variables are nonsense values, they are changed lates
-	   :economy 0
-	   :govtype 0
-	   :techlevel 0
-	   :population 0
-	   :productivity 0
-	   :radius 0
+	   :y (logand (lsh (seedtype-w0 s) -8) 255);other variables are nonsense values, they are changed lates
+	   :economy economy
+	   :govtype govtype
+
+	   :techlevel (if (= (logand govtype 1) 1) (+ 1 techlevel) techlevel)
+	   :population population
+
+	   :productivity productivity
+	   :radius radius
 	   :goatsoupseed 0
 	   :name ""))
-
-					;set govtype and economy
-					;variable can be used lates in this functions
-					;   (setq s
-					; 	;initialize seed for galaxy 1
-					; 	(make-seedtype
-					; 	 :w0 base0
-					; 	 :w1 base1
-					; 	 :w2 base2
-					; 	 ))
-    (setq govtype (logand (lsh (seedtype-w1 s) -3) 7))
-    (setq economy (logand (lsh (seedtype-w0 s) -8) 7))
-    (if (<= govtype 1)
-	(setq economy (logior economy 2)))
-					;set govtype and economy in thissys' plansys struct
-    (setf (plansys-economy thissys) economy)
-    (setf (plansys-govtype thissys) govtype)
-					;(insert "Economy: " (number-to-string economy) "\n")
-					;(insert "Govtype: " (number-to-string govtype) "\n")
-    
-					;set techlevel
-    (setq techlevel (+ (logand (lsh (seedtype-w1 s) -8) 3) (logxor economy 7) ))
-    (setq techlevel (+ techlevel (lsh govtype -1) ))
-    (if (= (logand govtype 1) 1)
-	(setq techlevel (+ techlevel 1)))
-					;set techlevel in thissys' plansys struct
-    (setf (plansys-techlevel thissys) techlevel)
-					;(insert "Techlevel: " (number-to-string techlevel) "\n")
-    
-					;set population
-    (setq population (+ (* 4 techlevel) economy))
-    (setq population (+ population govtype 1))
-    (setf (plansys-population thissys) population)
-					;(insert "Population: " (number-to-string population) "\n")
-    
-					;set productivity
-    (setq productivity (* (+ (logxor economy 7) 3) (+ govtype 4) ))
-    (setq productivity (* productivity population 8))
-    (setf (plansys-productivity thissys) productivity)
-					;(insert "productivity: " (number-to-string productivity) "\n")
-
-					;set radius
-    (setq radius (+ (* 256 (+ (logand (lsh (seedtype-w2 s) -8) 15) 11) ) (plansys-x thissys) ))
-    (setf (plansys-radius thissys) radius)
-					;(insert "Radius: " (number-to-string radius) "\n")
 
 					;set goatsoupseed
     (setf (plansys-goatsoupseed thissys) 
@@ -749,8 +699,8 @@
 	   :c (logand (seedtype-w2 s)  #xFF)
 	   :d (logand (lsh (seedtype-w2 s) -8)  #xFF)))
 
-					;set name
-					;init alphabet pairs
+    ;set name
+    ;init alphabet pairs
     (setq pair1 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
     (tweakseed s)
     (setq pair2 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
@@ -759,7 +709,8 @@
     (tweakseed s)
     (setq pair4 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
     (tweakseed s)
-					;Always four iterations of random number
+
+    ;Always four iterations of random number
     (setq planet-name
 	  (concat 
 	   (code-to-char (aref pairs pair1))
@@ -775,26 +726,9 @@
 		 planet-name
 		 (code-to-char (aref pairs pair4))
 		 (code-to-char (aref pairs (1+ pair4)))))))
-    (setf (plansys-name thissys) (stripout planet-name "."))
-					;(insert (stripout planet-name ".") "\n")
-					;return plansys
+    (setf (plansys-name thissys) (replace-regexp-in-string "\\." "" planet-name))
+
     (copy-plansys thissys)))
-(defun stripout (s c)
-  "Remove all c's from string s."
-  (let ((len)
-	(count)
-	(tmp)
-	(name))
-    (setq len (length s))
-    (setq count 0)
-    (setq tmp "")
-    (setq name "")
-    (while (< count len)
-      (setq tmp (code-to-char (aref s count)))
-      (if (not (string=  tmp c))
-	  (setq name (concat name tmp)))
-      (setq count (1+ count)))
-    (substring name 0)))
 
 (defun code-to-char (ascii-code)
   "Helper function. Returns string of ascii code."
@@ -809,26 +743,20 @@
 
 (defun buildgalaxy (galaxynumber &optional completion-status)
   "Builds galaxy."
-  (let ((galcount)
+  (let ((galcount galaxynumber)
 	(current-system)
-	(syscount)
-	(galaxy))
-    (setq galaxy (make-vector galsize []))
-
-    (setq galcount galaxynumber)
+	(syscount 0)
+	(galaxy (make-vector galsize [])))
 
     (if (= galcount 1)
 	(progn (setq seed
-					;initialize seed for galaxy 1
 		     (make-seedtype
 		      :w0 base0
 		      :w1 base1
 		      :w2 base2))))
-					;(setq galaxynumber 2)
-					;    (while (< galcount galaxynumber)
 
-					;hardcoded seeds for galaxies 2-8
-					;seed values extracted from modified Text Elite 1.3 source
+    ;hardcoded seeds for galaxies 2-8
+    ;seed values extracted from modified Text Elite 1.3 source
     (if (= galcount 2)
 	(progn (setq seed
 		     (make-seedtype
@@ -872,44 +800,20 @@
 		      :w1 292
 		      :w2 56233))))
 
-					;(nextgalaxy seed)
-					;(setq seed (nextgalaxy seed))
-					;    (setq galcount (1+ galcount))
-					;    )
-
-					;put galaxy data in array of structures
-    (setq syscount 0)
-    (let ((progress)
-	  (prog-text)
+    (let ((progress 0)
+	  (prog-text "Initializing universe")
 	  (percent))
-      (setq prog-text "Initializing universe")
-      (setq progress 0)
       (while (< syscount galsize)
-					;vector of vectors..
+	;vector of vectors..
 	(setq current-system (makesystem seed))
 	(aset galaxy syscount current-system)
-					;(aset elite-planet-completion-list syscount (list (plansys-name current-system) syscount))
-	(setq syscount (1+ syscount))
-
-					;progress
-	;;       (setq progress (1+ progress))
-	;;       (if (= (% progress 1) 0)
-	;; 	  (progn 
-	;; 	    (setq percent (number-to-string (floor (/ progress  2.56))))
-	;; 	     ;(setq prog-text (concat prog-text "."))
-	;; 	    (message (concat prog-text " "  percent "%%" completion-status))
-	;; 	    )
-	;; 	  )
-	))
+	(setq syscount (1+ syscount))))
     galaxy))
 
 (defun elite-for-emacs-build-universe ()
-  (let ((i)
-	(universe))
-    (setq universe (make-vector 8 nil))
-    (setq i 0)
+  (let ((i 0)
+	(universe (make-vector 8 nil)))
     (while (< i 8)
-      
       (aset universe i (buildgalaxy (1+ i)))
       (setq i (1+ i)))
     universe))

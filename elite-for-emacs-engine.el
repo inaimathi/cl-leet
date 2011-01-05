@@ -48,10 +48,8 @@
 	      (product (* (plansys-economy p) (tradegood-gradient commodity)))
 	      (changing (logand fluct (tradegood-maskbyte commodity)))
 	      (q (logand (+ (tradegood-basequant commodity) changing (- product)) 255)))
-	 (if (/= (logand q ?\x80) 0)
-	     (setq q 0)) ;clip to positive 8-bit
-			 ;error in q...
-			 ;get quantity array 
+	 (when (/= (logand q ?\x80) 0) (setq q 0)) ;clip to positive 8-bit
+
 	 (aset (markettype-quantity lmarket) i (logand q ?\x3f)) ;mast to 6 bits
 	 
 	 (setq q (+ (tradegood-baseprice commodity) changing product))
@@ -144,10 +142,8 @@
 
 (defun elite-for-emacs-planet-description (galaxy-index system-index)
   "Return planet description"
-  (let ((planet-sys)
-	(rnd_seed))
-    (setq planet-sys (aref (aref elite-for-emacs-galaxies-in-universe galaxy-index) system-index))
-    (setq rnd_seed (copy-fastseedtype (plansys-goatsoupseed planet-sys)))
+  (let* ((planet-sys (aref (aref elite-for-emacs-galaxies-in-universe galaxy-index) system-index))
+	(rnd_seed (copy-fastseedtype (plansys-goatsoupseed planet-sys))))
     (setq elite-for-emacs-planet-description "")
     (goat_soup "\x8F is \x97." planet-sys)
     elite-for-emacs-planet-description))
@@ -188,15 +184,12 @@
 (defun goat_soup (source planet-sys)
   (let ((c)
 	(rnd)
-	(source-list nil)
+	(source-list (mapcar string-to-char (split-string source "")))
 	(tmp (split-string source ""))
 	(i)
 	(len)
 	(x))
-    (while tmp
-      (setq c (car tmp))
-      (setq source-list (append source-list (list (string-to-char c))))
-      (setq tmp (cdr tmp)))
+
     (while source-list
       (setq c (car source-list))
       (if (< c #x80)
@@ -204,7 +197,7 @@
 	(progn
 	  (if (<= c #xa4)
 	      (progn (setq rnd (gen_rnd_number))
-		     (setq tmp 0);;true: non-zero, zer=false
+		     (setq tmp 0);;true: non-zero, false: zero
 		     (if (>= rnd #x33)
 			 (setq tmp (1+ tmp)))
 		     (if (>= rnd #x66)
@@ -214,53 +207,28 @@
 		     (if (>= rnd #xCC)
 			 (setq tmp (1+ tmp)))
 		     (goat_soup (nth tmp (nth (- c #x81) desc_list)) planet-sys))
-		     ;;.option[()+(rnd >= 0x66)+(rnd >= 0x99)+(rnd >= 0xCC)] planet-sys)
-		     ;;goat_soup(desc_list[c-0x81].option[(rnd >= 0x33)+(rnd >= 0x66)+(rnd >= 0x99)+(rnd >= 0xCC)],psy);
-		     ;;(goat_soup...
-
-	    (progn ;;switch...
+	    (progn
 	      (cond ((= c #xB0);;planet name
 		     (setq elite-for-emacs-planet-description 
 			   (concat elite-for-emacs-planet-description 
-				   (capitalize (plansys-name planet-sys))))
-		     ;;(insert (capitalize (plansys-name planet-sys)))
-		     )
+				   (capitalize (plansys-name planet-sys)))))
 		    ((= c #xB1);; /* <planet name>ian */
 		     (setq tmp (capitalize (plansys-name planet-sys)))
 		     (if (and (not (string-match "e$" tmp)) (not (string-match "i$" tmp)))
 			 (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description tmp))
-		       ;;(insert tmp)
-		       (progn ;;(setq tmp "helleinooio")
-			 (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (substring tmp 0 (1- (length tmp))) "ian" ));;(insert (substring tmp 0 (1- (length tmp))))
-			 )))
+		       (progn
+			 (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (substring tmp 0 (1- (length tmp))) "ian" )))))
 		    ((= c #xB2);;/* random name */
 		     (setq i 0)
 		     (setq len (logand (gen_rnd_number) 3))
 		     (while (<= i len)
 		       (setq x (logand (gen_rnd_number) #x3e))
 		       (if (/= (aref pairs x) 46);;46='.' (string-to-char ".")
-			   (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (char-to-string (aref pairs x))))
-			 ;;(insert (char-to-string (aref pairs0 x)))
-			 )
+			   (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (char-to-string (aref pairs x)))))
 		       (if (and (> i 0) (/= (aref pairs (1+ x)) 46))
-			   (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (char-to-string (aref pairs (1+ x)))))
-			 ;;(insert (char-to-string (aref pairs0 (1+ x))))			     
-			 )
-		       (setq i (1+ i)))
-		     ;; 		       				case 0xB2: /* random name */
-		     ;; 				{	int i;
-		     ;; 					int len = gen_rnd_number() & 3;
-		     ;; 					for(i=0;i<=len;i++)
-		     ;; 					{	int x = gen_rnd_number() & 0x3e;
-		     ;; 						if(pairs0[x]!='.') printf("%c",pairs0[x]);
-		     ;; 						if(i && (pairs0[x+1]!='.')) printf("%c",pairs0[x+1]);
-		     ;; 					}
-		     ;; 				}	break;
-
-		     ))))))
-      ;;break	    
+			   (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (char-to-string (aref pairs (1+ x))))))
+		       (setq i (1+ i)))))))))
       (setq source-list (cdr source-list)))))
-
 
 (defun gen_rnd_number ()
   (let ((a)

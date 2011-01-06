@@ -6,18 +6,13 @@
   "Welcome to the Elite Federation of Pilots. You are now one of The Few in The Eight Galaxies. All pilots strive to Elite, few succeed and most die.\nPilot your Cobra MkIII with honor.\nQ'Apla!")
 
 (defun elite-for-emacs-prompt ()
-  (let ((prompt)
-	(cmdr))
+  (let ((cmdr (car elite-for-emacs-commander-list)))
     (if elite-for-emacs-game-is-on
-	(progn (setq cmdr (car elite-for-emacs-commander-list))
-	       (if (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list))  STATE_BAZAAR)
-		   (progn (setq prompt (elite-for-emacs-bazaar-prompt)))
-		 (progn (setq prompt
-			      (concat (elite-for-emacs-get-system-name 
-				       (elite-for-emacs-commander-current-galaxy cmdr) 
-				       (elite-for-emacs-commander-current-planet cmdr))
-				      ">")))))
-      (progn (setq prompt "Elite>"))) prompt))
+	(concat (elite-for-emacs-get-system-name 
+		 (elite-for-emacs-commander-current-galaxy cmdr) 
+		 (elite-for-emacs-commander-current-planet cmdr))
+		">")
+      "Elite>")))
 
 (defun elite-for-emacs-mode-line ()
   (let ((modeline))
@@ -299,7 +294,7 @@ version 0.1")))
 			(setq item-index  (elite-for-emacs-trade-good-index item))
 
 			(setq bought (elite-for-emacs-gamebuy  (car elite-for-emacs-commander-list) item (string-to-number (nth 1 params))))
-			(insert "Bought " (number-to-string bought) (aref unitnames ( tradegood-units (aref commodities item-index))) " of " (aref tradnames item-index) "."))
+			(insert "Bought " (number-to-string bought) (aref unitnames (tradegood-units (aref commodities item-index))) " of " (aref tradnames item-index) "."))
 	       (error
 		(insert
 		 (error-message-string error)

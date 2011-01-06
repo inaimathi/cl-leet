@@ -96,22 +96,26 @@
 	(setq current-holdspace (elite-for-emacs-commander-cargo-capacity cmdr))
 	(setq shipshold (elite-for-emacs-commander-current-cargo cmdr))
 	(setq tonnes-to-buy (min quantity amount))
-	(if (= ( tradegood-units (aref commodities item-index)) 0)
-	    (setq tonnes-to-buy (min current-holdspace tonnes-to-buy))
-	  ())
+	(when (= ( tradegood-units (aref commodities item-index)) 0)
+	    (setq tonnes-to-buy (min current-holdspace tonnes-to-buy)))
 	(setq tonnes-to-buy (min tonnes-to-buy (floor (/ (float cash ) (aref (markettype-price localmarket) item-index)))))
 
 	(if (> tonnes-to-buy 0)
 	    (progn
 	      (aset shipshold item-index (+ (aref shipshold item-index) tonnes-to-buy))
-					;  (aset shipshold item-index tonnes-to-buy)
 	      (if elite-for-emacs-online
-		  (elite-for-emacs-online-update-local-market-buy (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr) item-index tonnes-to-buy)
-		(aset (markettype-quantity localmarket) item-index (- (aref (markettype-quantity localmarket) item-index) tonnes-to-buy)))
+		  (elite-for-emacs-online-update-local-market-buy 
+		   (elite-for-emacs-commander-current-galaxy cmdr) 
+		   (elite-for-emacs-commander-current-planet cmdr) item-index tonnes-to-buy)
+		(aset (markettype-quantity localmarket) 
+		      item-index 
+		      (- (aref (markettype-quantity localmarket) item-index) tonnes-to-buy)))
 	      
-	      (setf (elite-for-emacs-commander-credits cmdr) (- cash (* tonnes-to-buy (aref (markettype-price localmarket) item-index))))
+	      (setf (elite-for-emacs-commander-credits cmdr) 
+		    (- cash (* tonnes-to-buy (aref (markettype-price localmarket) item-index))))
 	      
-	      (if (and (not (or (= item-index 13) (= item-index 14) (= item-index 15))) (member EQUIPMENT_TRADE_HISTORY_V1 (elite-for-emacs-commander-equipment-list cmdr)))
+	      (if (and (not (or (= item-index 13) (= item-index 14) (= item-index 15))) 
+		       (member EQUIPMENT_TRADE_HISTORY_V1 (elite-for-emacs-commander-equipment-list cmdr)))
 		  (progn (setq trade-history-current (elite-for-emacs-commander-trade-history-current cmdr))
 			 ;; 		  (if (not trade-history)
 			 ;; 		      (setq trade-history (make-list 17 0))
@@ -167,17 +171,6 @@
     (if bytevalue
 	(logand ix 255)
       ix)))
-					; 	int k1;
-					; 	int ix = rand_seed;
-					; 	
-					; 	k1 = ix / 127773;
-					; 	ix = 16807 * (ix - k1 * 127773) - k1 * 2836;
-					; 	if (ix < 0)
-					; 		ix += 2147483647;
-					; 	rand_seed = ix;
-					; 
-					; 	return ix; 
-
 
 (defvar elite-for-emacs-planet-description "")
 
@@ -217,7 +210,10 @@
 		     (if (and (not (string-match "e$" tmp)) (not (string-match "i$" tmp)))
 			 (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description tmp))
 		       (progn
-			 (setq elite-for-emacs-planet-description (concat elite-for-emacs-planet-description (substring tmp 0 (1- (length tmp))) "ian" )))))
+			 (setq elite-for-emacs-planet-description 
+			       (concat elite-for-emacs-planet-description 
+				       (substring tmp 0 (1- (length tmp))) 
+				       "ian")))))
 		    ((= c #xB2);;/* random name */
 		     (setq i 0)
 		     (setq len (logand (gen_rnd_number) 3))
@@ -231,17 +227,16 @@
       (setq source-list (cdr source-list)))))
 
 (defun gen_rnd_number ()
-  (let ((a)
-	(x))        
-    (setq x (logand (* (fastseedtype-a rnd_seed) 2) #xFF));
-    (setq a (+ x (fastseedtype-c rnd_seed)))
+  (let ((a (+ x (fastseedtype-c rnd_seed)))
+	(x (logand (* (fastseedtype-a rnd_seed) 2) #xFF)))        
+
     (if (> (fastseedtype-a rnd_seed) 127)
 	(setq a (1+ a)))
     (setf (fastseedtype-a rnd_seed) (logand a #xFF))
     (setf (fastseedtype-c rnd_seed) x)
     (setq a (/ a 256));	/* a = any carry left from above */
     (setq x (fastseedtype-b rnd_seed))
-
+    
     (setq a (logand (+ a x (fastseedtype-d rnd_seed)) #xFF))
     
     (setf (fastseedtype-b rnd_seed) a)
@@ -335,24 +330,17 @@
 (defconst inhabitant3 (list "Slimy " "Bug-Eyed " "Horned " "Bony " "Fat " "Furry "))
 (defconst inhabitant4 (list "Rodent" "Frog" "Lizard" "Lobster" "Bird" "Humanoid" "Feline" "Insect"))
 
-(defstruct seedtype
-					;six byte random number used as seed for planets
-  w0 w1 w2)
+(defstruct seedtype w0 w1 w2) ;six byte random number used as seed for planets
 
-(defvar seed
-					;variable seed
-  (make-seedtype :w0 1 :w1 2 :w2 3))
+(defvar seed (make-seedtype :w0 1 :w1 2 :w2 3)) ;variable seed
 
-(defstruct fastseedtype
-					;four byte random number used for planet description
-  a b c d)
+(defstruct fastseedtype a b c d) ;four byte random number used for planet description
 
 (defconst pairs0 "ABOUSEITILETSTONLONUTHNO"
   "Characters used in planet names.")
 					;must continue into ..
 (defconst pairs "..LEXEGEZACEBISOUSESARMAINDIREA.ERATENBERALAVETIEDORQUANTEISRION"
   "Characters for planet names.")
-
 
 (defconst desc_list
   (list
@@ -375,7 +363,7 @@
    ;; 89 */
    (list "\x96 civil war" "\x9B \x98 \x99s" "a \x9B disease" "\x96 earthquakes" "\x96 solar activity")
    ;; 8A */
-   (list "its \x83 \x84" "the \xB1 \x98 \x99""its inhabitants' \x9A \x85" "\xA1" "its \x8D \x8E")
+   (list "its \x83 \x84" "the \xB1 \x98 \x99" "its inhabitants' \x9A \x85" "\xA1" "its \x8D \x8E")
    ;; 8B */
    (list "juice" "brandy" "water" "brew" "gargle blasters")
    ;; 8C */
@@ -427,15 +415,14 @@
    ;; A3 */
    (list "ice" "mud" "Zero-G" "vacuum" "\xB1 ultra")
    ;; A4 */
-   (list "hockey" "cricket" "karate" "polo" "tennis")
-   ))
+   (list "hockey" "cricket" "karate" "polo" "tennis")))
 ;; B0 = <planet name>
 ;;	 B1 = <planet name>ian
 ;;	 B2 = <random name>
 
-(defstruct markettype
-  quantity
-  price)
+(defstruct markettype quantity price)
+
+(defun pick (a-list) (nth (random (length a-list)) a-list))
 
 (defstruct plansys
   ;planet structure
@@ -451,17 +438,15 @@
   name);12 characters
 
 (defconst govnames 
-  (vector "Anarchy" "Feudal" "Multi-gov" "Dictatorship" "Communist" "Confederacy" "Democracy" "Corporate State")
-  "Government names.")
+  (vector "Anarchy" "Feudal" "Multi-gov" "Dictatorship" "Communist" "Confederacy" "Democracy" "Corporate State"))
 
 (defconst econnames 
-  (vector "Rich Ind" "Average Ind" "Poor Ind" "Mainly Ind"  "Mainly Agri" "Rich Agri" "Average Agri" "Poor Agri")
-  "Econonmy names.")
+  (vector "Rich Ind" "Average Ind" "Poor Ind" "Mainly Ind"  "Mainly Agri" "Rich Agri" "Average Agri" "Poor Agri"))
 
 (defconst tradnames 
   (vector "Food" "Textiles" "Radioactives" "Slaves" "Liquor/Wines" "Luxuries" "Narcotics" "Computers" "Machinery" "Alloys" "Firearms" "Furs" "Minerals" "Gold" "Platinum" "Gem-Stones" "Alien Items"))
 
-(defconst unitnames (vector "t" "kg" "g") "unit types for commodities")
+(defconst unitnames (vector "t" "kg" "g"))
 
 (defstruct equipment 
   techlevel ;;tech level of system where available
@@ -471,9 +456,9 @@
 
 (defconst EQUIPMENT_LARGE_CARGO_BAY 0)
 (defconst EQUIPMENT_GALACTIC_HYPERDRIVE 1)
-(defconst EQUIPMENT_TRADE_HISTORY_V1 2);;version 1 displays latest items only
-(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 3);;history for gold, platinum
-(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 4);;history for gemstones
+(defconst EQUIPMENT_TRADE_HISTORY_V1 2) ;;version 1 displays latest items only
+(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 3) ;;history for gold, platinum
+(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 4) ;;history for gemstones
 
 ;;trade history:
 ;;  food total tonnes delivered (bought and sold), total amount of money spend in buyin
@@ -482,7 +467,7 @@
 ;;
 ;;  inventory: show system where bought,good,amount,price per amount  and money spent + prediction if selling in current
 ;;  system, price+profit
-					;(defvar elite-for-emacs-equipment-list
+
 (defvar elite-for-emacs-equipment-list
   (list (make-equipment :techlevel 1
 	:price 4000
@@ -627,88 +612,34 @@
 			  :units 0
 			  :name "Alien Items ")))
 
+(defun generate-planet-name ()
+  "I am not a planet")
+
 ;;build galaxy functions
 (defun makesystem (s)
   "Generate system from seed.
    Return plansys structure."
-  (let* ((longnameflag (logand (seedtype-w0 s) 64))
-	(govtype (logand (lsh (seedtype-w1 s) -3) 7))
-	(economy (if (<= govtype 1) (logior economy 2) (logand (lsh (seedtype-w0 s) -8) 7)))
-	(techlevel (+ (logand (lsh (seedtype-w1 s) -8) 3) (logxor economy 7) (lsh govtype -1)))
-	(population (+ (* 4 techlevel) economy govtype 1))
-	(radius (+ (* 256 (+ (logand (lsh (seedtype-w2 s) -8) 15) 11) ) (plansys-x thissys) ))
-	(productivity (* (+ (logxor economy 7) 3) (+ govtype 4) population 8))
-	(planet-name)
-	(thissys)
-	(pair1)
-	(pair2)
-	(pair3)
-	(pair4))
-
-    (setq thissys	
-	  (make-plansys
-	   :x (logand (lsh (seedtype-w1 s) -8) 255);and operation because x and y are lowest two bytes only
-	   :y (logand (lsh (seedtype-w0 s) -8) 255);other variables are nonsense values, they are changed lates
-	   :economy economy
-	   :govtype govtype
-
-	   :techlevel (if (= (logand govtype 1) 1) (+ 1 techlevel) techlevel)
-	   :population population
-
-	   :productivity productivity
-	   :radius radius
-	   :goatsoupseed 0
-	   :name ""))
-
-					;set goatsoupseed
-    (setf (plansys-goatsoupseed thissys) 
-	  (make-fastseedtype
-	   :a (logand (seedtype-w1 s) #xFF)
-	   :b (logand (lsh (seedtype-w1 s) -8)  #xFF)
-	   :c (logand (seedtype-w2 s)  #xFF)
-	   :d (logand (lsh (seedtype-w2 s) -8)  #xFF)))
-
-    ;set name
-    ;init alphabet pairs
-    (setq pair1 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
-    (tweakseed s)
-    (setq pair2 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
-    (tweakseed s)
-    (setq pair3 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
-    (tweakseed s)
-    (setq pair4 (* (logand (lsh (seedtype-w2 s) -8) 31) 2))
-    (tweakseed s)
-
-    ;Always four iterations of random number
-    (setq planet-name
-	  (concat 
-	   (code-to-char (aref pairs pair1))
-	   (code-to-char (aref pairs (1+ pair1)))
-	   (code-to-char (aref pairs pair2))
-	   (code-to-char (aref pairs (1+ pair2)))
-	   (code-to-char (aref pairs pair3))
-	   (code-to-char (aref pairs (1+ pair3)))))
-    (if (/= longnameflag 0)
-	(progn
-	  (setq planet-name 
-		(concat
-		 planet-name
-		 (code-to-char (aref pairs pair4))
-		 (code-to-char (aref pairs (1+ pair4)))))))
-    (setf (plansys-name thissys) (replace-regexp-in-string "\\." "" planet-name))
-
-    (copy-plansys thissys)))
-
-(defun code-to-char (ascii-code)
-  "Helper function. Returns string of ascii code."
-  (concat (make-list 1 ascii-code)))
-
-(defun tweakseed (s)
-  (let ((temp))
-    (setq temp (+ (seedtype-w0 s) (seedtype-w1 s) (seedtype-w2 s))) ;2 byte aritmetic
-    (setf (seedtype-w0 s) (seedtype-w1 s))
-    (setf (seedtype-w1 s) (seedtype-w2 s))
-    (setf (seedtype-w2 s) temp)))
+  (let* ((longnameflag)
+	 (x (logand (lsh (seedtype-w1 s) -8) 255));and operation because x and y are lowest two bytes only
+	 (govtype (logand (lsh (seedtype-w1 s) -3) 7))
+	 (economy (if (<= govtype 1) (logior (logand (lsh (seedtype-w0 s) -8) 7) 2) (logand (lsh (seedtype-w0 s) -8) 7)))
+	 (techlevel (+ (logand (lsh (seedtype-w1 s) -8) 3) (logxor economy 7) (lsh govtype -1)))
+	 (population (+ (* 4 techlevel) economy govtype 1))
+	 (radius (+ (* 256 (+ (logand (lsh (seedtype-w2 s) -8) 15) 11) ) x))
+	 (productivity (* (+ (logxor economy 7) 3) (+ govtype 4) population 8)))
+    (make-plansys
+     :x x
+     :y (logand (lsh (seedtype-w0 s) -8) 255);other variables are nonsense values, they are changed lates
+     :economy economy
+     :govtype govtype
+     
+     :techlevel (if (= (logand govtype 1) 1) (+ 1 techlevel) techlevel)
+     :population population
+     
+     :productivity productivity
+     :radius radius
+     :goatsoupseed 0
+     :name (generate-planet-name))))
 
 (defun buildgalaxy (galaxynumber &optional completion-status)
   "Builds galaxy."
@@ -717,57 +648,16 @@
 	(syscount 0)
 	(galaxy (make-vector galsize [])))
 
-    (if (= galcount 1)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 base0
-		      :w1 base1
-		      :w2 base2))))
-
+    (cond ((= galcount 1) (setq seed (make-seedtype :w0 base0 :w1 base1 :w2 base2)))
     ;hardcoded seeds for galaxies 2-8
     ;seed values extracted from modified Text Elite 1.3 source
-    (if (= galcount 2)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 46228
-		      :w1 1168
-		      :w2 28582))))
-    (if (= galcount 3)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 26921
-		      :w1 2081
-		      :w2 56909))))
-    (if (= galcount 4)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 53842
-		      :w1 4162
-		      :w2 48538))))
-    (if (= galcount 5)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 42404
-		      :w1 8324
-		      :w2 31541))))
-    (if (= galcount 6)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 19273
-		      :w1 16393
-		      :w2 63082))))
-    (if (= galcount 7)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 38546
-		      :w1 32786
-		      :w2 60884))))
-    (if (= galcount 8)
-	(progn (setq seed
-		     (make-seedtype
-		      :w0 11557
-		      :w1 292
-		      :w2 56233))))
+	  ((= galcount 2) (setq seed (make-seedtype :w0 46228 :w1 1168 :w2 28582)))
+	  ((= galcount 3) (setq seed (make-seedtype :w0 26921 :w1 2081 :w2 56909)))
+	  ((= galcount 4) (setq seed (make-seedtype :w0 53842 :w1 4162 :w2 48538)))
+	  ((= galcount 5) (setq seed (make-seedtype :w0 42404 :w1 8324 :w2 31541)))
+	  ((= galcount 6) (setq seed (make-seedtype :w0 19273 :w1 16393 :w2 63082)))
+	  ((= galcount 7) (setq seed (make-seedtype :w0 38546 :w1 32786 :w2 60884)))
+	  ((= galcount 8) (setq seed (make-seedtype :w0 11557 :w1 292 :w2 56233))))
 
     (let ((progress 0)
 	  (prog-text "Initializing universe")

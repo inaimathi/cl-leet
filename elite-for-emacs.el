@@ -29,7 +29,6 @@
 (defvar elite-for-emacs-command "")
 (defvar elite-for-emacs-buffer-name "*Elite for EMACS*")
 (defvar elite-for-emacs-buffer-name-offline "*Elite for EMACS*")
-(defvar elite-for-emacs-buffer-name-online "*Elite for EMACS (online)*")
 
 ;;Functions for prompt, modeline title.
 (defvar elite-for-emacs-prompt-function 'elite-for-emacs-prompt)
@@ -41,13 +40,10 @@
 (defvar elite-for-emacs-command-list nil)
 (defvar elite-for-emacs-suppress-message t)
 (defvar elite-for-emacs-suppress-default-newline-command nil)
-(defvar elite-for-emacs-online nil)
-
 
 (defvar elite-for-emacs-base-command-list
   (list (list "version" 'elite-for-emacs-version-info)
 	(list "display-logo" 'elite-for-emacs-logo)
-	(list "display-logo-no-text" 'elite-for-emacs-logo-no-text)
 	(list "cls" 'elite-for-emacs-clear)
 	(list "help" 'elite-for-emacs-help)
 	(list "exit" 'elite-for-emacs-exit)
@@ -94,12 +90,6 @@
 	     ;;add handler to self-insert-command, post-command hook
 	     (add-hook 'pre-command-hook 'elite-for-emacs-pre-command-hook nil t)
 	     (add-hook 'post-command-hook 'elite-for-emacs-post-command-hook nil t)))))
-
-(defun elite-for-emacs-online ()
-  "Elite for EMACS online."
-  (setq elite-for-emacs-online t)
-  (setq elite-for-emacs-buffer-name elite-for-emacs-buffer-name-online)
-  (elite-for-emacs))
 
 (defvar elite-for-emacs-command-loop-index 0)
 (defvar elite-for-emacs-history-index 0)

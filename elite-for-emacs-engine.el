@@ -33,11 +33,8 @@
    The decimal point in prices is introduced only when printing them.
    Internally, all prices are integers.
    The player's cash is held in four bytes."
-   (let ((lmarket (make-markettype
-		   :quantity (make-vector (1+ lasttrade) 0)
-
-		   :price (make-vector (1+ lasttrade) 0)))
-	 (i 0)
+   (let ((lmarket (make-markettype :quantity (make-vector (1+ lasttrade) 0) :price (make-vector (1+ lasttrade) 0)))
+   	 (i 0)
 	 (q)
 	 (product)
 	 (changing)
@@ -49,16 +46,16 @@
 	      (changing (logand fluct (tradegood-maskbyte commodity)))
 	      (q (logand (+ (tradegood-basequant commodity) changing (- product)) 255)))
 	 (when (/= (logand q ?\x80) 0) (setq q 0)) ;clip to positive 8-bit
-
+	 
 	 (aset (markettype-quantity lmarket) i (logand q ?\x3f)) ;mast to 6 bits
 	 
 	 (setq q (+ (tradegood-baseprice commodity) changing product))
 	 (setq q (logand q ?\xff))
 	 (aset (markettype-price lmarket) i (* q 4))
-
+	 
 	 (setq i (1+ i)))
        (aset (markettype-quantity lmarket) AlienItems 0) ;Override to force nonavailability, change..
-       (copy-markettype lmarket))))
+       lmarket)))
 
 
 (defun distance (a b)
@@ -87,9 +84,7 @@
       (progn
 	;;get first match in trade items      
 	(setq item-index  (elite-for-emacs-trade-good-index good))
-	(if elite-for-emacs-online
-	    (setq localmarket (elite-for-emacs-online-local-market (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr) ))
-	  (setq localmarket (elite-for-emacs-commander-local-market cmdr)))
+	(setq localmarket (elite-for-emacs-commander-local-market cmdr))
 
 	(setq quantity (aref (markettype-quantity localmarket) item-index))
 	(setq holdspace (elite-for-emacs-commander-max-cargo-capacity cmdr))
@@ -103,13 +98,9 @@
 	(if (> tonnes-to-buy 0)
 	    (progn
 	      (aset shipshold item-index (+ (aref shipshold item-index) tonnes-to-buy))
-	      (if elite-for-emacs-online
-		  (elite-for-emacs-online-update-local-market-buy 
-		   (elite-for-emacs-commander-current-galaxy cmdr) 
-		   (elite-for-emacs-commander-current-planet cmdr) item-index tonnes-to-buy)
-		(aset (markettype-quantity localmarket) 
-		      item-index 
-		      (- (aref (markettype-quantity localmarket) item-index) tonnes-to-buy)))
+	      (aset (markettype-quantity localmarket) 
+		    item-index 
+		    (- (aref (markettype-quantity localmarket) item-index) tonnes-to-buy))
 	      
 	      (setf (elite-for-emacs-commander-credits cmdr) 
 		    (- cash (* tonnes-to-buy (aref (markettype-price localmarket) item-index))))
@@ -694,35 +685,6 @@
  ________________\\    /   /__|-       -|__\\   \\    /________________
 |____________________________|\\       /|____________________________|
    __________________________  \\     /____________________________
-  |____________________________|\\___/|____________________________|
-      ____________________________^____________________________
-     |________________________   / \\   ________________________|
-       |____________________   _/ ^ \\_   ____________________|
-           _________________| /  / \\  \\ |_________________
-          |__________________/  / ^ \\  \\__________________|
-            |__________________/ / \\ \\__________________|
-                              /  / \\  \\
-                             /__/ ^ \\__\\
-                                 / \\
-                                / ^ \\
-                               /_/ \\_\\
-                                  ^")
-
-(defvar  elite-for-emacs-logo-no-text 
-  "               /\\                                   /\\
-              /  \\                                 /  \\
-              \\   \\                               /   /
-               \\   \\                             /   /
-                \\   \\                           /   /
-                /\\   \\                         /   /\\
-               /  \\   \\                       /   /  \\
-               \\   \\  /\\        |\\_/|        /\\  /   /
-                \\    /  \\       | _ |       /  \\    /
-                /\\   \\   \\      |   |      /   /   /\\
-                \\ \\   \\   \\   _/ \\-/ \\_   /   /   / /
-________________\\     /   /__|-       -|__\\   \\    /________________
-|____________________________|\\       /|____________________________|
-   ____________________________\\     /____________________________
   |____________________________|\\___/|____________________________|
       ____________________________^____________________________
      |________________________   / \\   ________________________|

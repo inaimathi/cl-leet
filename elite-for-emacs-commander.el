@@ -46,13 +46,10 @@
   home-galaxy
   ;;last message sent is for displaying last known system of commander
   ;;messages are public so we know it...
-  last-message-sent-galaxy;;for online mode, galaxy index where user sent message
-  last-message-sent-planet;;for online mode, planet index where user sent message
   distance-to-planet;;when in space, distance to planet, location 0 is space station and commander can dock,
   character-dd;;dungeons and dragons character description
   trade-history-current;;current trade items in cargo hold, update when buying
-  trade-history;;overall cargo history, update when selling
-  )
+  trade-history);;overall cargo history, update when selling
 
 (defvar elite-for-emacs-commander-list nil
   "Elite for EMACS commanders. First in list is player")

@@ -36,8 +36,8 @@
       (setq elite-for-emacs-command (car kill-ring)))))
 
 (defun elite-for-emacs-set-command-list ()
-  (let ()
-    (when (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list))  STATE_IN_SPACE)
+  (let ((state (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list))))
+    (when (eq state STATE_IN_SPACE)
       ;;set commands while in space
       (setq elite-for-emacs-command-list
 	    (append
@@ -54,49 +54,49 @@
 	      (list "path" 'elite-for-emacs-path-to-system))
 	     elite-for-emacs-base-command-list)))
 
-    (if (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_DOCKED)
-	;;set commands while in docked
-	(setq elite-for-emacs-command-list
-	      (append
-	       (list
-		(list "market" 'elite-for-emacs-market-info)
-		(list "commander-info" 'elite-for-emacs-commander-info)
-		(list "local-systems" 'elite-for-emacs-local-systems)
-		(list "list-equipment" 'elite-for-emacs-list-equipment)
-		(list "buy-goods" 'elite-for-emacs-buy-goods)
-		(list "buy-equipment" 'elite-for-emacs-buy-equipment)
-		(list "sell-goods" 'elite-for-emacs-sell-goods)
-		(list "sell-all" 'elite-for-emacs-sell-all)
-		(list "refuel" 'elite-for-emacs-refuel)
-		(list "galaxy-systems" 'elite-for-emacs-list-galaxy-reverse)
-		(list "galaxy-systems-reverse" 'elite-for-emacs-list-galaxy)
-		(list "inventory" 'elite-for-emacs-inventory)
-		(list "undock" 'elite-for-emacs-undock)
-		(list "system-info" 'elite-for-emacs-system-info)
-		(list "path" 'elite-for-emacs-path-to-system)
-		(list "save" 'elite-for-emacs-save-commander)
-		(list "bazaar" 'elite-for-emacs-bazaar))
-	       elite-for-emacs-base-command-list)))))
+    (when (eq state STATE_DOCKED)
+      ;;set commands while in docked
+      (setq elite-for-emacs-command-list
+	    (append
+	     (list
+	      (list "market" 'elite-for-emacs-market-info)
+	      (list "commander-info" 'elite-for-emacs-commander-info)
+	      (list "local-systems" 'elite-for-emacs-local-systems)
+	      (list "list-equipment" 'elite-for-emacs-list-equipment)
+	      (list "buy-goods" 'elite-for-emacs-buy-goods)
+	      (list "buy-equipment" 'elite-for-emacs-buy-equipment)
+	      (list "sell-goods" 'elite-for-emacs-sell-goods)
+	      (list "sell-all" 'elite-for-emacs-sell-all)
+	      (list "refuel" 'elite-for-emacs-refuel)
+	      (list "galaxy-systems" 'elite-for-emacs-list-galaxy-reverse)
+	      (list "galaxy-systems-reverse" 'elite-for-emacs-list-galaxy)
+	      (list "inventory" 'elite-for-emacs-inventory)
+	      (list "undock" 'elite-for-emacs-undock)
+	      (list "system-info" 'elite-for-emacs-system-info)
+	      (list "path" 'elite-for-emacs-path-to-system)
+	      (list "save" 'elite-for-emacs-save-commander)
+	      (list "bazaar" 'elite-for-emacs-bazaar))
+	     elite-for-emacs-base-command-list)))))
 
 (defun elite-for-emacs-pre-command ()) ;What to do before command is executed
 
 (defun elite-for-emacs-version-info ()
-  (insert "Elite for EMACS " elite-for-emacs-version "\n")
-  (insert "Based on Elite (c) 1984 Ian Bell and David Braben.\n")
-  (insert "Elite for EMACS by Sami Salkosuo.")
-  (insert elite-for-emacs-logo))
+  (insert "
+Elite for EMACS " elite-for-emacs-version "
+Based on Elite (c) 1984 Ian Bell and David Braben.
+Elite for EMACS by Sami Salkosuo.")
+  (elite-for-emacs-logo))
 
 (defun elite-for-emacs-logo () (insert elite-for-emacs-logo))
-(defun elite-for-emacs-logo-no-text () (insert elite-for-emacs-logo-no-text))
 
 (defun elite-for-emacs-changes ()
   (insert "
 Elite for EMACS changes
-version 0.1"))
+version " elite-for-emacs-version))
 
 (defun elite-for-emacs-load-commander ()
   "Load Elite commander. Usage: load <commander name>."
-  (let ((params)
+  (let ((params (cdr (split-string elite-for-emacs-command)))
 	(buffer)
 	(file-name)
 	(temp)
@@ -104,39 +104,26 @@ version 0.1"))
 	(cmdr-vector)
 	(i)
 	(exists))
-    (setq params (cdr (split-string elite-for-emacs-command)))
     (if (/= (length params) 1)
 	(insert "Usage: load <commander name>.")
       (progn
-	(if elite-for-emacs-online
-	    (progn ;;load commander
-	      ;;temp is commander data
-	      ;;(setq temp (elite-for-emacs-online-load-commander "Sami"))
-	      (setq temp (elite-for-emacs-online-load-commander (nth 0 params)))
-	      (if (not temp)
-		  (setq exists nil)
-		(progn ;;(insert (prin1-to-string temp))
-		  (setq elite-for-emacs-online t)
-		  (setq elite-for-emacs-saved-commander-list (list (car temp)))
-		  (setq exists t))))
-	  (progn (setq file-name (concat "~/.elite-for-emacs-commander-" (nth 0 params)))
-		 ;;(setq file-name (concat "~/.elite-for-emacs-commander-" "Sami"))
-		 (if (file-exists-p file-name)
-		     (progn (setq buffer (find-file file-name))
-			    (eval-buffer buffer)
-			    (kill-buffer buffer)
-			    (setq exists t))
-		   (setq exists nil))))
-
+	(progn (setq file-name (concat "~/.elite-for-emacs-commander-" (nth 0 params)))
+	       (if (file-exists-p file-name)
+		   (progn (setq buffer (find-file file-name))
+			  (eval-buffer buffer)
+			  (kill-buffer buffer)
+			  (setq exists t))
+		 (setq exists nil)))
+	
 	(if exists
 	    (progn (setq elite-for-emacs-game-is-on t)
 		   (setq elite-for-emacs-commander-list  nil)
 		   ;;todo upgrade commander struct
-		   (setq temp  (make-elite-for-emacs-commander))
+		   (setq temp (make-elite-for-emacs-commander))
 		   ;;(length (car elite-for-emacs-saved-commander-list))
 		   ;;(length (car elite-for-emacs-commander-list))
 		   ;;(length (make-elite-for-emacs-commander))
-
+		   
 		   (while elite-for-emacs-saved-commander-list
 		     (setq temp2 (car elite-for-emacs-saved-commander-list))
 		     (if (/= (length temp) (length temp2))
@@ -146,7 +133,7 @@ version 0.1"))
 			   (while (< i (length temp2))
 			     (aset cmdr-vector i (aref temp2 i))
 			     (setq i (1+ i)))
-
+			   
 			   (setq elite-for-emacs-commander-list
 				 (append
 				  elite-for-emacs-commander-list
@@ -155,15 +142,15 @@ version 0.1"))
 				    (append
 				     elite-for-emacs-commander-list
 				     (list temp2)))))
-
+		     
 		     (setq elite-for-emacs-saved-commander-list (cdr elite-for-emacs-saved-commander-list)))
-
+		   
 		   ;;(setq elite-for-emacs-commander-list elite-for-emacs-saved-commander-list)
-
+		   
 		   (if cmdr-vector
-		       (progn (insert "Commander " (nth 0 params)" updated and loaded."))
-		     (progn (insert "Commander " (nth 0 params) " loaded."))))
-	  (progn (insert "Commander " (nth 0 params) " does not exist.")))))))
+		       (insert "Commander " (nth 0 params)" updated and loaded.")
+		     (insert "Commander " (nth 0 params) " loaded.")))
+	  (insert "Commander " (nth 0 params) " does not exist."))))))
 
 
 (defun elite-for-emacs-new-commander ()
@@ -176,129 +163,81 @@ version 0.1"))
       (progn 
 	(elite-for-emacs-reset)
 	(elite-for-emacs-create-new-commander (nth 0 params) (nth 1 params) (nth 2 params))
-	;;(insert (concat "Incoming message: Greetings Commander " (nth 0 params) ".\n"))
-	;;(insert elite-for-emacs-pilot-welcome-message )
-	(setf (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_DOCKED)
-	(setq current-planet (elite-for-emacs-commander-current-planet (car elite-for-emacs-commander-list)))
-
-	(setf (elite-for-emacs-commander-local-market (car elite-for-emacs-commander-list))
-	      (genmarket 0 (aref (elite-for-emacs-get-galaxy 0) current-planet))) ;;; ERROR HERE
-	(setf (elite-for-emacs-commander-fluct (car elite-for-emacs-commander-list)) 0)
-	(insert "Welcome to Elite for EMACS Commander " (nth 0 params) ".")
-	(setq elite-for-emacs-game-is-on t)))))
+	(let ((cmdr (car elite-for-emacs-commander-list)))
+	  (setf (elite-for-emacs-commander-current-state cmdr) STATE_DOCKED)
+	  (setq current-planet (elite-for-emacs-commander-current-planet cmdr))
+	  
+	  (setf (elite-for-emacs-commander-local-market cmdr) (genmarket 0 (aref (elite-for-emacs-get-galaxy 0) current-planet))) ;;; ERROR HERE
+	  (setf (elite-for-emacs-commander-fluct cmdr) 0)
+	  (insert "Welcome to Elite for EMACS Commander " (nth 0 params) ".")
+	  (setq elite-for-emacs-game-is-on t))))))
 
 (defun elite-for-emacs-reset ()
-  (let ()
-    ;;set environment for game, commands etc
-    (setq elite-for-emacs-commander-list nil)
-    (mysrand 12345)
-
-    ;;command list
-    ))
+  ;;set environment for game, commands etc
+  (setq elite-for-emacs-commander-list nil)
+  (mysrand 12345))
 
 (defun elite-for-emacs-undock ()
-  (let ((cmdr))
-    (setq cmdr (car elite-for-emacs-commander-list))
+  "Launch from a station"
+  (let ((cmdr (car elite-for-emacs-commander-list)))
     (if (string= (elite-for-emacs-commander-condition cmdr) CONDITION_DOCKED)
 	(progn (insert "Leaving station..")
-	       (if elite-for-emacs-online
-		   (progn (if elite-for-emacs-online-autosave-undock
-			      (progn
-				(setq temp (elite-for-emacs-online-save-commander (car elite-for-emacs-commander-list)))
-				(if (not (string= temp "OK"))
-				    (error (concat "Automatic save failed.")))))
-			  ;;(insert "Commander saved.")
-			  ))
 	       (setf (elite-for-emacs-commander-condition cmdr) CONDITION_GREEN)
 	       (setf (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_IN_SPACE))
-      (progn (insert "Not docked.")))))
+      (insert "Not docked."))))
 
 (defun elite-for-emacs-dock ()
-  "Dock station."
-  (let ((cmdr)
+  "Dock at a station"
+  (let ((cmdr (car elite-for-emacs-commander-list))
 	(rnd-byte))
-    (setq cmdr (car elite-for-emacs-commander-list))
     (insert "Docking station..")
     (setf (elite-for-emacs-commander-condition cmdr) CONDITION_DOCKED)
     (setf (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_DOCKED)
-
-    (if (elite-for-emacs-commander-auto-refuel cmdr)
-	(elite-for-emacs-refuel))
-
-    (if elite-for-emacs-online
-	(progn (if elite-for-emacs-online-autosave-dock
-		   (progn (setq temp (elite-for-emacs-online-save-commander (car elite-for-emacs-commander-list)))
-			  (if (not (string= temp "OK"))
-			      (error (concat "Automatic save failed.")))))
-	       ;;(insert "Commander saved.")
-	       ))))
+    (when (elite-for-emacs-commander-auto-refuel cmdr) (elite-for-emacs-refuel))))
 
 (defun elite-for-emacs-buy-goods ()
-  "buy goods. Usage: buy-goods <trade item name> <amount>."
-  (let ((params)
-	(bought)
-	(item)
-	(item-index))
-    (setq params (cdr (split-string elite-for-emacs-command)))
-    ;;(setq params (list "fu" 44))
+  "Buy goods when docked. Usage: buy-goods <trade item name> <amount>."
+  (let* ((params (cdr (split-string elite-for-emacs-command)))
+	 (item (car params))
+	 (item-index (elite-for-emacs-trade-good-index item))
+	 (bought (elite-for-emacs-gamebuy (car elite-for-emacs-commander-list) item (string-to-number (nth 1 params)))))
     (if (/= (length params) 2)
 	(insert "Usage: buy-goods <trade item name> <amount>.")
       (progn (condition-case error
-		 (progn (setq item (nth 0 params))
-			(setq item-index  (elite-for-emacs-trade-good-index item))
-
-			(setq bought (elite-for-emacs-gamebuy  (car elite-for-emacs-commander-list) item (string-to-number (nth 1 params))))
-			(insert "Bought " (number-to-string bought) (aref unitnames (tradegood-units (aref commodities item-index))) " of " (aref tradnames item-index) "."))
-	       (error
-		(insert
-		 (error-message-string error)
-		 ;;"\n"
-		 "Usage: buy-goods <trade item name> <amount>.")))
-	     ;;amount to integer if not integer -> error/set to zero
-	     ))))
+		 (insert "Bought " (number-to-string bought) (aref unitnames (tradegood-units (aref commodities item-index))) " of " (aref tradnames item-index) ".")
+	       (error (insert (error-message-string error)
+			      "Usage: buy-goods <trade item name> <amount>.")))))))
 
 (defun elite-for-emacs-sell-goods ()
   "Sell goods. Usage: sell-goods <trade item name> <amount>."
-  (let ((params)
-	(amount)
-	(item)
-	(item-index)
-	(current-cargo)
-	(cmdr)
-	(amount-in-hold)
-	(cargo-to-sell)
+  (let* ((params (cdr (split-string elite-for-emacs-command)))
+	(amount (string-to-number (nth 1 params)))
+	(item (nth 0 params))
+	(item-index (elite-for-emacs-trade-good-index item))
+	(current-cargo (elite-for-emacs-commander-current-cargo cmdr))
+	(cmdr (car elite-for-emacs-commander-list))
+	(amount-in-hold (aref current-cargo item-index))
+	(cargo-to-sell (min amount amount-in-hold))
 	(localmarket)
-	(revenue)
+	(revenue (* cargo-to-sell (aref (markettype-price localmarket) item-index)))
 	(tmp))
-    (setq cmdr  (car elite-for-emacs-commander-list))
-    (setq params (cdr (split-string elite-for-emacs-command)))
-    ;;(setq params (list "fu" 44))
     (if (/= (length params) 2)
 	(insert "Usage: sell-goods <trade item name> <amount>.")
       (progn (condition-case error
 		 (progn
-		   (setq item (nth 0 params))
-		   (setq item-index  (elite-for-emacs-trade-good-index item))
-		   (setq amount (string-to-number (nth 1 params)))
-		   (setq current-cargo (elite-for-emacs-commander-current-cargo cmdr))
-		   (setq amount-in-hold (aref current-cargo item-index))
 		   (if (= amount-in-hold 0)
 		       (insert "Nothing to sell.")
 		     (progn ;;sell goods
-
+		       
 		       ;;move from ships cargo
-		       (setq cargo-to-sell (min amount amount-in-hold))
 		       (aset current-cargo item-index (- amount-in-hold cargo-to-sell))
 		       (setf (elite-for-emacs-commander-current-cargo cmdr) current-cargo)
-		       ;;move to local market
-		       (if elite-for-emacs-online
-			   (progn
-			     (elite-for-emacs-online-update-local-market-sell (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr) item-index cargo-to-sell)
-			     (setq localmarket (elite-for-emacs-online-local-market (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr))))
-			 (progn
-			   (setq localmarket (elite-for-emacs-commander-local-market cmdr))
-			   (aset (markettype-quantity localmarket) item-index (+ (aref (markettype-quantity localmarket) item-index) cargo-to-sell))))
 
+		       ;;move to local market
+		       (progn
+			 (setq localmarket (elite-for-emacs-commander-local-market cmdr))
+			 (aset (markettype-quantity localmarket) item-index (+ (aref (markettype-quantity localmarket) item-index) cargo-to-sell)))
+		       
 		       ;;todo: each ton sold decreases price 0.1CR
 		       ;;todo: make gross productivity count: more productivuty more system can
 		       ;;have before surplus, bigger productivity means that inhabitants can
@@ -329,23 +268,14 @@ version 0.1"))
 		       ;;(setq day-in-month (- day-in-year (* e-month 30)))
 
 		       ;;set cash
-		       (setq revenue (* cargo-to-sell (aref (markettype-price localmarket) item-index)))
 		       (setf (elite-for-emacs-commander-credits cmdr) (+ (elite-for-emacs-commander-credits cmdr) revenue ))
-
 		       (setf (elite-for-emacs-commander-cargo-capacity cmdr) (+ (elite-for-emacs-commander-cargo-capacity cmdr) cargo-to-sell))
 
 		       (insert "Sold " (number-to-string cargo-to-sell) (aref unitnames ( tradegood-units (aref commodities item-index))) " of " (aref tradnames item-index) " at " (format "%.1f CR" (/ revenue 10.0)) ".")
-
 		       (setq tmp (elite-for-emacs-commander-trade-history-current cmdr))
 		       (aset tmp item-index nil)
 		       (setf (elite-for-emacs-commander-trade-history-current cmdr) tmp))))
-	       (error
-		(insert
-		 (error-message-string error)
-		 ;;"\n"
-		 "Usage: sell-goods <trade item name> <amount>.")))
-	     ;;amount to integer if not integer -> error/set to zero
-	     ))))
+	       (error (insert (error-message-string error) "Usage: sell-goods <trade item name> <amount>.")))))))
 
 (defun elite-for-emacs-sell-all ()
   "Sell all except Gold, Platinum and Gem-Stones."
@@ -379,17 +309,10 @@ version 0.1"))
 			   (setf (elite-for-emacs-commander-current-cargo cmdr) current-cargo)
 			   ;;move to local market
 			   
-			   (if elite-for-emacs-online
-			       (progn (elite-for-emacs-online-update-local-market-sell 
-				       (elite-for-emacs-commander-current-galaxy cmdr) 
-				       (elite-for-emacs-commander-current-planet cmdr) i cargo-to-sell)
-				      (setq localmarket (elite-for-emacs-online-local-market 
-							 (elite-for-emacs-commander-current-galaxy cmdr) 
-							 (elite-for-emacs-commander-current-planet cmdr))))
-			     (progn (setq localmarket (elite-for-emacs-commander-local-market cmdr))
-				    (aset (markettype-quantity localmarket) 
-					  i 
-					  (+ (aref (markettype-quantity localmarket) i) cargo-to-sell))))
+			   (setq localmarket (elite-for-emacs-commander-local-market cmdr))
+			   (aset (markettype-quantity localmarket) 
+				 i 
+				 (+ (aref (markettype-quantity localmarket) i) cargo-to-sell))
 			   
 			   ;;set cash
 			   (setq revenue 
@@ -527,26 +450,18 @@ version 0.1"))
 
 (defun elite-for-emacs-market-info ()
   "Show local system market info."
-  (let ((cmdr)
-	(msg)
-	(i)
-	(commodity)
-	(localmarket)
-	(in-cargo-hold)
-	(market-price)
-	(market-quantity)
-	(total-profit 0))
-    (setq i 0)
-    (setq cmdr  (car elite-for-emacs-commander-list))
-
-    (if elite-for-emacs-online
-	(progn (setq localmarket (elite-for-emacs-online-local-market (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr))))
-      (progn (setq localmarket  (elite-for-emacs-commander-local-market cmdr))))
-
+  (let* ((cmdr (car elite-for-emacs-commander-list))
+	 (msg)
+	 (i 0)
+	 (commodity)
+	 (localmarket (elite-for-emacs-commander-local-market cmdr))
+	 (in-cargo-hold)
+	 (market-price)
+	 (market-quantity)
+	 (total-profit 0))
 
     (while (<= i lasttrade)
       (setq commodity (aref commodities i))
-
       (setq in-cargo-hold (aref (elite-for-emacs-commander-current-cargo cmdr) i))
       (setq market-price (aref (markettype-price localmarket) i))
       (setq market-quantity (aref (markettype-quantity localmarket) i))
@@ -563,7 +478,7 @@ version 0.1"))
 		       (setq trade-history-current (elite-for-emacs-commander-trade-history-current cmdr))
 		       (if (and trade-history-current (aref trade-history-current i))
 			   (progn (setq trade-history-current (aref trade-history-current i))
-				  (insert " Value: "
+				  (insert " Value: " 
 					  (format "%.1f CR" (/ (* in-cargo-hold market-price) 10.0)))
 
 				  (insert " Bought from "
@@ -724,10 +639,9 @@ version 0.1"))
 		 (setf (elite-for-emacs-commander-current-planet cmdr) target-index)
 		 (setf (elite-for-emacs-commander-hyperspace-system cmdr) target-index)
 		 (setf (elite-for-emacs-commander-current-day cmdr) (ceiling (+ (elite-for-emacs-commander-current-day cmdr) (/ dist 10.0))))
-		 (if (not elite-for-emacs-online)
-		     (progn (setq rnd-byte (randbyte))
-			    (setf (elite-for-emacs-commander-fluct cmdr) rnd-byte)
-			    (setf (elite-for-emacs-commander-local-market cmdr) (genmarket rnd-byte (aref (aref elite-for-emacs-galaxies-in-universe (elite-for-emacs-commander-current-galaxy cmdr)) (elite-for-emacs-commander-current-planet cmdr))))))
+		 (setq rnd-byte (randbyte))
+		 (setf (elite-for-emacs-commander-fluct cmdr) rnd-byte)
+		 (setf (elite-for-emacs-commander-local-market cmdr) (genmarket rnd-byte (aref (aref elite-for-emacs-galaxies-in-universe (elite-for-emacs-commander-current-galaxy cmdr)) (elite-for-emacs-commander-current-planet cmdr))))
 
 		 ;;(insert (elite-for-emacs-short-local-system-info (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr)))
 		 (insert "\n")
@@ -779,51 +693,11 @@ version 0.1"))
 		(insert (error-message-string error) "\n")
 		(insert "Usage: system-info [<system name>]")))))))
 
-(defun elite-for-emacs-message-board ()
-  "System message board. Displays 20 recent messages."
-  (let ((cmdr)
-	(messages)
-	(msg))
-    (setq cmdr (car elite-for-emacs-commander-list))
-    (setq messages (elite-for-emacs-online-message-board (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr)))
-
-    (if (not messages)
-	(insert "No messages.")
-      (progn (while messages
-	       ;;(setq messages (car (read-from-string messages)))
-	       (setq msg (car messages))
-	       (insert (nth 0 msg) " " (nth 1 msg) ": " (nth 2 msg))
-	       
-	       (setq messages (cdr messages))
-	       (if messages (insert "\n")))))))
-
-(defun elite-for-emacs-send-message ()
-  "Send message to system message board. Usage: send-message <your message here can include space but limited to 160 characters>."
-  (let ((params)
-	(cmdr)
-	(msg)
-	(tmp))
-    (setq cmdr (car elite-for-emacs-commander-list))
-    (setq params (cdr (split-string elite-for-emacs-command)))
-    (if (= (length params) 0)
-	(insert "Usage: send-message <your message here can include space but limited to 160 characters>.")
-      (progn (setq msg "")
-	     (while params
-	       (setq msg (concat msg (car params) " "))
-	       (setq params (cdr params)))
-	     (setq tmp (elite-for-emacs-online-send-message (elite-for-emacs-commander-current-galaxy cmdr) (elite-for-emacs-commander-current-planet cmdr) (elite-for-emacs-commander-name cmdr) msg))
-	     (if (string= tmp "OK")
-		 (progn (setf (elite-for-emacs-commander-last-message-sent-galaxy cmdr) 
-			      (elite-for-emacs-commander-current-galaxy cmdr))
-			(setf (elite-for-emacs-commander-last-message-sent-planet cmdr) 
-			      (elite-for-emacs-commander-current-planet cmdr))
-			(insert "Message sent.")))))))
-
 (defun elite-for-emacs-other-commanders ()
   "Display info of other commanders in universe."
   (let ((commanders)
 	(commander))
-    (setq commanders (elite-for-emacs-online-commanders))
+    (setq commanders (elite-for-emacs-online-commanders)) ;;ToDo: make this list local commanders insted of online commanders
     ;;(insert (format "%Name" "Credits"))
     (insert "Total commanders: " (number-to-string (length commanders)) "\n")
     (insert "Name,Credits,Last known system(galaxy)\n")
@@ -1040,22 +914,14 @@ version 0.1"))
 (defun elite-for-emacs-save-commander ()
   "Save commander."
   (let ((temp))
-
-    (if elite-for-emacs-online
-	(progn
-	  (setq temp (elite-for-emacs-online-save-commander (car elite-for-emacs-commander-list)))
-	  (if (not (string= temp "OK"))
-	      (error (concat "Save commander failed.")))
-	  (insert "Commander saved."))
-      (progn
-	(find-file (concat "~/.elite-for-emacs-commander-" 
-			   (elite-for-emacs-commander-name (car elite-for-emacs-commander-list))))
-	(erase-buffer)
-	(insert "(setq elite-for-emacs-saved-commander-list '")
-	(prin1 elite-for-emacs-commander-list (current-buffer))
-	(insert ")\n")
-	(save-buffer)
-	(kill-buffer (current-buffer))))))
+    (find-file (concat "~/.elite-for-emacs-commander-" 
+		       (elite-for-emacs-commander-name (car elite-for-emacs-commander-list))))
+    (erase-buffer)
+    (insert "(setq elite-for-emacs-saved-commander-list '")
+    (prin1 elite-for-emacs-commander-list (current-buffer))
+    (insert ")\n")
+    (save-buffer)
+    (kill-buffer (current-buffer))))
 
 (defun elite-for-emacs-kill-buffer ()
   "Clean up when killing buffer "
@@ -1067,8 +933,4 @@ version 0.1"))
 	     (y-or-n-p-with-timeout (concat "Save commander " (elite-for-emacs-commander-name (car elite-for-emacs-commander-list)) " ") 4 t))
 	(elite-for-emacs-save-commander))
     (setq elite-for-emacs-game-is-on nil)
-    (setq elite-for-emacs-online nil )
-    (setq elite-for-emacs-buffer-name elite-for-emacs-buffer-name-offline)
-
-    ;;(setq elite-for-emacs-commander-list nil)
-    ))
+    (setq elite-for-emacs-buffer-name elite-for-emacs-buffer-name-offline)))

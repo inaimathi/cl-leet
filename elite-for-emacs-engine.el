@@ -327,9 +327,7 @@
 
 (defstruct fastseedtype a b c d) ;four byte random number used for planet description
 
-(defconst pairs0 "ABOUSEITILETSTONLONUTHNO"
-  "Characters used in planet names.")
-					;must continue into ..
+;must continue into ..
 (defconst pairs "..LEXEGEZACEBISOUSESARMAINDIREA.ERATENBERALAVETIEDORQUANTEISRION"
   "Characters for planet names.")
 

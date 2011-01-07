@@ -413,7 +413,7 @@
 
 (defstruct markettype quantity price)
 
-(defun pick (a-list) (nth (random (length a-list)) a-list))
+
 
 (defstruct plansys
   ;planet structure

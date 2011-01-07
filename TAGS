@@ -1,4 +1,14 @@
 
+name-generator.el,208
+(defmacro hash 1,0
+(defun pick 8,176
+(defun pick-g 9,236
+(defun tree-to-string 11,295
+(defun flatten 17,569
+(defun generate-name 33,1162
+(defun expand-grammar 38,1372
+(defun expand-grammar-tc 45,1637
+
 elite-for-emacs-functions.el,604
 (defun elite-for-emacs-create-new-commander 3,64
 (defun elite-for-emacs-get-galaxy 8,306
@@ -54,7 +64,7 @@ elite-for-emacs-commands.el,1724
 (defun elite-for-emacs-save-commander 913,40349
 (defun elite-for-emacs-kill-buffer 925,40789
 
-elite-for-emacs-engine.el,2844
+elite-for-emacs-engine.el,2821
 (defun mysrand 3,36
 (defun myrand 7,114
 (defun randbyte 19,773
@@ -97,44 +107,43 @@ elite-for-emacs-engine.el,2844
 (defconst pairs 333,12421
 (defconst desc_list336,12542
 (defstruct markettype 414,15479
-(defun pick 416,15520
-(defstruct plansys418,15583
-(defconst govnames 431,15750
-(defconst econnames 434,15888
-(defconst tradnames 437,16028
-(defconst unitnames 440,16252
-(defstruct equipment 442,16298
-(defconst EQUIPMENT_LARGE_CARGO_BAY 448,16439
-(defconst EQUIPMENT_GALACTIC_HYPERDRIVE 449,16479
-(defconst EQUIPMENT_TRADE_HISTORY_V1 450,16523
-(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 451,16603
-(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 452,16689
-(defvar elite-for-emacs-equipment-list462,17166
-(defstruct tradegood476,17605
-(defconst TRADEGOOD_FOOD 484,17697
-(defconst TRADEGOOD_TEXTILES 485,17726
-(defconst TRADEGOOD_RADIOACTIVES 486,17759
-(defconst TRADEGOOD_SLAVES 487,17796
-(defconst TRADEGOOD_LIQUOR 488,17827
-(defconst TRADEGOOD_LUXURIES 489,17858
-(defconst TRADEGOOD_NARCOTICS 490,17891
-(defconst TRADEGOOD_COMPUTERS 491,17925
-(defconst TRADEGOOD_MACHINERY 492,17959
-(defconst TRADEGOOD_ALLOYS 493,17993
-(defconst TRADEGOOD_FIREARMS 494,18024
-(defconst TRADEGOOD_FURS 495,18058
-(defconst TRADEGOOD_MINERALS 496,18088
-(defconst TRADEGOOD_GOLD 497,18122
-(defconst TRADEGOOD_PLATINUM 498,18152
-(defconst TRADEGOOD_GEMS 499,18186
-(defconst TRADEGOOD_ALIENITEMS 500,18216
-(defvar commodities502,18254
-(defun generate-planet-name 606,20581
-(defun makesystem 610,20665
-(defun buildgalaxy 635,21747
-(defun elite-for-emacs-build-universe 663,22944
-(defvar elite-for-emacs-galaxies-in-universe 671,23143
-(defvar elite-for-emacs-logo 673,219252
+(defstruct plansys418,15524
+(defconst govnames 431,15691
+(defconst econnames 434,15829
+(defconst tradnames 437,15969
+(defconst unitnames 440,16193
+(defstruct equipment 442,16239
+(defconst EQUIPMENT_LARGE_CARGO_BAY 448,16380
+(defconst EQUIPMENT_GALACTIC_HYPERDRIVE 449,16420
+(defconst EQUIPMENT_TRADE_HISTORY_V1 450,16464
+(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 451,16544
+(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 452,16630
+(defvar elite-for-emacs-equipment-list462,17107
+(defstruct tradegood476,17546
+(defconst TRADEGOOD_FOOD 484,17638
+(defconst TRADEGOOD_TEXTILES 485,17667
+(defconst TRADEGOOD_RADIOACTIVES 486,17700
+(defconst TRADEGOOD_SLAVES 487,17737
+(defconst TRADEGOOD_LIQUOR 488,17768
+(defconst TRADEGOOD_LUXURIES 489,17799
+(defconst TRADEGOOD_NARCOTICS 490,17832
+(defconst TRADEGOOD_COMPUTERS 491,17866
+(defconst TRADEGOOD_MACHINERY 492,17900
+(defconst TRADEGOOD_ALLOYS 493,17934
+(defconst TRADEGOOD_FIREARMS 494,17965
+(defconst TRADEGOOD_FURS 495,17999
+(defconst TRADEGOOD_MINERALS 496,18029
+(defconst TRADEGOOD_GOLD 497,18063
+(defconst TRADEGOOD_PLATINUM 498,18093
+(defconst TRADEGOOD_GEMS 499,18127
+(defconst TRADEGOOD_ALIENITEMS 500,18157
+(defvar commodities502,18195
+(defun generate-planet-name 606,20522
+(defun makesystem 610,20606
+(defun buildgalaxy 635,21688
+(defun elite-for-emacs-build-universe 663,22885
+(defvar elite-for-emacs-galaxies-in-universe 671,23084
+(defvar elite-for-emacs-logo 673,219193
 
 elite-for-emacs.el,1900
 (defconst elite-for-emacs-version 3,44

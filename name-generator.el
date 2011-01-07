@@ -1,194 +1,53 @@
-TIBEDIED
-QUBE
-LELEER
-BIARGE
-XEQUERIN
-TIRAOR
-RABEDIRA
-LAVE
-ZAATXE
-DIUSREZA
-TEAATIS
-RIINUS
-ESBIZA
-ONTIMAXE
-CEBETELA
-CEEDRA
-RIZALA
-ATRISO
-TEANREBI
-AZAQU
-RETILA
-SOTIQU
-INLEUS
-ONRIRA
-CEINZALA
-BIISZA
-LEGEES
-QUATOR
-AREXE
-ATRABIIN
-USANAT
-XEESLE
-ORESEREN
-INERA
-INUS
-ISENCE
-REESDICE
-TEREA
-ORGETIBE
-REORTE
-QUQUOR
-GEINONA
-ANARLAQU
-ORESRI
-ESESLA
-SOCELAGE
-RIEDQUAT
-GEREGE
-USLE
-MALAMA
-AESBION
-ALAZA
-XEAQU
-RAOROR
-ORORQU
-LEESTI
-GEISGEZA
-ZAINLABI
-USCELA
-ISVEVE
-TIORANIN
-LEARORCE
-ESUSTI
-USUSOR
-MAREGEIS
-AATE
-SORI
-CEMAVE
-ARUSQUDI
-EREDVE
-REGEATGE
-EDINSO
-RA
-ARONAR
-ARRAESSO
-CEVEGE
-ORTEVE
-GEERRA
-SOINUSTE
-ERLAGE
-XEAAN
-VEIS
-ENSOREUS
-RIVEIS
-BIVEA
-ERMASO
-VELETE
-ENGEMA
-ATRIENXE
-BEUSRIOR
-ONTIAT
-ATARZA
-ARAZAES
-XEERANRE
-QUZADI
-ISTI
-DIGEBITI
-LEONED
-ENZAER
-TERAED
-VETITICE
-LAENIN
-BERAANXE
-ATAGE
-VEISTI
-ZAERLA
-ESREDICE
-BEOR
-ORSO
-USATQURA
-ERBITI
-REINEN
-ININBI
-ERLAZA
-CELABILE
-RIBISO
-QUDIRA
-ISDIBI
-GEQURE
-RARERE
-AERATER
-ATBEVETE
-BIORIS
-RAALE
-TIONISLA
-ENCERESO
-ANERBE
-GELAED
-ONUSORLE
-ZAONCE
-DIQUER
-ZADIES
-ENTIZADI
-ESANBE
-USRALAAT
-ANLERE
-TEVERI
-SOTIERA
-EDEDLEEN
-INONRI
-ESBEUS
-LERELACE
-ESZARAXE
-ANBEEN
-BIORLE
-ANISOR
-USRAREMA
-DISO
-RIRAES
-ORRIRA
-XEER
-CEESXE
-ISATRE
-AONA
-ISINOR
-USZAA
-AANBIAT
-BEMAERA
-ININES
-EDZAON
-LERITEAN
-VEALE
-EDLE
-ANLAMA
-RIBILEBI
-RELAES
-DIZAONER
-RAZAAR
-ENONLA
-ISANLEQU
-TIBECEA
-SOTERA
-ESVEOR
-ESTEONBI
-XEESENRI
-ORESLE
-ERVEIN
-LARAIS
-ANXEBIZA
-DIEDAR
-ENINRE
-BIBE
-DIQUXE
-SORACE
-ANXEONIS
-RIANTIAT
-ZARECE
-MAESIN
-TIBIONIS
-GELEGEUS
-DIORA
-RIGETI
-BEGEABI
-ORRERE
+(defmacro hash (name &rest pairs)
+  `(progn
+     (defvar ,name (make-hash-table))
+     ,@(mapcar (lambda (pair)
+		 `(puthash ',(car pair) ,(cdr pair) ,name))
+	       pairs)))
+
+(defun pick (a-list) (nth (random (length a-list)) a-list))
+(defun pick-g (key grammar) (pick (gethash key grammar)))
+
+(defun tree-to-string (a-tree &optional acc)
+  (cond ((not a-tree) acc)
+	((stringp (car a-tree)) (tree-to-string (cdr a-tree) (concat (or acc "") (car a-tree))))
+	((listp (car a-tree)) (concat (tree-to-string (car a-tree) acc)
+				     (tree-to-string (cdr a-tree) "")))))
+
+(defun flatten (list) (mapcan (lambda (x) (if (listp x) x nil)) list))
+
+
+(hash planet-name-grammar
+      (root . '(strict-starter
+		(strict-starter strict-terminal)
+		(strict-starter versatile strict-terminal)
+		(strict-starter strict-link strict-terminal)
+		versatile
+		(versatile versatile)
+		(versatile strict-link versatile)))
+      (strict-starter . '("at" "an" "ao" "ar" "az" (strict-starter versatile)))
+      (strict-terminal . '("za" "es" "ma" "en" "be" (versatile strict-starter)))
+      (versatile . '("a" "ag" (versatile versatile)))
+      (strict-link . '("on" "xe" "bi" "on")))
+
+(defun generate-name (grammar)
+  (let ((raw-name (expand-grammar (pick-g 'root grammar) grammar))) 
+    (capitalize (cond ((stringp raw-name) raw-name)
+		      ((listp raw-name) (tree-to-string raw-name))))))
+
+(defun expand-grammar (production grammar)
+  (cond ((symbolp production) (expand-grammar (pick-g production grammar) grammar))
+	((listp production) (mapcar (lambda (p) (expand-grammar p grammar)) production))
+	;((stringp production) production)
+	(t production)))
+
+
+(defun expand-grammar-tc (production grammar &optional acc)
+  (cond ((not production) acc)
+	((stringp production) (concat (or acc "") production))
+	((symbolp production) (expand-grammar-tc (pick-g production grammar) grammar acc))
+	((and (listp production) (stringp (car production)))
+	 (expand-grammar-tc (cdr production) grammar (concat (or acc "") (car production))))
+	(t (concat (expand-grammar-tc (car production) grammar acc)
+		   (expand-grammar-tc (cdr production) grammar "")))))
+

@@ -21,7 +21,6 @@
 (load "elite-for-emacs-functions")
 (load "elite-for-emacs-commander")
 (load "elite-for-emacs-engine")
-(load "elite-for-emacs-bazaar")
 
 (defvar elite-for-emacs-current-command nil)
 (defvar elite-for-emacs-original-frame-title-format nil)

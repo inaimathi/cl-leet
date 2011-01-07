@@ -1,203 +1,189 @@
 
-elite-for-emacs-commands.el,1881
+elite-for-emacs-functions.el,604
+(defun elite-for-emacs-create-new-commander 3,64
+(defun elite-for-emacs-get-galaxy 8,306
+(defun elite-for-emacs-get-system-name 12,443
+(defun elite-for-emacs-get-current-system-name 16,640
+(defun elite-for-emacs-get-plansys 21,945
+(defun elite-for-emacs-get-system-index 25,1113
+(defun elite-for-emacs-short-local-system-info 42,1873
+(defun prisys 60,2712
+(defun elite-for-emacs-trade-good-index 93,4441
+(defun elite-for-emacs-match-trade-item 108,4799
+(defun elite-for-emacs-get-first-equipment-match 121,5123
+(defun elite-for-emacs-insert 138,5700
+(define-key emacs-lisp-mode-map 142,5822
+
+elite-for-emacs-commands.el,1724
 (defvar elite-for-emacs-game-is-on 3,62
 (defvar elite-for-emacs-pilot-welcome-message5,108
 (defun elite-for-emacs-prompt 8,355
-(defun elite-for-emacs-mode-line 25,1052
-(defun elite-for-emacs-post-command 53,2026
-(defun elite-for-emacs-set-command-list 67,2565
-(defun elite-for-emacs-pre-command 127,5263
-(defun elite-for-emacs-version-info 131,5360
-(defun elite-for-emacs-logo 140,5669
-(defun elite-for-emacs-logo-no-text 143,5737
-(defun elite-for-emacs-changes 146,5821
-(defun elite-for-emacs-load-commander 154,5941
-(defun elite-for-emacs-new-commander 226,8555
-(defun elite-for-emacs-reset 267,10840
-(defun elite-for-emacs-undock 276,11030
-(defun elite-for-emacs-dock 293,11818
-(defun elite-for-emacs-buy-goods 313,12579
-(defun elite-for-emacs-sell-goods 337,13538
-(defun elite-for-emacs-sell-all 427,17894
-(defun elite-for-emacs-list-equipment 498,20485
-(defun elite-for-emacs-buy-equipment 515,21300
-(defun elite-for-emacs-refuel 541,22658
-(defun elite-for-emacs-inventory 558,23241
-(defun elite-for-emacs-market-info 605,25100
-(defun elite-for-emacs-local-systems 670,27688
-(defun elite-for-emacs-commander-info 701,28826
-(defun elite-for-emacs-hyperspace 773,32252
-(defun elite-for-emacs-galactic-hyperspace 821,35051
-(defun elite-for-emacs-system-info 836,35966
-(defun elite-for-emacs-message-board 860,37045
-(defun elite-for-emacs-send-message 878,37725
-(defun elite-for-emacs-other-commanders 900,38852
-(defun elite-for-emacs-script-execute 925,39948
-(defun elite-for-emacs-list-galaxy-reverse 952,41080
-(defun elite-for-emacs-list-galaxy 954,41163
-(defun elite-for-emacs-galaxy-map 998,42837
-(defun elite-for-emacs-path-to-system 1009,43164
-(defun elite-for-emacs-save-script 1105,46973
-(defun elite-for-emacs-start-script 1112,47275
-(defun elite-for-emacs-save-commander 1118,48166
-(defun elite-for-emacs-kill-buffer 1138,48852
+(defun elite-for-emacs-mode-line 17,658
+(defun elite-for-emacs-post-command 31,1294
+(defun elite-for-emacs-set-command-list 38,1632
+(defun elite-for-emacs-pre-command 80,3679
+(defun elite-for-emacs-version-info 82,3760
+(defun elite-for-emacs-logo 89,3976
+(defun elite-for-emacs-changes 91,4041
+(defun elite-for-emacs-load-commander 96,4153
+(defun elite-for-emacs-new-commander 155,6219
+(defun elite-for-emacs-reset 174,7276
+(defun elite-for-emacs-undock 179,7420
+(defun elite-for-emacs-dock 188,7873
+(defun elite-for-emacs-buy-goods 197,8291
+(defun elite-for-emacs-sell-goods 210,9057
+(defun elite-for-emacs-sell-all 279,12696
+(defun elite-for-emacs-list-equipment 343,14845
+(defun elite-for-emacs-buy-equipment 360,15660
+(defun elite-for-emacs-refuel 386,17018
+(defun elite-for-emacs-inventory 403,17601
+(defun elite-for-emacs-market-info 450,19460
+(defun elite-for-emacs-local-systems 507,21789
+(defun elite-for-emacs-commander-info 538,22927
+(defun elite-for-emacs-hyperspace 610,26353
+(defun elite-for-emacs-galactic-hyperspace 656,28973
+(defun elite-for-emacs-system-info 671,29888
+(defun elite-for-emacs-other-commanders 695,30967
+(defun elite-for-emacs-script-execute 720,32131
+(defun elite-for-emacs-list-galaxy-reverse 747,33263
+(defun elite-for-emacs-list-galaxy 749,33346
+(defun elite-for-emacs-galaxy-map 793,35020
+(defun elite-for-emacs-path-to-system 804,35347
+(defun elite-for-emacs-save-script 900,39156
+(defun elite-for-emacs-start-script 907,39458
+(defun elite-for-emacs-save-commander 913,40349
+(defun elite-for-emacs-kill-buffer 925,40789
 
-elite-for-emacs-bazaar.el,126
-(defun elite-for-emacs-bazaar 7,158
-(defun elite-for-emacs-leave-bazaar 13,365
-(defun elite-for-emacs-bazaar-prompt 19,575
+elite-for-emacs-engine.el,2844
+(defun mysrand 3,36
+(defun myrand 7,114
+(defun randbyte 19,773
+(defun genmarket 22,821
+(defun distance 61,2466
+(defun elite-for-emacs-gamebuy 69,2735
+(defvar rnd_seed 136,5711
+(defun elite-for-emacs-planet-description 138,5736
+(defvar elite-for-emacs-rand1-seed 146,6144
+(defun rand1 148,6185
+(defvar elite-for-emacs-planet-description 166,6812
+(defun goat_soup 168,6862
+(defun gen_rnd_number 220,8930
+(defun elite-for-emacs-describe-inhabitants 254,9856
+(defconst base0 298,11130
+(defconst base1 299,11156
+(defconst base2 300,11182
+(defconst numforLave 301,11208
+(defconst numforZaonce 302,11277
+(defconst numforDiso 303,11306
+(defconst numforRied 304,11333
+(defconst AlienItems 305,11359
+(defconst lasttrade 306,11385
+(defconst galsize 307,11418
+(defconst CONDITION_DOCKED 308,11456
+(defconst CONDITION_GREEN 309,11494
+(defconst CONDITION_YELLOW 310,11530
+(defconst CONDITION_RED 311,11568
+(defconst fuelcost 313,11602
+(defconst maxfuel 315,11647
+(defvar lastrand 317,11686
+(defconst inhabitant1 319,11736
+(defconst inhabitant2 320,11795
+(defconst inhabitant3 321,11881
+(defconst inhabitant4 322,11967
+(defstruct seedtype 324,12071
+(defvar seed 326,12153
+(defstruct fastseedtype 328,12219
+(defconst pairs0 330,12308
+(defconst pairs 333,12421
+(defconst desc_list336,12542
+(defstruct markettype 414,15479
+(defun pick 416,15520
+(defstruct plansys418,15583
+(defconst govnames 431,15750
+(defconst econnames 434,15888
+(defconst tradnames 437,16028
+(defconst unitnames 440,16252
+(defstruct equipment 442,16298
+(defconst EQUIPMENT_LARGE_CARGO_BAY 448,16439
+(defconst EQUIPMENT_GALACTIC_HYPERDRIVE 449,16479
+(defconst EQUIPMENT_TRADE_HISTORY_V1 450,16523
+(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 451,16603
+(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 452,16689
+(defvar elite-for-emacs-equipment-list462,17166
+(defstruct tradegood476,17605
+(defconst TRADEGOOD_FOOD 484,17697
+(defconst TRADEGOOD_TEXTILES 485,17726
+(defconst TRADEGOOD_RADIOACTIVES 486,17759
+(defconst TRADEGOOD_SLAVES 487,17796
+(defconst TRADEGOOD_LIQUOR 488,17827
+(defconst TRADEGOOD_LUXURIES 489,17858
+(defconst TRADEGOOD_NARCOTICS 490,17891
+(defconst TRADEGOOD_COMPUTERS 491,17925
+(defconst TRADEGOOD_MACHINERY 492,17959
+(defconst TRADEGOOD_ALLOYS 493,17993
+(defconst TRADEGOOD_FIREARMS 494,18024
+(defconst TRADEGOOD_FURS 495,18058
+(defconst TRADEGOOD_MINERALS 496,18088
+(defconst TRADEGOOD_GOLD 497,18122
+(defconst TRADEGOOD_PLATINUM 498,18152
+(defconst TRADEGOOD_GEMS 499,18186
+(defconst TRADEGOOD_ALIENITEMS 500,18216
+(defvar commodities502,18254
+(defun generate-planet-name 606,20581
+(defun makesystem 610,20665
+(defun buildgalaxy 635,21747
+(defun elite-for-emacs-build-universe 663,22944
+(defvar elite-for-emacs-galaxies-in-universe 671,23143
+(defvar elite-for-emacs-logo 673,219252
 
-elite-for-emacs-functions.el,607
-(defun elite-for-emacs-create-new-commander 3,64
-(defun elite-for-emacs-get-galaxy 11,372
-(defun elite-for-emacs-get-system-name 15,509
-(defun elite-for-emacs-get-current-system-name 19,706
-(defun elite-for-emacs-get-plansys 23,1020
-(defun elite-for-emacs-get-system-index 28,1190
-(defun elite-for-emacs-short-local-system-info 55,2233
-(defun prisys 74,3140
-(defun elite-for-emacs-trade-good-index 107,4869
-(defun elite-for-emacs-match-trade-item 122,5227
-(defun elite-for-emacs-get-first-equipment-match 135,5551
-(defun elite-for-emacs-insert 152,6128
-(define-key emacs-lisp-mode-map 156,6250
+elite-for-emacs.el,1900
+(defconst elite-for-emacs-version 3,44
+(defvar elite-for-emacs-current-command 25,631
+(defvar elite-for-emacs-original-frame-title-format 26,677
+(defvar elite-for-emacs-command-history 27,735
+(defvar elite-for-emacs-command 28,781
+(defvar elite-for-emacs-buffer-name 29,818
+(defvar elite-for-emacs-buffer-name-offline 30,876
+(defvar elite-for-emacs-prompt-function 33,985
+(defvar elite-for-emacs-mode-line-function 34,1051
+(defvar elite-for-emacs-frame-title-function 35,1123
+(defvar elite-for-emacs-custom-post-command-function 36,1178
+(defvar elite-for-emacs-custom-pre-command-function 37,1263
+(defvar elite-for-emacs-kill-buffer-function 38,1347
+(defvar elite-for-emacs-command-list 39,1423
+(defvar elite-for-emacs-suppress-message 40,1466
+(defvar elite-for-emacs-suppress-default-newline-command 41,1511
+(defvar elite-for-emacs-base-command-list43,1576
+(defun elite-for-emacs 55,2024
+(defvar elite-for-emacs-command-loop-index 93,3506
+(defvar elite-for-emacs-history-index 94,3553
+(defun elite-for-emacs-post-command-hook 96,3597
+(defun elite-for-emacs-get-first-command-match 222,8810
+(defvar elite-for-emacs-tab-index 238,9269
+(defvar elite-for-emacs-tab-command 239,9307
+(defvar elite-for-emacs-tab-ring 240,9349
+(defun elite-for-emacs-tab 242,9390
+(defun elite-for-emacs-pre-command-hook 272,10545
+(defun elite-for-emacs-kill-buffer-hook 284,11015
+(defun elite-for-emacs-set-prompt 292,11462
+(defun elite-for-emacs-set-mode-line 300,11781
+(defun elite-for-emacs-frame-title 309,12142
+(defun elite-for-emacs-default-frame-title 316,12459
+(defun elite-for-emacs-default-mode-line 317,12528
+(defun elite-for-emacs-default-prompt 318,12618
+(defun elite-for-emacs-clear 319,12676
+(defun elite-for-emacs-exit 320,12725
+(defun elite-for-emacs-help 322,12778
+(defgroup elite-for-emacs 342,13395
+(defcustom elite-for-emacs-save-confirmation-when-exit 349,13545
 
-elite-for-emacs-commander.el,405
+elite-for-emacs-commander.el,374
 (defconst STATE_DOCKED 10,447
 (defconst STATE_IN_SPACE 11,474
 (defconst STATE_WITCH_SPACE 12,503
 (defconst STATE_COMBAT 13,535
-(defconst STATE_BAZAAR 14,562
-(defstruct elite-for-emacs-commander21,781
-(defvar elite-for-emacs-commander-list 57,1976
-(defvar elite-for-emacs-saved-commander-list 60,2080
-(defun elite-for-emacs-generate-commander 63,2196
-(defun elite-for-emacs-get-commander 92,3138
-
-elite-for-emacs-engine.el,2869
-(defun mysrand 3,36
-(defun myrand 7,114
-(defun randbyte 19,768
-(defun genmarket 23,828
-(defun distance 81,2958
-(defun elite-for-emacs-gamebuy 96,3352
-(defvar rnd_seed 166,6854
-(defun elite-for-emacs-planet-description 168,6879
-(defvar elite-for-emacs-rand1-seed 184,7826
-(defun rand1 186,7867
-(defvar elite-for-emacs-planet-description 219,8750
-(defun goat_soup 221,8800
-(defun gen_rnd_number 305,12059
-(defun elite-for-emacs-describe-inhabitants 340,13008
-(defconst base0 384,14282
-(defconst base1 385,14308
-(defconst base2 386,14334
-(defconst numforLave 387,14360
-(defconst numforZaonce 388,14429
-(defconst numforDiso 389,14458
-(defconst numforRied 390,14485
-(defconst AlienItems 391,14511
-(defconst lasttrade 392,14537
-(defconst galsize 393,14570
-(defconst CONDITION_DOCKED 394,14608
-(defconst CONDITION_GREEN 395,14646
-(defconst CONDITION_YELLOW 396,14682
-(defconst CONDITION_RED 397,14720
-(defconst fuelcost 399,14754
-(defconst maxfuel 401,14799
-(defvar lastrand 403,14838
-(defconst inhabitant1 405,14888
-(defconst inhabitant2 406,14947
-(defconst inhabitant3 407,15033
-(defconst inhabitant4 408,15119
-(defstruct seedtype410,15223
-(defvar seed414,15311
-(defstruct fastseedtype418,15383
-(defconst pairs0 422,15478
-(defconst pairs 425,15586
-(defconst desc_list429,15709
-(defstruct markettype511,18478
-(defstruct plansys515,18525
-(defconst govnames 529,18696
-(defconst econnames 532,18855
-(defconst tradnames 536,19016
-(defconst unitnames 539,19240
-(defstruct equipment 541,19315
-(defconst EQUIPMENT_LARGE_CARGO_BAY 549,19463
-(defconst EQUIPMENT_GALACTIC_HYPERDRIVE 550,19503
-(defconst EQUIPMENT_TRADE_HISTORY_V1 551,19547
-(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 552,19626
-(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 553,19711
-(defstruct tradegood594,21108
-(defconst TRADEGOOD_FOOD 602,21200
-(defconst TRADEGOOD_TEXTILES 603,21229
-(defconst TRADEGOOD_RADIOACTIVES 604,21262
-(defconst TRADEGOOD_SLAVES 605,21299
-(defconst TRADEGOOD_LIQUOR 606,21330
-(defconst TRADEGOOD_LUXURIES 607,21361
-(defconst TRADEGOOD_NARCOTICS 608,21394
-(defconst TRADEGOOD_COMPUTERS 609,21428
-(defconst TRADEGOOD_MACHINERY 610,21462
-(defconst TRADEGOOD_ALLOYS 611,21496
-(defconst TRADEGOOD_FIREARMS 612,21527
-(defconst TRADEGOOD_FURS 613,21561
-(defconst TRADEGOOD_MINERALS 614,21591
-(defconst TRADEGOOD_GOLD 615,21625
-(defconst TRADEGOOD_PLATINUM 616,21655
-(defconst TRADEGOOD_GEMS 617,21689
-(defconst TRADEGOOD_ALIENITEMS 618,21719
-(defvar commodities620,21757
-(defun makesystem 744,24158
-(defun stripout 864,28021
-(defun code-to-char 881,28391
-(defun tweakseed 885,28517
-(defun buildgalaxy 892,28768
-(defun elite-for-emacs-build-universe 988,30986
-(defvar elite-for-emacs-galaxies-in-universe 999,31228
-(defvar elite-for-emacs-logo 1001,227337
-(defvar  elite-for-emacs-logo-no-text 1030,228932
-
-elite-for-emacs.el,2087
-(defconst elite-for-emacs-version 3,44
-(defvar elite-for-emacs-current-command 26,664
-(defvar elite-for-emacs-original-frame-title-format 27,710
-(defvar elite-for-emacs-command-history 28,768
-(defvar elite-for-emacs-command 29,814
-(defvar elite-for-emacs-buffer-name 30,851
-(defvar elite-for-emacs-buffer-name-offline 31,909
-(defvar elite-for-emacs-buffer-name-online 32,975
-(defvar elite-for-emacs-prompt-function 35,1092
-(defvar elite-for-emacs-mode-line-function 36,1158
-(defvar elite-for-emacs-frame-title-function 37,1230
-(defvar elite-for-emacs-custom-post-command-function 38,1314
-(defvar elite-for-emacs-custom-pre-command-function 39,1399
-(defvar elite-for-emacs-kill-buffer-function 40,1483
-(defvar elite-for-emacs-command-list 41,1559
-(defvar elite-for-emacs-suppress-message 42,1602
-(defvar elite-for-emacs-suppress-default-newline-command 43,1647
-(defvar elite-for-emacs-online 44,1710
-(defvar elite-for-emacs-base-command-list47,1751
-(defun elite-for-emacs 64,2356
-(defun elite-for-emacs-online 104,3901
-(defvar elite-for-emacs-command-loop-index 112,4117
-(defvar elite-for-emacs-history-index 113,4164
-(defun elite-for-emacs-post-command-hook 116,4210
-(defun elite-for-emacs-get-first-command-match 249,9568
-(defvar elite-for-emacs-tab-index 268,10069
-(defvar elite-for-emacs-tab-command 269,10107
-(defvar elite-for-emacs-tab-ring 270,10149
-(defun elite-for-emacs-tab 272,10190
-(defun elite-for-emacs-pre-command-hook 306,11455
-(defun elite-for-emacs-kill-buffer-hook 329,12115
-(defun elite-for-emacs-set-prompt 340,12594
-(defun elite-for-emacs-set-mode-line 348,12913
-(defun elite-for-emacs-frame-title 359,13381
-(defun elite-for-emacs-default-frame-title 366,13699
-(defun elite-for-emacs-default-mode-line 370,13815
-(defun elite-for-emacs-default-prompt 374,13946
-(defun elite-for-emacs-test-function 379,14049
-(defun elite-for-emacs-clear 384,14167
-(defun elite-for-emacs-exit 388,14249
-(defun elite-for-emacs-help 396,14464
-(defgroup elite-for-emacs 416,15081
-(defcustom elite-for-emacs-save-confirmation-when-exit 423,15231
+(defstruct elite-for-emacs-commander20,754
+(defvar elite-for-emacs-commander-list 53,1779
+(defvar elite-for-emacs-saved-commander-list 56,1883
+(defun elite-for-emacs-generate-commander 59,1999
+(defun elite-for-emacs-get-commander 86,2832

@@ -11,7 +11,6 @@
 (defconst STATE_IN_SPACE 1)
 (defconst STATE_WITCH_SPACE 2)
 (defconst STATE_COMBAT 3)
-(defconst STATE_BAZAAR 4)
 
 ;;additional fields MUST be included at the end of struct
 ;;when deployed: do NOT make new fields so that they have to be available from

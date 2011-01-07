@@ -74,8 +74,7 @@
 	      (list "undock" 'elite-for-emacs-undock)
 	      (list "system-info" 'elite-for-emacs-system-info)
 	      (list "path" 'elite-for-emacs-path-to-system)
-	      (list "save" 'elite-for-emacs-save-commander)
-	      (list "bazaar" 'elite-for-emacs-bazaar))
+	      (list "save" 'elite-for-emacs-save-commander))
 	     elite-for-emacs-base-command-list)))))
 
 (defun elite-for-emacs-pre-command ()) ;What to do before command is executed

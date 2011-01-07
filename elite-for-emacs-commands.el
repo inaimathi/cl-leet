@@ -15,130 +15,84 @@
       "Elite>")))
 
 (defun elite-for-emacs-mode-line ()
-  (let ((modeline))
+  (let ((modeline)
+	(cmdr (car elite-for-emacs-commander-list)))
     (if elite-for-emacs-game-is-on
-	(progn (setq cmdr (car elite-for-emacs-commander-list))
-	       (setq modeline (list "--- "
-				    "Credits: "
-				    (format "%.1f " (/ (elite-for-emacs-commander-credits cmdr) 10.0))
-				    "Condition: "
-				    (elite-for-emacs-commander-condition (car elite-for-emacs-commander-list))
-				    " "
-				    "Day: "
-				    (number-to-string (elite-for-emacs-commander-current-day cmdr))
-				    " "
-				    (elite-for-emacs-short-local-system-info 
-				     (elite-for-emacs-commander-current-galaxy cmdr) 
-				     (elite-for-emacs-commander-current-planet cmdr) t)
-				    " ")))
-      (setq modeline (list "---"
-			   "Elite for EMACS "
-			   'elite-for-emacs-version)))
-
-    (if elite-for-emacs-online
-	(progn (append modeline (list
-				 "-*ONLINE*"
-				 "-%-")))
-      (progn (append modeline (list "-%-"))))))
+	(format "--- Credits: %.1f Condition: %s Day: %s %s -%%-" 
+		(/ (elite-for-emacs-commander-credits cmdr) 10.0)
+		(elite-for-emacs-commander-condition (car elite-for-emacs-commander-list))
+		(number-to-string (elite-for-emacs-commander-current-day cmdr))
+		(elite-for-emacs-short-local-system-info 
+		 (elite-for-emacs-commander-current-galaxy cmdr) 
+		 (elite-for-emacs-commander-current-planet cmdr) t))
+      (format "---Elite for EMACS %s -%%-" 
+	      elite-for-emacs-version))))
 
 (defun elite-for-emacs-post-command ()
   "What to do after command is executed"
-  (let ()
-    (if elite-for-emacs-game-is-on
-	(progn (if (eq this-command 'newline)
-		   (progn (elite-for-emacs-set-command-list)))
-
-	       (if (eq this-command 'yank)
-		   (progn ;;check yank command, if it was script act accordingly
-		     (if (= (string-match "script" (car kill-ring)) 0)
-			 (setq elite-for-emacs-command (car kill-ring))
-		       ;;(elite-for-emacs-script-execute elite-for-emacs-command-output-string)
-		       )))))))
+  (when elite-for-emacs-game-is-on
+    (when (eq this-command 'newline) (elite-for-emacs-set-command-list))
+    (when (and (eq this-command 'yank) (= (string-match "script" (car kill-ring)) 0))
+      (setq elite-for-emacs-command (car kill-ring)))))
 
 (defun elite-for-emacs-set-command-list ()
   (let ()
-    (if (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list))  STATE_IN_SPACE)
-	(progn ;;set commands while in space
-	  (setq elite-for-emacs-command-list
-		(append
-		 (list
-		  (list "commander-info" 'elite-for-emacs-commander-info)
-		  (list "local-systems" 'elite-for-emacs-local-systems)
-		  (list "dock" 'elite-for-emacs-dock)
-		  (list "inventory" 'elite-for-emacs-inventory)
-		  (list "hyperspace" 'elite-for-emacs-hyperspace)
-		  (list "galaxy-systems" 'elite-for-emacs-list-galaxy-reverse)
-		  (list "galaxy-systems-reverse" 'elite-for-emacs-list-galaxy)
-		  (list "galactic-hyperspace" 'elite-for-emacs-galactic-hyperspace)
-		  (list "system-info" 'elite-for-emacs-system-info)
-		  (list "path" 'elite-for-emacs-path-to-system))
-		 elite-for-emacs-base-command-list))))
+    (when (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list))  STATE_IN_SPACE)
+      ;;set commands while in space
+      (setq elite-for-emacs-command-list
+	    (append
+	     (list
+	      (list "commander-info" 'elite-for-emacs-commander-info)
+	      (list "local-systems" 'elite-for-emacs-local-systems)
+	      (list "dock" 'elite-for-emacs-dock)
+	      (list "inventory" 'elite-for-emacs-inventory)
+	      (list "hyperspace" 'elite-for-emacs-hyperspace)
+	      (list "galaxy-systems" 'elite-for-emacs-list-galaxy-reverse)
+	      (list "galaxy-systems-reverse" 'elite-for-emacs-list-galaxy)
+	      (list "galactic-hyperspace" 'elite-for-emacs-galactic-hyperspace)
+	      (list "system-info" 'elite-for-emacs-system-info)
+	      (list "path" 'elite-for-emacs-path-to-system))
+	     elite-for-emacs-base-command-list)))
 
     (if (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_DOCKED)
-	(progn ;;set commands while in docked
-	  (setq elite-for-emacs-command-list
-		(append
-		 (list
-		  (list "market" 'elite-for-emacs-market-info)
-		  (list "commander-info" 'elite-for-emacs-commander-info)
-		  (list "local-systems" 'elite-for-emacs-local-systems)
-		  (list "list-equipment" 'elite-for-emacs-list-equipment)
-		  (list "buy-goods" 'elite-for-emacs-buy-goods)
-		  (list "buy-equipment" 'elite-for-emacs-buy-equipment)
-		  (list "sell-goods" 'elite-for-emacs-sell-goods)
-		  (list "sell-all" 'elite-for-emacs-sell-all)
-		  (list "refuel" 'elite-for-emacs-refuel)
-		  (list "galaxy-systems" 'elite-for-emacs-list-galaxy-reverse)
-		  (list "galaxy-systems-reverse" 'elite-for-emacs-list-galaxy)
-		  (list "inventory" 'elite-for-emacs-inventory)
-		  (list "undock" 'elite-for-emacs-undock)
-		  (list "system-info" 'elite-for-emacs-system-info)
-		  (list "path" 'elite-for-emacs-path-to-system)
-		  (list "save" 'elite-for-emacs-save-commander)
-		  (list "bazaar" 'elite-for-emacs-bazaar))
-		 elite-for-emacs-base-command-list))
+	;;set commands while in docked
+	(setq elite-for-emacs-command-list
+	      (append
+	       (list
+		(list "market" 'elite-for-emacs-market-info)
+		(list "commander-info" 'elite-for-emacs-commander-info)
+		(list "local-systems" 'elite-for-emacs-local-systems)
+		(list "list-equipment" 'elite-for-emacs-list-equipment)
+		(list "buy-goods" 'elite-for-emacs-buy-goods)
+		(list "buy-equipment" 'elite-for-emacs-buy-equipment)
+		(list "sell-goods" 'elite-for-emacs-sell-goods)
+		(list "sell-all" 'elite-for-emacs-sell-all)
+		(list "refuel" 'elite-for-emacs-refuel)
+		(list "galaxy-systems" 'elite-for-emacs-list-galaxy-reverse)
+		(list "galaxy-systems-reverse" 'elite-for-emacs-list-galaxy)
+		(list "inventory" 'elite-for-emacs-inventory)
+		(list "undock" 'elite-for-emacs-undock)
+		(list "system-info" 'elite-for-emacs-system-info)
+		(list "path" 'elite-for-emacs-path-to-system)
+		(list "save" 'elite-for-emacs-save-commander)
+		(list "bazaar" 'elite-for-emacs-bazaar))
+	       elite-for-emacs-base-command-list)))))
 
-	  (if elite-for-emacs-online
-	      (progn (setq elite-for-emacs-command-list
-			   (append
-			    elite-for-emacs-command-list
-			    (list
-			     (list "message-board" 'elite-for-emacs-message-board)
-			     (list "send-message" 'elite-for-emacs-send-message)			
-			     (list "commanders" 'elite-for-emacs-other-commanders))))))))
-
-    (if (eq (elite-for-emacs-commander-current-state (car elite-for-emacs-commander-list)) STATE_BAZAAR)
-	(progn ;;set commands while in docked
-	  (setq elite-for-emacs-command-list
-		(append
-		 (list
-		  (list "leave" 'elite-for-emacs-leave-bazaar))
-		 elite-for-emacs-base-command-list))))))
-
-(defun elite-for-emacs-pre-command ()
-  "What to do before command is executed"
-  (let ()))
+(defun elite-for-emacs-pre-command ()) ;What to do before command is executed
 
 (defun elite-for-emacs-version-info ()
-  "Elite for EMACS version."
-  (let ()
-    (insert "Elite for EMACS " elite-for-emacs-version "\n")
-    (insert "Based on Elite (c) 1984 Ian Bell and David Braben.\n")
-    (insert "Elite for EMACS by Sami Salkosuo.")
-    (insert elite-for-emacs-logo)))
-
-(defun elite-for-emacs-logo ()
+  (insert "Elite for EMACS " elite-for-emacs-version "\n")
+  (insert "Based on Elite (c) 1984 Ian Bell and David Braben.\n")
+  (insert "Elite for EMACS by Sami Salkosuo.")
   (insert elite-for-emacs-logo))
 
-(defun elite-for-emacs-logo-no-text ()
-  (insert elite-for-emacs-logo-no-text))
+(defun elite-for-emacs-logo () (insert elite-for-emacs-logo))
+(defun elite-for-emacs-logo-no-text () (insert elite-for-emacs-logo-no-text))
 
 (defun elite-for-emacs-changes ()
-  "Changes"
-  (let ()
-    (insert "
+  (insert "
 Elite for EMACS changes
-version 0.1")))
+version 0.1"))
 
 (defun elite-for-emacs-load-commander ()
   "Load Elite commander. Usage: load <commander name>."

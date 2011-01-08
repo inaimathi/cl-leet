@@ -27,11 +27,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (hash planet-name-grammar
       (root . '(strict-starter
-		(strict-starter strict-ender)
-		(strict-starter versatile strict-ender)
-		(strict-starter strict-link strict-ender)
+		(strict-starter continue)
 		versatile
-		(versatile strict-link versatile)))
+		(versatile continue)))
+      (continue . '((versatile strict-ender) (strict-link strict-ender) (strict-link versatile)
+		    strict-ender versatile))
       (strict-starter . '((strict-starter versatile)
 			  "at" "an" "ao" "ar" "az"))
       (strict-ender . '((versatile strict-ender)

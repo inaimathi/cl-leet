@@ -7,7 +7,7 @@
 
 (defun pick (a-list) (nth (random (length a-list)) a-list))
 
-;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar
+;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
 (defun pick-g (key grammar) (pick (gethash key grammar))) ;;pick specialized to grammars
 
 (defun grammar->string (grammar)
@@ -30,8 +30,11 @@
 		(strict-starter continue)
 		versatile
 		(versatile continue)))
-      (continue . '((versatile strict-ender) (strict-link strict-ender) (strict-link versatile)
-		    strict-ender versatile))
+      (continue . '((versatile strict-ender) 
+		    (strict-link strict-ender) 
+		    (strict-link versatile)
+		    strict-ender 
+		    versatile))
       (strict-starter . '((strict-starter versatile)
 			  "at" "an" "ao" "ar" "az"))
       (strict-ender . '((versatile strict-ender)

@@ -26,15 +26,10 @@
 ;;Specific grammars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (hash planet-name-grammar
-      (root . '(strict-starter
-		(strict-starter continue)
-		versatile
-		(versatile continue)))
-      (continue . '((versatile strict-ender) 
-		    (strict-link strict-ender) 
-		    (strict-link versatile)
-		    strict-ender 
-		    versatile))
+      (root . '((strict-starter continue) (versatile continue)
+		strict-starter versatile))
+      (continue . '((versatile strict-ender) (strict-link strict-ender) (strict-link versatile)
+		    strict-ender versatile))
       (strict-starter . '((strict-starter versatile)
 			  "at" "an" "ao" "ar" "az"))
       (strict-ender . '((versatile strict-ender)
@@ -43,6 +38,34 @@
 		     "a" "ag"))
       (strict-link . '((strict-link versatile) (versatile strict-link) (versatile strict-link versatile)
 		       "on" "xe" "bi" "on" "-" "'")))
+
+(defun break-string (str fragment-length)
+  (let ((frag-str (number-sequence 0 (/ (length str) fragment-length))))
+    (mapcar (lambda (i)
+	      (substring str (* i fragment-length) 
+			 (min (length str)
+			      (+ fragment-length (* i fragment-length)))))
+	    frag-str)))
+
+(defun part-links-ender (lst &optional acc)
+  (cond ((not (cdr lst)) (cons (reverse acc) lst))
+	((links-ender (cdr lst) (cons (car lst) acc)))))
+
+(defun partition-string (str)
+  (let ((broken (break-string str 2)))
+    (cons (car broken) (links-ender (cdr broken)))))
+
+(defun word-list->planet-grammar (list-of-words)
+  "Expects a bunch of words separated by newlines or spaces"
+  (let ((words (split-string list-of-words)) ;;(with-current-buffer (buffer-string))
+	(starter) (link) (ender))
+    (mapcar (lambda (a-word)
+	      (let ((p (partition-string a-word)))
+		(add-to-list 'starter (car p))
+		(mapcar (lambda (a) (add-to-list 'link a)) (cadr p))
+		(add-to-list 'ender (caddr p))))
+	    words)
+    (list starter link ender)))
 
 (defun generate-planet-name ()
   (capitalize (grammar->string planet-name-grammar)))

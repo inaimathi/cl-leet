@@ -21,7 +21,7 @@
 
 (defun genmarket (fluct p);p is plansys struct
   " Prices and availabilities are influenced by the planet's economy type
-   (0-7) and a random ""fluctuation"" byte that was kept within the saved
+   (0-7) and a random 'fluctuation' byte that was kept within the saved
    commander position to keep the market prices constant over gamesaves.
    Availabilities must be saved with the game since the player alters them
    by buying (and selling(?))

@@ -1,30 +1,41 @@
-(defmacro hash (name &rest pairs)
-  `(progn
-     (defvar ,name (make-hash-table))
-     ,@(mapcar (lambda (pair)
-		 `(puthash ',(car pair) ,(cdr pair) ,name))
-	       pairs)))
+;; Structs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defstruct planet
+  (name nil :read-only t)
+  (description nil :read-only t)
+  (radius nil :read-only t)
+  x y z
+  market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
+  government ;; numeric or name? either way there's a lookup (if it's a name, I need to look up the number for calculation, if it's a number, I need to look up the name each time for display purposes).
+  economy
+  tech-level
+  population
+  productivity)
 
-(defun pick (a-list) (nth (random (length a-list)) a-list))
+(defstruct tradegood
+  (base-price nil :read-only t)  ;; Base price per unit
+  elasticity ;; How easily does this good respond to flooded/restricted markets?
+  (type nil :read-only t) ;; right now either "goods" "fuel" "gear"
+  (name nil :read-only t)
+  (unit nil :read-only t))
 
-;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
-(defun pick-g (key grammar) (pick (gethash key grammar))) ;;pick specialized to grammars
+(defstruct ship
+  name
+  cargo-cap
+  frame
+  engine
+  speed
+  fuel-consumption
+  fuel-cap)
 
-(defun grammar->string (grammar)
-  (expand-grammar-tc (pick-g 'root grammar) grammar))
+(defstruct captain
+  name
+  credits
+  reputation
+  xp
+  current-planet
+  trade-history)
 
-(defun expand-grammar-tc (production grammar &optional acc)
-  (cond ((not production) acc)
-	((stringp production) (concat (or acc "") production))
-	((symbolp production) (expand-grammar-tc (pick-g production grammar) grammar acc))
-	((and (listp production) (stringp (car production)))
-	 (expand-grammar-tc (cdr production) grammar (concat (or acc "") (car production))))
-	(t (concat (expand-grammar-tc (car production) grammar acc)
-		   (expand-grammar-tc (cdr production) grammar "")))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;Specific grammars
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Grammars ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (hash planet-name-grammar ;be mindful of name probabilities if you try to reduce duplication here
       (root . '((starter link ender)
 		(starter partition ender)
@@ -47,43 +58,13 @@
 		"ma" "or" "be" "en" "qu" "a" "n" "r" "te" "t"))
       (partition . '("-" "'")))
 
-(defun break-string (str fragment-length)
-  (let ((frag-str (number-sequence 0 (/ (length str) fragment-length))))
-    (remove "" (mapcar (lambda (i)
-			 (substring str (* i fragment-length) 
-				    (min (length str)
-					 (+ fragment-length (* i fragment-length)))))
-		       frag-str))))
-
-(defun partition-string (str)
-  (let ((broken (break-string str 2)))
-    (list (car broken)
-	  (butlast (cdr broken))
-	  (car (last broken)))))
-
-(defun word-list->planet-grammar (list-of-words)
-  "Expects a bunch of words separated by newlines or spaces. Elite for Emacs 0.1 had a bunch of planet names generated; this was the easiest way of getting a grammar that included all of them"
-  (let ((words (split-string list-of-words)) ;;(with-current-buffer (buffer-string))
-	(starter) (link) (ender))
-    (mapcar (lambda (a-word)
-	      (let ((p (partition-string a-word)))
-		(add-to-list 'starter (car p))
-		(mapcar (lambda (a) (add-to-list 'link a)) (cadr p))
-		(add-to-list 'ender (caddr p))))
-	    words)
-    (list starter link ender)))
-
-(defun generate-planet-name ()
-  (capitalize (grammar->string planet-name-grammar)))
-
 ;;xB0 is the current planets' name
 ;;xB1 is the name of the current planets' inhabitants (the original grammar has it specified as "xB0ian"
 ;;xB2 corresponds to "random name". The original code uses the same function to generate this name as a planet name, and doesn't prevent collisions. A half-way decent way of implementing this is to add a non-terminal "random-name" to planet-desc-grammar that contains a bunch of results from (generate-planet-name)
 
-;;As a note, the descriptions seem pretty evocative without the above. I could just remove those references and leave it at that. The other opion is to have the planet-desc-grammar return format directives instead of vanilla strings, then have the generate-description function take a planet + inhabitant name, generate a random name and generate enough directives to complete the format call. Could be interesting once everything else is refactored. A third option is to have grammar->list instead of grammar->string, change expand-grammar to accumulate using car and reverse instead of concat and have the individual generators do what's best for their situation.
 (hash planet-desc-grammar
       (root . '((sentence-start planet-fact ".")))
-      (sentence-start . '("\xB0" "The planet \xB0" "The world \xB0" "This planet" "This world"))
+      (sentence-start . '("" "The planet " "The world " "This planet" "This world"))
       (planet-fact . '((" " reputation " for " subject)
 		       (" " emphasis " " reputation " for " subject)
 		       (" " emphasis " " reputation " for " subject follow-up-fact) 
@@ -96,13 +77,13 @@
 		   ("the \xB1 " adj-fauna " " creature) 
 		   ("its inhabitants' " adj-local-custom " " inhabitant-property) 
 		   passtime))
-      (passtime . '((creature " " drink) ("\xB1 " fauna " " food) ("its " adjective " " fauna " " food) (adj-activity " " sport)
+      (passtime . '((creature " " drink) (fauna " " food) ("its " adjective " " fauna " " food) (adj-activity " " sport)
 		    "cuisine" "night life" "casinos" "sit coms"))
       (historic-event . '((adj-disaster " civil war") (adj-threat " " adj-fauna " " creature "s") ("a " adj-threat " disease") 
 			  (adj-disaster " earthquakes") (adj-disaster " solar activity")))
-      (creature . '((fauna "oid") ("\xB1 " adj-threat)
+      (creature . '((fauna "oid") ("\xB2 " adj-threat)
 		    fauna insect 
-		    "\xB1 \xB2" "\xB2" "inhabitant"))
+		    "inhabitant"))
       
       (place . '((creature flora " plantations") (adj-forest " forests") scenery 
 		 "forests" "mountains" "oceans"))
@@ -137,4 +118,40 @@
       (adj-opposing-force . '("beset" "plagued" "ravaged" "cursed" "scourged"))
       (syn-planet . '("planet" "world" "place" "little planet" "dump")))
 
-(defun generate-planet-description () (grammar->string planet-desc-grammar))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Convenience functions ;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defmacro hash (name &rest pairs)
+  `(progn
+     (defvar ,name (make-hash-table))
+     ,@(mapcar (lambda (pair)
+		 `(puthash ',(car pair) ,(cdr pair) ,name))
+	       pairs)))
+
+
+;; These were used to help generate the planet-name grammar from a bunch of cool-sounding names
+(defun break-string (str fragment-length)
+  (let ((frag-str (number-sequence 0 (/ (length str) fragment-length))))
+    (remove "" (mapcar (lambda (i)
+			 (substring str (* i fragment-length) 
+				    (min (length str)
+					 (+ fragment-length (* i fragment-length)))))
+		       frag-str))))
+
+(defun partition-string (str)
+  (let ((broken (break-string str 2)))
+    (list (car broken)
+	  (butlast (cdr broken))
+	  (car (last broken)))))
+
+(defun word-list->planet-grammar (list-of-words)
+  "Expects a bunch of words separated by newlines or spaces. Elite for Emacs 0.1 had a bunch of planet names generated; this was the easiest way of getting a grammar that included all of them"
+  (let ((words (split-string list-of-words)) ;;(with-current-buffer (buffer-string))
+	(starter) (link) (ender))
+    (mapcar (lambda (a-word)
+	      (let ((p (partition-string a-word)))
+		(add-to-list 'starter (car p))
+		(mapcar (lambda (a) (add-to-list 'link a)) (cadr p))
+		(add-to-list 'ender (caddr p))))
+	    words)
+    (list starter link ender)))

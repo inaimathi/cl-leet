@@ -15,37 +15,37 @@ refuel
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (defstruct planet
-  :name
-  :description
-  :radius
-  :x :y :z
-  :market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
-  :government ;; numeric or name? either way there's a lookup (if it's a name, I need to look up the number for calculation, if it's a number, I need to look up the name each time for display purposes).
-  :economy
-  :tech-level
-  :population
-  :productivity)
+  (name nil :read-only t)
+  (description nil :read-only t)
+  (radius nil :read-only t)
+  x y z
+  market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
+  government ;; numeric or name? either way there's a lookup (if it's a name, I need to look up the number for calculation, if it's a number, I need to look up the name each time for display purposes).
+  economy
+  tech-level
+  population
+  productivity)
 
 (defstruct tradegood
-  :base-price ;; Base price per unit
-  :elasticity ;; How easily does this good respond to flooded/restricted markets?
-  :type ;; right now either "goods" "fuel" "gear"
-  :name
-  :unit)
+  (base-price nil :read-only t)  ;; Base price per unit
+  elasticity ;; How easily does this good respond to flooded/restricted markets?
+  (type nil :read-only t) ;; right now either "goods" "fuel" "gear"
+  (name nil :read-only t)
+  (unit nil :read-only t))
 
 (defstruct ship
-  :cargo-cap
-  :frame
-  :engine
-  :name)
-
-(defstruct engine
-  :speed
-  :fuel-consumption
-  :fuel-cap)
+  name
+  cargo-cap
+  frame
+  engine
+  speed
+  fuel-consumption
+  fuel-cap)
 
 (defstruct captain
-  :name
-  :money
-  :xp
-  :current-system)
+  name
+  credits
+  reputation
+  xp
+  current-planet
+  trade-history)

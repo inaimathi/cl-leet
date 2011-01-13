@@ -5,11 +5,12 @@
   (radius nil :read-only t)
   x y z
   market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
-  government ;; numeric or name? either way there's a lookup (if it's a name, I need to look up the number for calculation, if it's a number, I need to look up the name each time for display purposes).
+  government
   economy
   tech-level
   population
-  productivity)
+  productivity
+  stats)
 
 (defstruct tradegood
   (base-price nil :read-only t)  ;; Base price per unit
@@ -18,24 +19,49 @@
   (name nil :read-only t)
   (unit nil :read-only t))
 
-(defstruct ship
-  name
-  cargo-cap
-  frame
-  engine
-  speed
-  fuel-consumption
-  fuel-cap)
-
-(defstruct captain
-  name
+(defstruct captain 
+  name ship
   credits
   reputation
   xp
   current-planet
   trade-history)
 
+(defstruct ship
+  name
+  frame
+  engine
+  speed
+  fuel-consumption
+  fuel-cap
+  fuel
+  cargo-cap
+  cargo)
+
+;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
+(defun pick (a-list) (nth (random (length a-list)) a-list))
+(defun pick-g (key grammar) (pick (gethash key grammar))) ;;pick specialized to grammars
+
+(defun grammar->string (grammar)
+  (expand-grammar-tc (pick-g 'root grammar) grammar))
+
+(defun expand-grammar-tc (production grammar &optional acc)
+  (cond ((not production) acc)
+	((stringp production) (concat (or acc "") production))
+	((symbolp production) (expand-grammar-tc (pick-g production grammar) grammar acc))
+	((and (listp production) (stringp (car production)))
+	 (expand-grammar-tc (cdr production) grammar (concat (or acc "") (car production))))
+	(t (concat (expand-grammar-tc (car production) grammar acc)
+		   (expand-grammar-tc (cdr production) grammar "")))))
+
 ;; Grammars ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defmacro hash (name &rest pairs)
+  `(progn
+     (defvar ,name (make-hash-table))
+     ,@(mapcar (lambda (pair)
+		 `(puthash ',(car pair) ,(cdr pair) ,name))
+	       pairs)))
+
 (hash planet-name-grammar ;be mindful of name probabilities if you try to reduce duplication here
       (root . '((starter link ender)
 		(starter partition ender)
@@ -64,21 +90,21 @@
 
 (hash planet-desc-grammar
       (root . '((sentence-start planet-fact ".")))
-      (sentence-start . '("" "The planet " "The world " "This planet" "This world"))
+      (sentence-start . '("" "The planet" "The world" "This planet" "This world"))
       (planet-fact . '((" " reputation " for " subject)
 		       (" " emphasis " " reputation " for " subject)
 		       (" " emphasis " " reputation " for " subject follow-up-fact) 
-		       (" " adj-opposing-force " by " historic-event) 
+		       (" " adj-opposing-force " by " historic-event)
 		       (", a " adj-negative " " syn-planet)))
       (follow-up-fact . '((" and " subject)
 			  (" but " adj-opposing-force " by " historic-event)))
       (subject . '(("its " adjective " " place) 
 		   ("its " adjective " " passtime)
-		   ("the \xB1 " adj-fauna " " creature) 
+		   ("the \xB2 " adj-fauna " " creature) 
 		   ("its inhabitants' " adj-local-custom " " inhabitant-property) 
 		   passtime))
       (passtime . '((creature " " drink) (fauna " " food) ("its " adjective " " fauna " " food) (adj-activity " " sport)
-		    "cuisine" "night life" "casinos" "sit coms"))
+		    "cuisine" "night-life" "casinos" "sit-coms"))
       (historic-event . '((adj-disaster " civil war") (adj-threat " " adj-fauna " " creature "s") ("a " adj-threat " disease") 
 			  (adj-disaster " earthquakes") (adj-disaster " solar activity")))
       (creature . '((fauna "oid") ("\xB2 " adj-threat)
@@ -96,7 +122,7 @@
       (insect . '("wasp" "moth" "grub" "ant" "\xB2"))
       
       (scenery .
- '("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes"))
+	       '("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes"))
       (reputation . '("fabled" "notable" "well known" "famous" "noted"))
       (emphasis . '("very" "mildly" "most" "reasonably"))
       
@@ -114,21 +140,11 @@
       (adj-disaster . '("frequent" "occasional" "unpredictable" "dreadful" "deadly"))
       (adj-threat . '("killer" "deadly" "evil" "lethal" "vicious"))
       (adj-activity . '("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules"))
-
+      
       (adj-opposing-force . '("beset" "plagued" "ravaged" "cursed" "scourged"))
       (syn-planet . '("planet" "world" "place" "little planet" "dump")))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Convenience functions ;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defmacro hash (name &rest pairs)
-  `(progn
-     (defvar ,name (make-hash-table))
-     ,@(mapcar (lambda (pair)
-		 `(puthash ',(car pair) ,(cdr pair) ,name))
-	       pairs)))
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; These were used to help generate the planet-name grammar from a bunch of cool-sounding names
 (defun break-string (str fragment-length)
   (let ((frag-str (number-sequence 0 (/ (length str) fragment-length))))
@@ -155,3 +171,5 @@
 		(add-to-list 'ender (caddr p))))
 	    words)
     (list starter link ender)))
+
+(provide 'leet-data)

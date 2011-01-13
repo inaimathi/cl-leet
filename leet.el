@@ -1,29 +1,36 @@
-;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
-
-(defun grammar->string (grammar)
-  (expand-grammar-tc (pick-g 'root grammar) grammar))
-
-(defun expand-grammar-tc (production grammar &optional acc)
-  (cond ((not production) acc)
-	((stringp production) (concat (or acc "") production))
-	((symbolp production) (expand-grammar-tc (pick-g production grammar) grammar acc))
-	((and (listp production) (stringp (car production)))
-	 (expand-grammar-tc (cdr production) grammar (concat (or acc "") (car production))))
-	(t (concat (expand-grammar-tc (car production) grammar acc)
-		   (expand-grammar-tc (cdr production) grammar "")))))
+(require 'leet-data)
 
 (defun generate-planet ()
-  (let* ((govtype (- (random 8) 1))
-	 (econ (if (> govtype 0) (logior (logand (lsh (random 3) -8) 7) 2) (logand (lsh (random 3) -8) 7)))
-	 (tech (+ (logand (lsh (random 3) -8) 3) (logxor economy 7) (lsh govtype -1)))
-	 (pop (+ (* 4 tech) econ govtype 1))
-	 (prod (* (+ (logxor economy 7) 3) (+ 4 government) population 8)))
+  (let* ((gov (random 8))
+	 (econ (if (> gov 0) (logior (logand (lsh (random 3) -8) 7) 2) (logand (lsh (random 3) -8) 7)))
+	 (tech (+ (logand (lsh (random 3) -8) 3) (logxor econ 7) (lsh gov -1)))
+	 (pop (+ (* 4 tech) econ gov 1))
+	 (prod (* (+ (logxor econ 7) 3) (+ 4 gov) pop 8)))
     (make-planet :name (capitalize (grammar->string planet-name-grammar))
 		 :description (grammar->string planet-desc-grammar)
 		 :radius (+ 1000 (random 7000))
-		 :x (random) :y (random) :z (random)
-		 :government 
-		 :stats (:gov :econ :tech :pop :prod)))) ;; numeric versions of these stats, in case I need to recalculate something later
+		 :x (random 300) :y (random 300) :z (random 300)
+		 :market '((widgets 30 10) (gewgaws 30 10) (whasits 50 10))
+		 :government gov :economy econ :tech-level tech :population pop :productivity prod
+		 :stats (list :gov gov :econ econ :tech tech :pop pop :prod prod)))) ;; numeric versions of these stats, in case I need to recalculate something later
+
+(defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))
+(defvar commander (make-captain :name "Mal"
+				:credits 10000
+				:reputation 0
+				:xp 0
+				:current-planet (planet-name (car galaxy))
+				:trade-history '()
+				:ship (make-ship :name "Serenity"
+						 :cargo-cap 10
+						 :cargo nil
+						 :frame 'firefly
+						 :engine 'standard
+						 :speed 20
+						 :fuel-consumption 2
+						 :fuel-cap 10
+						 :fuel 10)))
+		
 
 ;;NOTES
 ;; government = (- (random 8) 1) [-1 is anarchy, the rest are named political systems]
@@ -33,6 +40,23 @@
 ;; population [related to tech, econ and government; they're all bonuses, but tech and econ are larger than gov]
 ;; productivity is [related to government, economy and population (tech should have an effect here too, but the initial engine doesn't implement one, except for the large indirect bonus through econ and pop). Government is a big bonus, so is economy, population is a multiplier]
 
-;; Convenience functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun pick (a-list) (nth (random (length a-list)) a-list))
-(defun pick-g (key grammar) (pick (gethash key grammar))) ;;pick specialized to grammars
+(defun planet-info (p)
+  (format "--==[ %s ]==--\n%s\nSize: % 15s\nPopulation: % 15s\nGovernment: %ys\nTech-level: % 15s"
+	  (planet-name p) (planet-description p) (planet-radius p) (planet-population p) 
+	  (planet-government p) (planet-tech-level p)))
+
+(defun inventory (s)
+  (let ((cargo (ship-cargo s))
+	(fuel (ship-fuel s)))
+    (format "%s\n%s" 
+	    (if cargo
+		(mapcar (lambda (i) (format "%s" i)) cargo)
+	      (format "%s has nothing in her hold at the moment." (ship-name s)))
+	    (if (> fuel 0)
+		(format "Fuel Cells: %s/%s" fuel (ship-fuel-cap s))
+	      (format "%s has nothing left in her fuel cells. Bust out the distress beacon, or abandon ship."  
+		      (ship-name s))))))
+
+(defun buy (num good))
+
+(provide 'leet)

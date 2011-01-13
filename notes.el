@@ -1,4 +1,10 @@
 ;;; Commands ;;;;;;;;;;
+new-game
+load-game
+
+commander-info ;; displays commander stats [this is why I'm wondering aloud whether a commander should just be a hash or plist]
+planet-info
+inventory ;; displays the contents of your ships' hold and fuel cells
 market ;; displays local market
 local-systems ;; display a list of systems in range for the ship
 

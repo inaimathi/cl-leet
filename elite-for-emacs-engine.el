@@ -57,7 +57,6 @@
        (aset (markettype-quantity lmarket) AlienItems 0) ;Override to force nonavailability, change..
        lmarket)))
 
-
 (defun distance (a b)
   ;;  "Seperation between two planets (4*sqrt(X*X+Y*Y/4))."
   (let ((ax (plansys-x a))

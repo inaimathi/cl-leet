@@ -137,7 +137,7 @@
       (adj-negative . '((adj-negative ", " adj-negative) "boring" "dull" "tedious" "revolting"))
       (adj-local-custom . '("ancient" "exceptional" "eccentric" "ingrained" "unusual"))
       (adj-forest . '("tropical" "vast" "dense" "rain" "impenetrable" "exuberant"))
-      (adj-disaster . '("frequent" "occasional" "unpredictable" "dreadful" "deadly"))
+      (adj-disaster . '("frequent" "occasional" "unpredictable" "dreadful" adj-threat))
       (adj-threat . '("killer" "deadly" "evil" "lethal" "vicious"))
       (adj-activity . '("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules"))
       

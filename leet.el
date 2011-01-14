@@ -1,5 +1,10 @@
 (require 'leet-data)
 
+(defun filter (predicate lst &optional acc)
+  (cond ((not lst) (reverse acc))
+	((funcall predicate (car lst)) (filter predicate (cdr lst) (cons (car lst) acc)))
+	(t (filter predicate (cdr lst) acc))))
+
 (defun generate-planet ()
   (let* ((gov (random 8))
 	 (econ (if (> gov 0) (logior (logand (lsh (random 3) -8) 7) 2) (logand (lsh (random 3) -8) 7)))
@@ -27,24 +32,44 @@
 						 :frame 'firefly
 						 :engine 'standard
 						 :speed 20
-						 :fuel-consumption 2
-						 :fuel-cap 10
-						 :fuel 10)))
-		
+						 :fuel-consumption 1
+						 :fuel-cap 150
+						 :fuel 150)))
 
-;;NOTES
-;; government = (- (random 8) 1) [-1 is anarchy, the rest are named political systems]
-;; econ [related to government; anarchy has a low econ, the higher the better (maybe should plateau off at some point), but mitigated by a random factor
-;; tech [related to government and econ; government is a small penalty, econ is a large bonus. Small random factor]
-;; radius is random, but weighed towards earth radius
-;; population [related to tech, econ and government; they're all bonuses, but tech and econ are larger than gov]
-;; productivity is [related to government, economy and population (tech should have an effect here too, but the initial engine doesn't implement one, except for the large indirect bonus through econ and pop). Government is a big bonus, so is economy, population is a multiplier]
+;; Commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun cap-info () 
+  (interactive)
+  (insert (captain-info commander)))
 
+(defun plan-info ()
+  (interactive)
+  (insert (planet-info (planet-name->planet (captain-current-planet commander)))))
+
+(defun market ()
+  (interactive)
+  (mapcar 'insert 
+	  (market-info (planet-market (planet-name->planet (captain-current-planet commander))))))
+
+(defun local-planets ()
+  (interactive)
+  (mapcar (lambda (p) (insert p "\n"))
+	  (list-local-planets commander)))
+
+(defun travel (p)
+  (interactive (list (completing-read "Planet Name: " (list-local-planets commander))))
+  (move-to-planet commander (planet-name->planet p)))
+
+;; Command Components ;;;;;;;;;;;;;;;;;;;
+;;Info functions
 (defun planet-info (p)
-  (format "--==[ %s ]==--\n%s\nSize: % 15s\nPopulation: % 15s\nGovernment: %ys\nTech-level: % 15s"
+  (format "--==[ %s ]==--\n%s\nSize: % 10s\nPopulation: %s\nGovernment: %s\nTech-level: %s"
 	  (planet-name p) (planet-description p) (planet-radius p) (planet-population p) 
 	  (planet-government p) (planet-tech-level p)))
 
+(defun captain-info (cmdr)
+  (format "--==[ %s ]==--\nCredits: %s\nReputation: %s\nXP: %s\nCurrent Planet: %s\nShip: %s\n"
+	  (captain-name cmdr) (captain-credits cmdr) (captain-reputation cmdr) (captain-xp cmdr) (captain-current-planet cmdr) (ship-name (captain-ship cmdr))))
+  
 (defun inventory (s)
   (let ((cargo (ship-cargo s))
 	(fuel (ship-fuel s)))
@@ -57,6 +82,47 @@
 	      (format "%s has nothing left in her fuel cells. Bust out the distress beacon, or abandon ship."  
 		      (ship-name s))))))
 
+(defun market-info (m)
+  (mapcar (lambda (single-good)
+	    (format "--==[ %s ]==--\nIn Stock: %s\nPrice/unit: %s\n\n" (car single-good) (cadr single-good) (caddr single-good)))
+	  m))
+
+(defun list-local-planets (cmdr)
+  (mapcar (lambda (p) (planet-name p))
+	  (systems-in-range (/ (ship-fuel (captain-ship commander)) 
+			       (ship-fuel-consumption (captain-ship commander)))
+			    (planet-name->planet (captain-current-planet commander)))))
+
+(defun systems-in-range (a-range p)
+  "Returns a list of planets within [a-range] of planet [p]"
+  (filter (lambda (other-planet)
+	    (> a-range (planet-distance p other-planet)))
+	  galaxy))
+
+(defun planet-distance (p1 p2)
+  "Given two planets, returns the distance between them"
+  (flet ((diff-sq (n1 n2) (* (- n1 n2) (- n1 n2))))
+    (sqrt (+ (diff-sq (planet-z p1) (planet-z p2))
+	     (diff-sq (planet-y p1) (planet-y p2))
+	     (diff-sq (planet-x p1) (planet-x p2))))))
+
+(defun move-to-planet (cmdr p)
+  (let* ((fuel (ship-fuel (captain-ship cmdr)))
+	 (current-planet (planet-name->planet (captain-current-planet cmdr)))
+	 (distance (planet-distance current-planet p))
+	 (fuel-range (/ fuel (ship-fuel-consumption (captain-ship cmdr)))))
+    (if (>= fuel-range distance)
+	(setf (captain-current-planet cmdr) (planet-name p)
+	      (ship-fuel (captain-ship cmdr)) (round (- fuel (* distance (ship-fuel-consumption (captain-ship cmdr))))))
+      (error "Planet out of range"))))
+
+;;Actions
 (defun buy (num good))
+(defun sell (num good))
+
+;; Getters
+(defun planet-name->planet (p-name)
+  "Given a planet name, returns that planets' struct (or nil if the planet doesn't exist in the game)"
+  (find-if (lambda (p) (string= (planet-name p) p-name)) galaxy))
 
 (provide 'leet)

@@ -25,14 +25,11 @@ fuel is a good that fills out your fuel-cap before your cargo hold
 equipment is a good that doesn't take up cargo space, and has some sort of effect on your ship instead
 
 ;;; Commands ;;;;;;;;;;
-new-game
 load-game
+new-game ;; probably new/load/list/delete commander instead of game. Generate one universe at installation and call it a day
 
 buy [num] [good] ;; buy [num] [good]s from the local market
 sell [num] [good] ;; sell [num] [good]s to the local market
-
-dock ;;dock at the local planet
-undock ;;undock from the current planet
 
 ;; Compound commands
 refuel

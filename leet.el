@@ -59,6 +59,10 @@
   (interactive (list (completing-read "Planet Name: " (list-local-planets commander))))
   (move-to-planet commander (planet-name->planet p)))
 
+(defun buy (tradegood num)
+  (interactive "sTradegood: \nnAmount: ")
+  (insert tradegood num))
+
 ;; Command Components ;;;;;;;;;;;;;;;;;;;
 ;;Info functions
 (defun planet-info (p)

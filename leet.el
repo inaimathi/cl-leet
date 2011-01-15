@@ -1,47 +1,12 @@
+(require 'leet-primitives)
 (require 'leet-data)
-
-(defun filter (predicate lst &optional acc)
-  (cond ((not lst) (reverse acc))
-	((funcall predicate (car lst)) (filter predicate (cdr lst) (cons (car lst) acc)))
-	(t (filter predicate (cdr lst) acc))))
-
-(defun generate-planet ()
-  (let* ((gov (random 8))
-	 (econ (if (> gov 0) (logior (logand (lsh (random 3) -8) 7) 2) (logand (lsh (random 3) -8) 7)))
-	 (tech (+ (logand (lsh (random 3) -8) 3) (logxor econ 7) (lsh gov -1)))
-	 (pop (+ (* 4 tech) econ gov 1))
-	 (prod (* (+ (logxor econ 7) 3) (+ 4 gov) pop 8)))
-    (make-planet :name (capitalize (grammar->string planet-name-grammar))
-		 :description (grammar->string planet-desc-grammar)
-		 :radius (+ 1000 (random 7000))
-		 :x (random 300) :y (random 300) :z (random 300)
-		 :market '((widgets 30 10) (gewgaws 30 10) (whasits 50 10))
-		 :government gov :economy econ :tech-level tech :population pop :productivity prod
-		 :stats (list :gov gov :econ econ :tech tech :pop pop :prod prod)))) ;; numeric versions of these stats, in case I need to recalculate something later
-
-(defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))
-(defvar commander (make-captain :name "Mal"
-				:credits 10000
-				:reputation 0
-				:xp 0
-				:current-planet (planet-name (car galaxy))
-				:trade-history '()
-				:ship (make-ship :name "Serenity"
-						 :cargo-cap 10
-						 :cargo nil
-						 :frame 'firefly
-						 :engine 'standard
-						 :speed 20
-						 :fuel-consumption 1
-						 :fuel-cap 150
-						 :fuel 150)))
 
 ;; Commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun cap-info () 
   (interactive)
   (insert (captain-info commander)))
 
-(defun plan-info ()
+(defun plt-info ()
   (interactive)
   (insert (planet-info (planet-name->planet (captain-current-planet commander)))))
 
@@ -49,6 +14,10 @@
   (interactive)
   (mapcar 'insert 
 	  (market-info (planet-market (planet-name->planet (captain-current-planet commander))))))
+
+(defun cargo ()
+  (interactive)
+  (insert (inventory (captain-ship commander))))
 
 (defun local-planets ()
   (interactive)
@@ -61,23 +30,24 @@
 
 (defun buy (tradegood num)
   (interactive "sTradegood: \nnAmount: ")
-  (insert tradegood num))
+  (purchase num tradegood commander))
+  ;;(insert (format "%s %s\n\n" tradegood num)))
 
 ;; Command Components ;;;;;;;;;;;;;;;;;;;
 ;;Info functions
 (defun planet-info (p)
-  (format "--==[ %s ]==--\n%s\nSize: % 10s\nPopulation: %s\nGovernment: %s\nTech-level: %s"
+  (format "--==[ %s ]==--\n%s\nSize: % 10s\nPopulation: %s\nGovernment: %s\nTech-level: %s\n\n"
 	  (planet-name p) (planet-description p) (planet-radius p) (planet-population p) 
 	  (planet-government p) (planet-tech-level p)))
 
 (defun captain-info (cmdr)
-  (format "--==[ %s ]==--\nCredits: %s\nReputation: %s\nXP: %s\nCurrent Planet: %s\nShip: %s\n"
+  (format "--==[ %s ]==--\nCredits: %s\nReputation: %s\nXP: %s\nCurrent Planet: %s\nShip: %s\n\n"
 	  (captain-name cmdr) (captain-credits cmdr) (captain-reputation cmdr) (captain-xp cmdr) (captain-current-planet cmdr) (ship-name (captain-ship cmdr))))
   
 (defun inventory (s)
   (let ((cargo (ship-cargo s))
 	(fuel (ship-fuel s)))
-    (format "%s\n%s" 
+    (format "%s\n%s\n\n" 
 	    (if cargo
 		(mapcar (lambda (i) (format "%s" i)) cargo)
 	      (format "%s has nothing in her hold at the moment." (ship-name s)))
@@ -88,9 +58,10 @@
 
 (defun market-info (m)
   (mapcar (lambda (single-good)
-	    (format "--==[ %s ]==--\nIn Stock: %s\nPrice/unit: %s\n\n" (car single-good) (cadr single-good) (caddr single-good)))
+	    (format "--[ %s ]--\nIn Stock: %s\nPrice/unit: %s\n\n" 
+		    (car single-good) (cadr single-good) (caddr single-good)))
 	  m))
-
+ 
 (defun list-local-planets (cmdr)
   (mapcar (lambda (p) (planet-name p))
 	  (systems-in-range (/ (ship-fuel (captain-ship commander)) 
@@ -121,12 +92,43 @@
       (error "Planet out of range"))))
 
 ;;Actions
-(defun buy (num good))
+(defun purchase (num tradegood cmdr)
+  (let ((good (tradegood-available? tradegood (planet-market (planet-name->planet (captain-current-planet cmdr))))))
+    (cond ((not good) (error "That's not available at this planet"))
+	  ((< (cadr good) num) (error (format "They don't have that many %s" tradegood)))
+	  ((< (captain-credits cmdr) (* num (caddr good))) (error "You can't afford that many."))
+	  ((< (ship-cargo-space (captain-ship cmdr)) num) (error "You don't have enough room in your cargo hold"))
+	  (t (setf (cadr good) (- (cadr good) num) ;; Remoe [num] [tradegood] from the planet
+		   (captain-credits cmdr) (- (captain-credits cmdr) (* num (caddr good))))
+	     (add-to-inventory cmdr tradegood num)))))
+	  ;;This involves (in order):
+	  ;; - Remove [num] [tradegood] from (tradegood-available? tradegood (planet-market (captain-current-planet cmdr)))
+	  ;; - Add [num] [tradegood] to the captains' hold (or fuel-tank/hold if it's a fuel)
+	  ;; - Remove (* num (caddr good)) credits from the captains' account
+
+(defun add-to-inventory (cmdr tradegood num)
+  (let ((g (assoc (capitalize tradegood) (ship-cargo (captain-ship cmdr)))))
+    (if g
+	(setf (cadr g) (+ (cadr g) num))
+      (setf (ship-cargo (captain-ship cmdr))
+	    (cons (list (capitalize tradegood) num) (ship-cargo (captain-ship cmdr)))))))
+	
+(defun ship-cargo-space (s)
+  (- (ship-cargo-cap s)
+     (apply '+ (mapcar (lambda (g) (or (cadr g) 0)) (ship-cargo s)))))
+
+(defun tradegood-available? (tradegood market)
+  "Takes a tradegood name, returns that tradegoods stats on the current market (or NIL if it is unavailable)"
+  (assoc (capitalize tradegood) market))
+
 (defun sell (num good))
 
 ;; Getters
 (defun planet-name->planet (p-name)
   "Given a planet name, returns that planets' struct (or nil if the planet doesn't exist in the game)"
   (find-if (lambda (p) (string= (planet-name p) p-name)) galaxy))
+
+(defun tradegood-name->tradegood (t-name)
+  (find-if (lambda (g) (string= (tradegood-name g))) tradegoods))
 
 (provide 'leet)

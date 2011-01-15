@@ -14,7 +14,7 @@
 
 (defstruct tradegood
   (base-price nil :read-only t)  ;; Base price per unit
-  elasticity ;; How easily does this good respond to flooded/restricted markets?
+  tech-level ;; How advanced must a planet be to have them, and about how many will there be at a time? This may change over time. Production rate should be calculated from this.
   (type nil :read-only t) ;; right now either "goods" "fuel" "gear"
   (name nil :read-only t)
   (unit nil :read-only t))
@@ -38,10 +38,82 @@
   cargo-cap
   cargo)
 
-;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
-(defun pick (a-list) (nth (random (length a-list)) a-list))
-(defun pick-g (key grammar) (pick (gethash key grammar))) ;;pick specialized to grammars
+;; Basic Tradegood Data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (This is up here instead of with the generated data because the market generator needs it)
+(defvar tradegoods
+  (list (make-tradegood :base-price 19
+			:unit "hammock"
+			:type 'goods
+			:tech-level 2
+			:name "Food")
+	(make-tradegood :base-price 20
+			:unit "roll"
+			:type 'goods
+			:tech-level 4
+			:name "Textiles")
+	(make-tradegood :base-price 140 
+			:unit "group"
+			:type 'goods
+			:tech-level 0
+			:name "Slaves")
+	(make-tradegood :base-price 83
+			:unit "bottle"
+			:type 'goods
+			:tech-level 3
+			:name "Liquor")
+	(make-tradegood :base-price 196
+			:unit "sack"
+			:type 'goods
+			:tech-level 6
+			:name "Luxuries")
+	(make-tradegood :base-price 154 
+			:unit "chip"
+			:type 'goods
+			:tech-level 8
+			:name "Computers")
+	(make-tradegood :base-price 117
+			:unit "unit"
+			:type 'goods
+			:tech-level 7
+			:name "Machinery")
+	(make-tradegood :base-price 124
+			:unit "unit"
+			:type 'goods
+			:tech-level 6
+			:name "Firearms")
+	(make-tradegood :base-price 32
+			:unit "ton"
+			:type 'goods
+			:tech-level 0
+			:name "Minerals")
+	(make-tradegood :base-price 30
+			:unit "gallon"
+			:type 'fuel
+			:tech-level 1
+			:name "Fuel")))
 
+;; Generators ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun generate-planet ()
+  (let* ((gov (random 8))
+	 (econ (if (> gov 0) (logior (logand (lsh (random 3) -8) 7) 2) (logand (lsh (random 3) -8) 7)))
+	 (tech (+ (logand (lsh (random 3) -8) 3) (logxor econ 7) (lsh gov -1)))
+	 (pop (+ (* 4 tech) econ gov 1))
+	 (prod (* (+ (logxor econ 7) 3) (+ 4 gov) pop 8)))
+    (make-planet :name (capitalize (grammar->string planet-name-grammar))
+		 :description (grammar->string planet-desc-grammar)
+		 :radius (+ 1000 (random 7000))
+		 :x (random 300) :y (random 300) :z (random 300)
+		 :market (generate-market tech)
+		 :government gov :economy econ :tech-level tech :population pop :productivity prod
+		 :stats (list :gov gov :econ econ :tech tech :pop pop :prod prod)))) ;; numeric versions of these stats, in case I need to recalculate something later
+
+(defun generate-market (tech-level)
+  (let ((possible-goods (filter (lambda (g) (>= tech-level (tradegood-tech-level g))) tradegoods)))
+    (mapcar (lambda (g)
+	      (list (tradegood-name g) 300 (tradegood-base-price g)))
+	    possible-goods)))
+
+;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
 (defun grammar->string (grammar)
   (expand-grammar-tc (pick-g 'root grammar) grammar))
 
@@ -55,121 +127,101 @@
 		   (expand-grammar-tc (cdr production) grammar "")))))
 
 ;; Grammars ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defmacro hash (name &rest pairs)
-  `(progn
-     (defvar ,name (make-hash-table))
-     ,@(mapcar (lambda (pair)
-		 `(puthash ',(car pair) ,(cdr pair) ,name))
-	       pairs)))
-
-(hash planet-name-grammar ;be mindful of name probabilities if you try to reduce duplication here
-      (root . '((starter link ender)
-		(starter partition ender)
-		(starter partition link ender)
-		(starter partition root)
-		(starter link link ender)
-		(starter ender)
-		starter))
-      (starter . '((starter link)
-		   "aa" "ae" "al" "an" "ao" "ar" "at" "az" "be" "bi" "ce" "di" "ed" "en" "er" 
-		   "es" "ge" "in" "is" "la" "le" "ma" "on" "or" "qu" "ra" "re" "ri" "so" "te" 
-		   "ti" "us" "ve" "xe" "za"))
-      (ender . '((link ender)
-		 "aa" "al" "at" "di" "ti" "so" "ce" "re" "za" "in" "ed" "or" "an" "ma" 
-		 "ab" "ge" "aq" "en" "ri" "ve" "ag" "qu" "us" "es" "ex" "ae" "on" "bi" 
-		 "xe" "le" "is" "er" "be" "la" "ar" "az" "io" "sb" "te" "ra" "ia" "nb"))
-      (link . '((link link) (link link)
-		"at" "an" "ri" "es" "ed" "bi" "ce" "us" "on" "er" "ti" "ve" "ra" "la" 
-		"le" "ge" "i" "u" "xe" "in" "di" "so" "ar" "e" "s" "na" "is" "za" "re" 
-		"ma" "or" "be" "en" "qu" "a" "n" "r" "te" "t"))
-      (partition . '("-" "'")))
+(defvar planet-name-grammar 
+  #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8 data 
+		(root ((starter link ender) ;be mindful of name probabilities if you try to reduce duplication here
+		       (starter partition ender) 
+		       (starter partition link ender) 
+		       (starter partition root) 
+		       (starter link link ender) 
+		       (starter ender) 
+		       starter) 
+		      starter ((starter link) 
+			       "aa" "ae" "al" "an" "ao" "ar" "at" "az" "be" "bi" "ce" "di" "ed" "en" "er" 
+			       "es" "ge" "in" "is" "la" "le" "ma" "on" "or" "qu" "ra" "re" "ri" "so" "te" 
+			       "ti" "us" "ve" "xe" "za") 
+		      ender ((link ender) 
+			     "aa" "al" "at" "di" "ti" "so" "ce" "re" "za" "in" "ed" "or" "an" "ma" "ab" 
+			     "ge" "aq" "en" "ri" "ve" "ag" "qu" "us" "es" "ex" "ae" "on" "bi" "xe" "le" 
+			     "is" "er" "be" "la" "ar" "az" "io" "sb" "te" "ra" "ia" "nb") 
+		      link ((link link) (link link) 
+			    "at" "an" "ri" "es" "ed" "bi" "ce" "us" "on" "er" "ti" "ve" "ra" "la" "le" 
+			    "ge" "i" "u" "xe" "in" "di" "so" "ar" "e" "s" "na" "is" "za" "re" "ma" "or" 
+			    "be" "en" "qu" "a" "n" "r" "te" "t") 
+		      partition ("-" "'"))))
 
 ;;xB0 is the current planets' name
 ;;xB1 is the name of the current planets' inhabitants (the original grammar has it specified as "xB0ian"
 ;;xB2 corresponds to "random name". The original code uses the same function to generate this name as a planet name, and doesn't prevent collisions. A half-way decent way of implementing this is to add a non-terminal "random-name" to planet-desc-grammar that contains a bunch of results from (generate-planet-name)
 
-(hash planet-desc-grammar
-      (root . '((sentence-start planet-fact ".")))
-      (sentence-start . '("" "The planet" "The world" "This planet" "This world"))
-      (planet-fact . '((" " reputation " for " subject)
-		       (" " emphasis " " reputation " for " subject)
-		       (" " emphasis " " reputation " for " subject follow-up-fact) 
-		       (" " adj-opposing-force " by " historic-event)
-		       (", a " adj-negative " " syn-planet)))
-      (follow-up-fact . '((" and " subject)
-			  (" but " adj-opposing-force " by " historic-event)))
-      (subject . '(("its " adjective " " place) 
-		   ("its " adjective " " passtime)
-		   ("the \xB2 " adj-fauna " " creature) 
-		   ("its inhabitants' " adj-local-custom " " inhabitant-property) 
-		   passtime))
-      (passtime . '((creature " " drink) (fauna " " food) ("its " adjective " " fauna " " food) (adj-activity " " sport)
-		    "cuisine" "night-life" "casinos" "sit-coms"))
-      (historic-event . '((adj-disaster " civil war") (adj-threat " " adj-fauna " " creature "s") ("a " adj-threat " disease") 
-			  (adj-disaster " earthquakes") (adj-disaster " solar activity")))
-      (creature . '((fauna "oid") ("\xB2 " adj-threat)
-		    fauna insect 
-		    "inhabitant"))
-      
-      (place . '((creature flora " plantations") (adj-forest " forests") scenery 
-		 "forests" "mountains" "oceans"))
-      (technology . '(passtime "food blenders" "tourists" "poetry" "discos"))
-      (inhabitant-property . '(("loathing of " technology) ("love for " technology)
-			       "shyness" "silliness" "mating traditions"))
-      
-      (fauna . '("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" "\xB2"))
-      (flora . '(("\xB2" "weed") "plant" "tulip" "banana" "corn" "carrot"))
-      (insect . '("wasp" "moth" "grub" "ant" "\xB2"))
-      
-      (scenery .
-	       '("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes"))
-      (reputation . '("fabled" "notable" "well known" "famous" "noted"))
-      (emphasis . '("very" "mildly" "most" "reasonably"))
-      
-      (drink . '("juice" "brandy" "water" "brew" "gargle blasters"))
-      (sport . '("hockey" "cricket" "karate" "polo" "tennis" "quiddich"))
-      (food . '("meat" "cutlet" "steak" "burgers" "soup"))
-      
-      (adjective . '((emphasis adjective) (adjective ", " adjective)
-		     adj-local-custom adj-fauna adj-forest adj-disaster
-		     "great" "pink" "fabulous" "hoopy" "funny" "wierd" "strange" "peculiar"))
-      (adj-fauna . '(adj-threat "mountain" "edible" "tree" "spotted" "exotic"))
-      (adj-negative . '((adj-negative ", " adj-negative) "boring" "dull" "tedious" "revolting"))
-      (adj-local-custom . '("ancient" "exceptional" "eccentric" "ingrained" "unusual"))
-      (adj-forest . '("tropical" "vast" "dense" "rain" "impenetrable" "exuberant"))
-      (adj-disaster . '("frequent" "occasional" "unpredictable" "dreadful" adj-threat))
-      (adj-threat . '("killer" "deadly" "evil" "lethal" "vicious"))
-      (adj-activity . '("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules"))
-      
-      (adj-opposing-force . '("beset" "plagued" "ravaged" "cursed" "scourged"))
-      (syn-planet . '("planet" "world" "place" "little planet" "dump")))
+(defvar planet-desc-grammar
+  #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8 data 
+		(root ((sentence-start planet-fact ".")) 
+		      sentence-start ("" "The planet" "The world" "This planet" "This world") 
+		      planet-fact ((" " reputation " for " subject) 
+				   (" " emphasis " " reputation " for " subject) 
+				   (" " emphasis " " reputation " for " subject " and " subject) 
+				   (" " emphasis " " reputation " for " subject " but " adj-opposing-force " by " historic-event)
+				   (" " adj-opposing-force " by " historic-event) 
+				   (", a " adj-negative " " syn-planet)) 
+		      subject (("its " adjective " " place) 
+			       ("its " adjective " " passtime) 
+			       ("the \262 " adj-fauna " " creature) 
+			       ("its inhabitants' " adj-local-custom " " inhabitant-property) 
+			       passtime) 
+		      passtime ((creature " " drink) (fauna " " food) 
+				("its " adjective " " fauna " " food) 
+				(adj-activity " " sport) 
+				"cuisine" "night-life" "casinos" "sit-coms") 
+		      historic-event ((adj-disaster " civil war") 
+				      (adj-threat " " adj-fauna " " creature "s") 
+				      ("a " adj-threat " disease") 
+				      (adj-disaster " earthquakes") 
+				      (adj-disaster " solar activity")) 
+		      creature ((fauna "oid") ("\262 " adj-threat) 
+				fauna insect "inhabitant") 
+		      place ((creature flora " plantations") (adj-forest " forests") scenery "forests" "mountains" "oceans")
+		      technology (passtime "food blenders" "tourists" "poetry" "discos") 
+		      inhabitant-property (("loathing of " technology) ("love for " technology) 
+					   "shyness" "silliness" "mating traditions") 
+		      fauna ("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" "\262") 
+		      flora (("\262" "weed") "plant" "tulip" "banana" "corn" "carrot") 
+		      insect ("wasp" "moth" "grub" "ant" "\262") 
+		      scenery ("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes") 
+		      reputation ("fabled" "notable" "well known" "famous" "noted") 
+		      emphasis ("very" "mildly" "most" "reasonably") 
+		      drink ("juice" "brandy" "water" "brew" "gargle blasters") 
+		      sport ("hockey" "cricket" "karate" "polo" "tennis" "quiddich") 
+		      food ("meat" "cutlet" "steak" "burgers" "soup") 
+		      adjective ((emphasis adjective) (adjective ", " adjective) 
+				 adj-local-custom adj-fauna adj-forest adj-disaster 
+				 "great" "pink" "fabulous" "hoopy" "funny" "wierd" "strange" "peculiar") 
+		      adj-fauna (adj-threat "mountain" "edible" "tree" "spotted" "exotic") 
+		      adj-negative ((adj-negative ", " adj-negative) "boring" "dull" "tedious" "revolting") 
+		      adj-local-custom ("ancient" "exceptional" "eccentric" "ingrained" "unusual") 
+		      adj-forest ("tropical" "vast" "dense" "rain" "impenetrable" "exuberant") 
+		      adj-disaster ("frequent" "occasional" "unpredictable" "dreadful" adj-threat) 
+		      adj-threat ("killer" "deadly" "evil" "lethal" "vicious") 
+		      adj-activity ("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules") 
+		      adj-opposing-force ("beset" "plagued" "ravaged" "cursed" "scourged") 
+		      syn-planet ("planet" "world" "place" "little planet" "dump"))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; These were used to help generate the planet-name grammar from a bunch of cool-sounding names
-(defun break-string (str fragment-length)
-  (let ((frag-str (number-sequence 0 (/ (length str) fragment-length))))
-    (remove "" (mapcar (lambda (i)
-			 (substring str (* i fragment-length) 
-				    (min (length str)
-					 (+ fragment-length (* i fragment-length)))))
-		       frag-str))))
-
-(defun partition-string (str)
-  (let ((broken (break-string str 2)))
-    (list (car broken)
-	  (butlast (cdr broken))
-	  (car (last broken)))))
-
-(defun word-list->planet-grammar (list-of-words)
-  "Expects a bunch of words separated by newlines or spaces. Elite for Emacs 0.1 had a bunch of planet names generated; this was the easiest way of getting a grammar that included all of them"
-  (let ((words (split-string list-of-words)) ;;(with-current-buffer (buffer-string))
-	(starter) (link) (ender))
-    (mapcar (lambda (a-word)
-	      (let ((p (partition-string a-word)))
-		(add-to-list 'starter (car p))
-		(mapcar (lambda (a) (add-to-list 'link a)) (cadr p))
-		(add-to-list 'ender (caddr p))))
-	    words)
-    (list starter link ender)))
+;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))
+(defvar commander (make-captain :name "Mal"
+				:credits 10000
+				:reputation 0
+				:xp 0
+				:current-planet (planet-name (car galaxy))
+				:trade-history '()
+				:ship (make-ship :name "Serenity"
+						 :cargo-cap 10
+						 :cargo nil
+						 :frame 'firefly
+						 :engine 'standard
+						 :speed 20
+						 :fuel-consumption 1
+						 :fuel-cap 150
+						 :fuel 150)))
 
 (provide 'leet-data)

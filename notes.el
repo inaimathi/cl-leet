@@ -5,6 +5,8 @@ This will likely be much more efficient in a relational model because you want t
 
 Checked how the original system handles this, and it's the stupid way (one giant array, sorted by essentially planet-id, which gets traversed in full whenever the player wants to go anywhere). Granted, this doesn't have to be blazing fast, but I get the feeling that traversing a linked list of ~800 elements every move isn't a good idea.
 
+In theory, the grammars and generated variables can be stored more efficiently in a database than as in-memory objects (this means that something like 90% of the leet-data file could be eliminated with the use of a DB).
+
 ;;Basic mechanics
 fuel/fuel-consumption yields travel range (fuel-consumption is how much fuel the ship burns in a move of 1 unit)
 

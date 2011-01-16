@@ -19,6 +19,11 @@
   (name nil :read-only t)
   (unit nil :read-only t))
 
+(defstruct listing
+  name
+  amount
+  price)
+
 (defstruct captain 
   name ship
   credits

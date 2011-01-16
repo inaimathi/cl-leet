@@ -1,14 +1,11 @@
-Right now, the galaxy is stored as an unsorted array, which means getting a planet by name is O(scary), and a pain in the ass (but only because Elisp doesn't have filter defined as a primitive). 
-Consider doing a nested hash ('universe with keys that correspond to [galaxy names], each galaxy is a hash of [planet name] . planet). 
-
-This will likely be much more efficient in a relational model because you want to reference by different things at different times. (Sometimes you'll want planets by x/y/z coord, sometimes by name and sometimes by tech level. This is just in-game, btw, for other metrics, it makes even more sense to make the database external.)
+This game will likely be much more efficient in a relational model because you want to reference by different things at different times. (Sometimes you'll want planets by x/y/z coord, sometimes by name and sometimes by tech level. Same story for goods, you want to be able to get them by tech-level, name or price. This is just in-game, btw, for other metrics, it makes even more sense to make the database external.)
 
 Checked how the original system handles this, and it's the stupid way (one giant array, sorted by essentially planet-id, which gets traversed in full whenever the player wants to go anywhere). Granted, this doesn't have to be blazing fast, but I get the feeling that traversing a linked list of ~800 elements every move isn't a good idea.
 
-In theory, the grammars and generated variables can be stored more efficiently in a database than as in-memory objects (this means that something like 90% of the leet-data file could be eliminated with the use of a DB).
+In theory, the grammars and generated variables can be stored more efficiently in a database than as in-memory objects (this means that something like 90% of the leet-data file could be eliminated with the use of a no-sql or RDB).
 
 ;;Basic mechanics
-fuel/fuel-consumption yields travel range (fuel-consumption is how much fuel the ship burns in a move of 1 unit)
+fuel/fuel-consumption yields travel range (fuel-consumption is how much fuel the ship burns in a move of 10 units)
 
 basically, a planet should have supply/demand dynamics (selling applies a penalty to price, buying gives a small bonus). Make sure the numbers are big enough that a single ship can't lock up the market.
 
@@ -24,16 +21,13 @@ productivity is [related to government, economy and population (tech should have
 
 ;;Goods/purchasing
 fuel is a good that fills out your fuel-cap before your cargo hold
-equipment is a good that doesn't take up cargo space, and has some sort of effect on your ship instead
+gear is a good that doesn't take up cargo space, and has some sort of effect on your ship instead (this should be illustrated by an "effect" field. It should contain a function that takes a ship and returns a modified ship)
 
 ;;; Commands ;;;;;;;;;;
 load-game
 new-game ;; probably new/load/list/delete commander instead of game. Generate one universe at installation and call it a day
 
-buy [num] [good] ;; buy [num] [good]s from the local market
-sell [num] [good] ;; sell [num] [good]s to the local market
-
 ;; Compound commands
-refuel
-path
+refuel ;; in terms of "buy"
+path ;; in terms of "travel"
 ;;;;;;;;;;;;;;;;;;;;;;

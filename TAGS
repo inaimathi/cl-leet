@@ -1,14 +1,4 @@
 
-name-generator.el,208
-(defmacro hash 1,0
-(defun pick 8,176
-(defun pick-g 9,236
-(defun tree-to-string 11,295
-(defun flatten 17,569
-(defun generate-name 33,1162
-(defun expand-grammar 38,1372
-(defun expand-grammar-tc 45,1637
-
 elite-for-emacs-functions.el,604
 (defun elite-for-emacs-create-new-commander 3,64
 (defun elite-for-emacs-get-galaxy 8,306
@@ -64,86 +54,132 @@ elite-for-emacs-commands.el,1724
 (defun elite-for-emacs-save-commander 913,40349
 (defun elite-for-emacs-kill-buffer 925,40789
 
-elite-for-emacs-engine.el,2821
+leet-data.el,416
+(defstruct planet2,42
+(defstruct tradegood15,313
+(defstruct listing22,691
+(defstruct captain 27,736
+(defstruct ship35,831
+(defvar tradegoods48,1087
+(defun generate-planet 101,2190
+(defun generate-market 115,2984
+(defun grammar->string 122,3839
+(defun expand-grammar-tc 125,3927
+(defvar planet-name-grammar 135,4460
+(defvar planet-desc-grammar162,6108
+(defvar galaxy 215,9463
+(defvar commander 216,9536
+
+leet.el,853
+(defun cap-info 6,203
+(defun plt-info 10,276
+(defun market 14,395
+(defun cargo 19,540
+(defun local-planets 23,622
+(defun travel 28,738
+(defun buy 32,900
+(defun sell 36,1003
+(defun move-to-planet! 43,1198
+(defun purchase! 54,1801
+(defun convey! 66,2677
+(defun add-to-market! 78,3494
+(defun add-to-inventory! 86,3850
+(defun remove-from-inventory! 101,4744
+(defun enough-space? 112,5227
+(defun fuel? 121,5669
+(defun tradegood-available? 126,5802
+(defun going-rate 133,6088
+(defun planet-info 142,6618
+(defun captain-info 147,6870
+(defun inventory 151,7152
+(defun market-info 164,7655
+(defun list-local-planets 171,7901
+(defun systems-in-range 178,8272
+(defun planet-distance 184,8466
+(defun planet-name->planet 191,8750
+(defun tradegood-name->tradegood 195,8956
+(defun ship-cargo-space 199,9186
+(defun ship-fuel-space 204,9367
+
+elite-for-emacs-engine.el,2793
 (defun mysrand 3,36
 (defun myrand 7,114
 (defun randbyte 19,773
 (defun genmarket 22,821
-(defun distance 61,2466
-(defun elite-for-emacs-gamebuy 69,2735
-(defvar rnd_seed 136,5711
-(defun elite-for-emacs-planet-description 138,5736
-(defvar elite-for-emacs-rand1-seed 146,6144
-(defun rand1 148,6185
-(defvar elite-for-emacs-planet-description 166,6812
-(defun goat_soup 168,6862
-(defun gen_rnd_number 220,8930
-(defun elite-for-emacs-describe-inhabitants 254,9856
-(defconst base0 298,11130
-(defconst base1 299,11156
-(defconst base2 300,11182
-(defconst numforLave 301,11208
-(defconst numforZaonce 302,11277
-(defconst numforDiso 303,11306
-(defconst numforRied 304,11333
-(defconst AlienItems 305,11359
-(defconst lasttrade 306,11385
-(defconst galsize 307,11418
-(defconst CONDITION_DOCKED 308,11456
-(defconst CONDITION_GREEN 309,11494
-(defconst CONDITION_YELLOW 310,11530
-(defconst CONDITION_RED 311,11568
-(defconst fuelcost 313,11602
-(defconst maxfuel 315,11647
-(defvar lastrand 317,11686
-(defconst inhabitant1 319,11736
-(defconst inhabitant2 320,11795
-(defconst inhabitant3 321,11881
-(defconst inhabitant4 322,11967
-(defstruct seedtype 324,12071
-(defvar seed 326,12153
-(defstruct fastseedtype 328,12219
-(defconst pairs0 330,12308
-(defconst pairs 333,12421
-(defconst desc_list336,12542
-(defstruct markettype 414,15479
-(defstruct plansys418,15524
-(defconst govnames 431,15691
-(defconst econnames 434,15829
-(defconst tradnames 437,15969
-(defconst unitnames 440,16193
-(defstruct equipment 442,16239
-(defconst EQUIPMENT_LARGE_CARGO_BAY 448,16380
-(defconst EQUIPMENT_GALACTIC_HYPERDRIVE 449,16420
-(defconst EQUIPMENT_TRADE_HISTORY_V1 450,16464
-(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 451,16544
-(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 452,16630
-(defvar elite-for-emacs-equipment-list462,17107
-(defstruct tradegood476,17546
-(defconst TRADEGOOD_FOOD 484,17638
-(defconst TRADEGOOD_TEXTILES 485,17667
-(defconst TRADEGOOD_RADIOACTIVES 486,17700
-(defconst TRADEGOOD_SLAVES 487,17737
-(defconst TRADEGOOD_LIQUOR 488,17768
-(defconst TRADEGOOD_LUXURIES 489,17799
-(defconst TRADEGOOD_NARCOTICS 490,17832
-(defconst TRADEGOOD_COMPUTERS 491,17866
-(defconst TRADEGOOD_MACHINERY 492,17900
-(defconst TRADEGOOD_ALLOYS 493,17934
-(defconst TRADEGOOD_FIREARMS 494,17965
-(defconst TRADEGOOD_FURS 495,17999
-(defconst TRADEGOOD_MINERALS 496,18029
-(defconst TRADEGOOD_GOLD 497,18063
-(defconst TRADEGOOD_PLATINUM 498,18093
-(defconst TRADEGOOD_GEMS 499,18127
-(defconst TRADEGOOD_ALIENITEMS 500,18157
-(defvar commodities502,18195
-(defun generate-planet-name 606,20522
-(defun makesystem 610,20606
-(defun buildgalaxy 635,21688
-(defun elite-for-emacs-build-universe 663,22885
-(defvar elite-for-emacs-galaxies-in-universe 671,23084
-(defvar elite-for-emacs-logo 673,219193
+(defun distance 60,2462
+(defun elite-for-emacs-gamebuy 68,2731
+(defvar rnd_seed 135,5707
+(defun elite-for-emacs-planet-description 137,5732
+(defvar elite-for-emacs-rand1-seed 145,6140
+(defun rand1 147,6181
+(defvar elite-for-emacs-planet-description 165,6808
+(defun goat_soup 167,6858
+(defun gen_rnd_number 219,8926
+(defun elite-for-emacs-describe-inhabitants 253,9852
+(defconst base0 297,11126
+(defconst base1 298,11152
+(defconst base2 299,11178
+(defconst numforLave 300,11204
+(defconst numforZaonce 301,11273
+(defconst numforDiso 302,11302
+(defconst numforRied 303,11329
+(defconst AlienItems 304,11355
+(defconst lasttrade 305,11381
+(defconst galsize 306,11414
+(defconst CONDITION_DOCKED 307,11452
+(defconst CONDITION_GREEN 308,11490
+(defconst CONDITION_YELLOW 309,11526
+(defconst CONDITION_RED 310,11564
+(defconst fuelcost 312,11598
+(defconst maxfuel 314,11643
+(defvar lastrand 316,11682
+(defconst inhabitant1 318,11732
+(defconst inhabitant2 319,11791
+(defconst inhabitant3 320,11877
+(defconst inhabitant4 321,11963
+(defstruct seedtype 323,12067
+(defvar seed 325,12149
+(defstruct fastseedtype 327,12215
+(defconst pairs 330,12328
+(defconst desc_list333,12449
+(defstruct markettype 411,15386
+(defstruct plansys415,15431
+(defconst govnames 428,15598
+(defconst econnames 431,15736
+(defconst tradnames 434,15876
+(defconst unitnames 437,16100
+(defstruct equipment 439,16146
+(defconst EQUIPMENT_LARGE_CARGO_BAY 445,16287
+(defconst EQUIPMENT_GALACTIC_HYPERDRIVE 446,16327
+(defconst EQUIPMENT_TRADE_HISTORY_V1 447,16371
+(defconst EQUIPMENT_PRECIOUS_METALS_TRADE_HISTORY_V1 448,16451
+(defconst EQUIPMENT_GEM_STONES_TRADE_HISTORY_V1 449,16537
+(defvar elite-for-emacs-equipment-list459,17014
+(defstruct tradegood473,17453
+(defconst TRADEGOOD_FOOD 481,17545
+(defconst TRADEGOOD_TEXTILES 482,17574
+(defconst TRADEGOOD_RADIOACTIVES 483,17607
+(defconst TRADEGOOD_SLAVES 484,17644
+(defconst TRADEGOOD_LIQUOR 485,17675
+(defconst TRADEGOOD_LUXURIES 486,17706
+(defconst TRADEGOOD_NARCOTICS 487,17739
+(defconst TRADEGOOD_COMPUTERS 488,17773
+(defconst TRADEGOOD_MACHINERY 489,17807
+(defconst TRADEGOOD_ALLOYS 490,17841
+(defconst TRADEGOOD_FIREARMS 491,17872
+(defconst TRADEGOOD_FURS 492,17906
+(defconst TRADEGOOD_MINERALS 493,17936
+(defconst TRADEGOOD_GOLD 494,17970
+(defconst TRADEGOOD_PLATINUM 495,18000
+(defconst TRADEGOOD_GEMS 496,18034
+(defconst TRADEGOOD_ALIENITEMS 497,18064
+(defvar commodities499,18102
+(defun generate-planet-name 603,20429
+(defun makesystem 607,20513
+(defun buildgalaxy 632,21595
+(defun elite-for-emacs-build-universe 660,22792
+(defvar elite-for-emacs-galaxies-in-universe 668,22991
+(defvar elite-for-emacs-logo 670,219100
 
 elite-for-emacs.el,1900
 (defconst elite-for-emacs-version 3,44
@@ -186,6 +222,14 @@ elite-for-emacs.el,1900
 (defgroup elite-for-emacs 342,13395
 (defcustom elite-for-emacs-save-confirmation-when-exit 349,13545
 
+leet-primitives.el,161
+(defun filter 1,0
+(defun pick 6,352
+(defun pick-g 7,412
+(defun break-string 11,694
+(defun partition-string 19,986
+(defun word-list->planet-grammar 25,1131
+
 elite-for-emacs-commander.el,374
 (defconst STATE_DOCKED 10,447
 (defconst STATE_IN_SPACE 11,474
@@ -196,3 +240,8 @@ elite-for-emacs-commander.el,374
 (defvar elite-for-emacs-saved-commander-list 56,1883
 (defun elite-for-emacs-generate-commander 59,1999
 (defun elite-for-emacs-get-commander 86,2832
+
+leet-test.el,21
+(deftest test-+3,27
+
+notes.el,0

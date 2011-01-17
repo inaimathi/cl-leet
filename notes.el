@@ -1,5 +1,3 @@
-I should probably refactor so that as much of this thing is functional as possible (it'll mean I have to pass more specific things in, and it'll mean that the UI is actually in charge of doing data changes as well. Does that really sound like a good idea?)
-
 This game will likely be much more efficient in a relational model because you want to reference by different things at different times. (Sometimes you'll want planets by x/y/z coord, sometimes by name and sometimes by tech level. Same story for goods, you want to be able to get them by tech-level, name or price. This is just in-game, btw, for other metrics, it makes even more sense to make the database external.)
 
 Checked how the original system handles this, and it's the stupid way (one giant array, sorted by essentially planet-id, which gets traversed in full whenever the player wants to go anywhere). Granted, this doesn't have to be blazing fast, but I get the feeling that traversing a linked list of ~800 elements every move isn't a good idea.
@@ -22,7 +20,6 @@ population [related to tech, econ and government; they're all bonuses, but tech 
 productivity is [related to government, economy and population (tech should have an effect here too, but the initial engine doesn't implement one, except for the large indirect bonus through econ and pop). Government is a big bonus, so is economy, population is a multiplier]  
 
 ;;Goods/purchasing
-fuel is a good that fills out your fuel-cap before your cargo hold
 gear is a good that doesn't take up cargo space, and has some sort of effect on your ship instead (this should be illustrated by an "effect" field. It should contain a function that takes a ship and returns a modified ship)
 
 ;;; Commands ;;;;;;;;;;

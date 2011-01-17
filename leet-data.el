@@ -24,6 +24,13 @@
   amount
   price)
 
+(defstruct trade-record
+  type ;;'sold or 'bought
+  planet
+  good
+  amount
+  price/unit)
+
 (defstruct captain 
   name ship
   credits

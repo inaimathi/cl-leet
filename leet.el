@@ -48,6 +48,7 @@
 	  (captain-name cmdr) (captain-credits cmdr) (captain-reputation cmdr) (captain-xp cmdr) (captain-current-planet cmdr) (ship-name (captain-ship cmdr))))
   
 (defun inventory (s)
+  "Takes a ship and outputs the contents of its cargo bay"
   (let ((cargo (ship-cargo s))
 	(fuel (ship-fuel s)))
     (format "%s\n%s\n\n" 
@@ -60,12 +61,14 @@
 		      (ship-name s))))))
 
 (defun market-info (m)
+  "Takes a market and prints all goods available on it"
   (mapcar (lambda (single-good)
 	    (format "--[ %s ]--\nIn Stock: %s\nPrice/unit: %s\n\n" 
 		    (car single-good) (cadr single-good) (caddr single-good)))
 	  m))
  
 (defun list-local-planets (cmdr)
+  "Takes a commander and outputs all directly reachable planets given their ships fuel and fuel-consumption"
   (mapcar (lambda (p) (planet-name p))
 	  (systems-in-range (/ (ship-fuel (captain-ship commander)) 
 			       (ship-fuel-consumption (captain-ship commander)))
@@ -85,6 +88,7 @@
 	     (diff-sq (planet-x p1) (planet-x p2))))))
 
 (defun move-to-planet (cmdr p)
+  "Takes a commander and a planet, and moves the commander to the planet if its within rangex"
   (let* ((fuel (ship-fuel (captain-ship cmdr)))
 	 (current-planet (planet-name->planet (captain-current-planet cmdr)))
 	 (distance (planet-distance current-planet p))
@@ -137,6 +141,7 @@
       (setf market (cons (list (capitalize t-name) num (going-rate p-name t-name)) market)))))
 
 (defun add-to-inventory (cmdr t-name num)
+  "Add [num] [t-good] to [cmdr]s inventory"
   (let ((listing (assoc (capitalize t-name) (ship-cargo (captain-ship cmdr))))
 	(ship (captain-ship cmdr))
 	(good (tradegood-name->tradegood t-name)))
@@ -151,6 +156,7 @@
 		   (cons (list (capitalize t-name) num) (ship-cargo (captain-ship cmdr)))))))) ;; otherwise add a new entry
 
 (defun remove-from-inventory (cmdr t-name num)
+  "Remove [num] [t-good] from [cmdr]s inventory"
   (let* ((cargo (ship-cargo (captain-ship cmdr)))
 	 (listing (assoc (capitalize t-name) cargo)))
     (if (= (cadr listing) num)

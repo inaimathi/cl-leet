@@ -155,10 +155,6 @@
 			    "be" "en" "qu" "a" "n" "r" "te" "t") 
 		      partition ("-" "'"))))
 
-;;xB0 is the current planets' name
-;;xB1 is the name of the current planets' inhabitants (the original grammar has it specified as "xB0ian"
-;;xB2 corresponds to "random name". The original code uses the same function to generate this name as a planet name, and doesn't prevent collisions. A half-way decent way of implementing this is to add a non-terminal "random-name" to planet-desc-grammar that contains a bunch of results from (generate-planet-name)
-
 (defvar planet-desc-grammar
   #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8 data 
 		(root ((sentence-start planet-fact ".")) 
@@ -171,7 +167,7 @@
 				   (", a " adj-negative " " syn-planet)) 
 		      subject (("its " adjective " " place) 
 			       ("its " adjective " " passtime) 
-			       ("the \262 " adj-fauna " " creature) 
+			       ("the " random-name " " adj-fauna " " creature) 
 			       ("its inhabitants' " adj-local-custom " " inhabitant-property) 
 			       passtime) 
 		      passtime ((creature " " drink) (fauna " " food) 
@@ -183,15 +179,15 @@
 				      ("a " adj-threat " disease") 
 				      (adj-disaster " earthquakes") 
 				      (adj-disaster " solar activity")) 
-		      creature ((fauna "oid") ("\262 " adj-threat) 
+		      creature ((fauna "oid") (random-name "oid") (random-name " " adj-threat) 
 				fauna insect "inhabitant") 
 		      place ((creature flora " plantations") (adj-forest " forests") scenery "forests" "mountains" "oceans")
 		      technology (passtime "food blenders" "tourists" "poetry" "discos") 
 		      inhabitant-property (("loathing of " technology) ("love for " technology) 
 					   "shyness" "silliness" "mating traditions") 
-		      fauna ("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" "\262") 
-		      flora (("\262" "weed") "plant" "tulip" "banana" "corn" "carrot") 
-		      insect ("wasp" "moth" "grub" "ant" "\262") 
+		      fauna ("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" random-name) 
+		      flora ((random-name " weed") "plant" "tulip" "banana" "corn" "carrot") 
+		      insect ("wasp" "moth" "grub" "ant" random-name) 
 		      scenery ("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes") 
 		      reputation ("fabled" "notable" "well known" "famous" "noted") 
 		      emphasis ("very" "mildly" "most" "reasonably") 
@@ -209,7 +205,10 @@
 		      adj-threat ("killer" "deadly" "evil" "lethal" "vicious") 
 		      adj-activity ("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules") 
 		      adj-opposing-force ("beset" "plagued" "ravaged" "cursed" "scourged") 
-		      syn-planet ("planet" "world" "place" "little planet" "dump"))))
+		      syn-planet ("planet" "world" "place" "little planet" "dump")
+		      random-name (mapcar (lambda (n) 
+					    (capitalize (grammar->string planet-name-grammar))) 
+					  (make-list 10 0)))))
 
 ;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))

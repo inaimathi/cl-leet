@@ -2,7 +2,7 @@
 (require 'leet-data)
 
 ;; Commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; These are all side-effect functions, but don't have the bang because they require the user to type them out
+;; These are all side-effect functions, but don't have the bang because they may require the user to type them out
 (defun cap-info ()
   (interactive)
   (insert (captain-info commander)))
@@ -106,6 +106,10 @@
 	(setf (ship-cargo (captain-ship cmdr)) (remove-if (lambda (l) (string= (capitalize t-name) (car l))) cargo))
       (setf (cadr listing) (- (cadr listing) num)))))
 
+(defun record-trade-history! (cmdr trade)
+  (setf (captain-trade-history cmdr)
+	(cons trade (captain-trade-history cmdr))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Oddly Specific Predicates;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -124,7 +128,7 @@
        (eq (tradegood-type g) 'fuel)))
 
 (defun tradegood-available? (t-name market)
-  "Takes a tradegood name, returns that tradegoods stats on the current market (or NIL if it is unavailable)"
+  "Takes a tradegood name and a market, returns that tradegoods stats on the market (nil if it is unavailable)"
   (assoc (capitalize t-name) market))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -167,7 +171,7 @@
 	    (format "--[ %s ]--\nIn Stock: %s\nPrice/unit: %s\n\n" 
 		    (car single-good) (cadr single-good) (caddr single-good)))
 	  m))
- 
+
 (defun list-local-planets (cmdr)
   "Takes a commander and outputs all directly reachable planets given their ships fuel and fuel-consumption"
   (mapcar (lambda (p) (planet-name p))

@@ -5,7 +5,7 @@ Checked how the original system handles this, and it's the stupid way (one giant
 In theory, the grammars and generated variables can be stored more efficiently in a database than as in-memory objects (this means that something like 90% of the leet-data file could be eliminated with the use of a no-sql or RDB).
 
 ;;Basic mechanics
-fuel/fuel-consumption yields travel range (fuel-consumption is how much fuel the ship burns in a move of 10 units)
+fuel/fuel-consumption yields travel range (fuel-consumption is how much fuel the ship burns in a move of 1 units)
 
 basically, a planet should have supply/demand dynamics (selling applies a penalty to price, buying gives a small bonus). Make sure the numbers are big enough that a single ship can't lock up the market.
 
@@ -16,8 +16,8 @@ government = (- (random 8) 1) [-1 is anarchy, the rest are named political syste
 econ [related to government. anarchy has a low econ, the higher the better (maybe should plateau off at some point), but mitigated by a random factor]
 tech [related to government and econ. government is a small penalty, econ is a large bonus. Small random factor]
 radius is random, but weighed towards earth radius (I should play with the units so that distance and planet size correspond roughly. Perhaps do the planet wars thing where I don't care? This requires a 2D representation though, which would be ok)
-population [related to tech, econ and government; they're all bonuses, but tech and econ are larger than gov]
-productivity is [related to government, economy and population (tech should have an effect here too, but the initial engine doesn't implement one, except for the large indirect bonus through econ and pop). Government is a big bonus, so is economy, population is a multiplier]  
+population [related to tech, econ and government. they're all bonuses, but tech and econ are much larger than gov]
+productivity is [related to government, economy and population (tech should have an effect here too, but the initial engine doesn't implement one, except for the large indirect bonus through econ and pop). Government is a big bonus, so is economy, population is a multiplier]
 
 ;;Goods/purchasing
 gear is a good that doesn't take up cargo space, and has some sort of effect on your ship instead (this should be illustrated by an "effect" field. It should contain a function that takes a ship and returns a modified ship)

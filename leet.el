@@ -60,7 +60,8 @@
 	  ((not (enough-space? cmdr t-name num)) (error "You don't have enough room in your cargo hold"))
 	  (t (setf (cadr good) (- (cadr good) num) ;; Remoe [num] [t-name] from the planet
 		   (captain-credits cmdr) (- (captain-credits cmdr) (* num (caddr good)))) ;; Remove (* [num] [price]) credits from captains' account
-	     (add-to-inventory! cmdr t-name num)
+	     (add-to-cargo! cmdr t-name num)
+	     (record-trade-history! cmdr 'buy (captain-current-planet cmdr) num (capitalize t-name) (caddr good))
 	     (format "Bought %s %s" num t-name)))))
 
 (defun convey! (cmdr t-name num)
@@ -83,7 +84,7 @@
 	(setf (cadr listing) (+ (cadr listing) num))
       (setf market (cons (list (capitalize t-name) num (going-rate p-name t-name)) market)))))
 
-(defun add-to-inventory! (cmdr t-name num)
+(defun add-to-cargo! (cmdr t-name num)
   "Add [num] [t-good] to [cmdr]s inventory"
   (let ((listing (assoc (capitalize t-name) (ship-cargo (captain-ship cmdr))))
 	(ship (captain-ship cmdr))
@@ -93,7 +94,7 @@
 	     (if (>= f-space num)
 		 (setf (ship-fuel ship) (+ (ship-fuel ship) num))
 	       (progn (setf (ship-fuel ship) (ship-fuel-cap ship))
-		      (add-to-inventory! cmdr t-name (- num f-space))))))
+		      (add-to-cargo! cmdr t-name (- num f-space))))))
 	  (listing (setf (cadr listing) (+ (cadr listing) num))) ;; If there's already some [good] in inventory, just add it to the pile
 	  (t (setf (ship-cargo (captain-ship cmdr))
 		   (cons (list (capitalize t-name) num) (ship-cargo (captain-ship cmdr)))))))) ;; otherwise add a new entry
@@ -106,9 +107,11 @@
 	(setf (ship-cargo (captain-ship cmdr)) (remove-if (lambda (l) (string= (capitalize t-name) (car l))) cargo))
       (setf (cadr listing) (- (cadr listing) num)))))
 
-(defun record-trade-history! (cmdr trade)
-  (setf (captain-trade-history cmdr)
-	(cons trade (captain-trade-history cmdr))))
+(defun record-trade-history! (cmdr type planet amount t-name price/unit)
+  (let ((trade (make-trade-record 
+		:type type :planet planet
+		:amount amount :good t-name :price/unit price/unit)))
+    (setf (captain-trade-history cmdr) (cons trade (captain-trade-history cmdr)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Oddly Specific Predicates;;

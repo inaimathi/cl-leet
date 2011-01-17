@@ -25,7 +25,7 @@
   price)
 
 (defstruct trade-record
-  type ;;'sold or 'bought
+  type ;;'buy or 'sell
   planet
   good
   amount
@@ -146,8 +146,7 @@
 		       (starter partition link ender) 
 		       (starter partition root) 
 		       (starter link link ender) 
-		       (starter ender) 
-		       starter) 
+		       (starter ender)) 
 		      starter ((starter link) 
 			       "aa" "ae" "al" "an" "ao" "ar" "at" "az" "be" "bi" "ce" "di" "ed" "en" "er" 
 			       "es" "ge" "in" "is" "la" "le" "ma" "on" "or" "qu" "ra" "re" "ri" "so" "te" 
@@ -171,37 +170,34 @@
 				   (" " emphasis " " reputation " for " subject " and " subject) 
 				   (" " emphasis " " reputation " for " subject " but " adj-opposing-force " by " historic-event)
 				   (" " adj-opposing-force " by " historic-event) 
-				   (", a " adj-negative " " syn-planet)) 
+				   (", a " adj-negative " " syn-planet))
 		      subject (("its " adjective " " place) 
 			       ("its " adjective " " passtime) 
-			       ("the " random-name " " adj-fauna " " creature) 
+			       ("the " adj-fauna " " fauna) 
 			       ("its inhabitants' " adj-local-custom " " inhabitant-property) 
 			       passtime) 
-		      passtime ((creature " " drink) (fauna " " food) 
+		      passtime ((fauna " " drink) (fauna " " food) 
 				("its " adjective " " fauna " " food) 
 				(adj-activity " " sport) 
 				"cuisine" "night-life" "casinos" "sit-coms") 
 		      historic-event ((adj-disaster " civil war") 
-				      (adj-threat " " adj-fauna " " creature "s") 
+				      (adj-threat " " adj-fauna " " fauna "s") 
 				      ("a " adj-threat " disease") 
 				      (adj-disaster " earthquakes") 
 				      (adj-disaster " solar activity")) 
-		      creature ((fauna "oid") (random-name "oid") (random-name " " adj-threat) 
-				fauna insect "inhabitant") 
-		      place ((creature flora " plantations") (adj-forest " forests") scenery "forests" "mountains" "oceans")
+		      place ((fauna flora " plantations") (adj-forest " forests") scenery "forests" "mountains" "oceans")
 		      technology (passtime "food blenders" "tourists" "poetry" "discos") 
 		      inhabitant-property (("loathing of " technology) ("love for " technology) 
 					   "shyness" "silliness" "mating traditions") 
-		      fauna ("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" random-name) 
-		      flora ((random-name " weed") "plant" "tulip" "banana" "corn" "carrot") 
-		      insect ("wasp" "moth" "grub" "ant" random-name) 
+		      fauna ("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" "wasp" "moth" "grub" "ant") 
+		      flora ((fauna "-weed") "plant" "tulip" "banana" "corn" "carrot") 
 		      scenery ("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes") 
 		      reputation ("fabled" "notable" "well known" "famous" "noted") 
 		      emphasis ("very" "mildly" "most" "reasonably") 
 		      drink ("juice" "brandy" "water" "brew" "gargle blasters") 
 		      sport ("hockey" "cricket" "karate" "polo" "tennis" "quiddich") 
 		      food ("meat" "cutlet" "steak" "burgers" "soup") 
-		      adjective ((emphasis adjective) (adjective ", " adjective) 
+		      adjective ((emphasis adjective) 
 				 adj-local-custom adj-fauna adj-forest adj-disaster 
 				 "great" "pink" "fabulous" "hoopy" "funny" "wierd" "strange" "peculiar") 
 		      adj-fauna (adj-threat "mountain" "edible" "tree" "spotted" "exotic") 
@@ -212,10 +208,7 @@
 		      adj-threat ("killer" "deadly" "evil" "lethal" "vicious") 
 		      adj-activity ("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules") 
 		      adj-opposing-force ("beset" "plagued" "ravaged" "cursed" "scourged") 
-		      syn-planet ("planet" "world" "place" "little planet" "dump")
-		      random-name (mapcar (lambda (n) 
-					    (capitalize (grammar->string planet-name-grammar))) 
-					  (make-list 10 0)))))
+		      syn-planet ("planet" "world" "place" "little planet" "dump"))))
 
 ;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))

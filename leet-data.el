@@ -122,7 +122,7 @@
 (defun generate-market (tech-level)
   (let ((possible-goods (filter (lambda (g) (>= tech-level (tradegood-tech-level g))) tradegoods)))
     (mapcar (lambda (g)
-	      (list (tradegood-name g) 300 (tradegood-base-price g)))
+	      (make-listing :name (tradegood-name g) :amount 300 :price (tradegood-base-price g)))
 	    possible-goods)))
 
 ;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
@@ -217,7 +217,7 @@
 				      :reputation 0
 				      :xp 0
 				      :current-planet (planet-name (car galaxy))
-				      :trade-history '()
+				      :trade-history nil
 				      :ship (make-ship :name "Serenity"
 						       :cargo-cap 10
 						       :cargo nil

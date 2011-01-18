@@ -53,40 +53,40 @@
 
 (defun purchase! (a-cap t-name num)
   "Check if a purchase order is valid, and if so, fulfill it"
-  (let ((good (tradegood-available? t-name (planet-market (planet-name->planet (captain-current-planet a-cap))))))
-    (cond ((not good) (error "That's not available at this planet"))
-	  ((< (cadr good) num) (error (format "They don't have that many %s" t-name)))
-	  ((< (captain-credits a-cap) (* num (caddr good))) (error (format "You can't afford that many %s" t-name)))
+  (let ((a-listing (tradegood-available? t-name (planet-market (planet-name->planet (captain-current-planet a-cap))))))
+    (cond ((not a-listing) (error "That's not available at this planet"))
+	  ((< (listing-amount a-listing) num) (error (format "They don't have that many %s" t-name)))
+	  ((< (captain-credits a-cap) (* num (listing-price a-listing))) (error (format "You can't afford that many %s" t-name)))
 	  ((not (enough-space? a-cap t-name num)) (error "You don't have enough room in your cargo hold"))
-	  (t (setf (cadr good) (- (cadr good) num) ;; Remoe [num] [t-name] from the planet
-		   (captain-credits a-cap) (- (captain-credits a-cap) (* num (caddr good)))) ;; Remove (* [num] [price]) credits from captains' account
+	  (t (setf (listing-amount a-listing) (- (listing-amount a-listing) num) ;; Remoe [num] [t-name] from the planet
+		   (captain-credits a-cap) (- (captain-credits a-cap) (* num (listing-price a-listing)))) ;; Remove (* [num] [price]) credits from captains' account
 	     (add-to-cargo! a-cap t-name num)
-	     (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (capitalize t-name) (caddr good))
+	     (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (capitalize t-name) (listing-price a-listing))
 	     (format "Bought %s %s" num t-name)))))
 
 (defun convey! (a-cap t-name num)
   "Check if a sell order is valid, and if so, fulfill it"
   (let ((sell-price (going-rate (captain-current-planet a-cap) t-name))
-	(inventory-listing (assoc (capitalize t-name) (ship-cargo (captain-ship a-cap)))))
+	(a-listing (tradegood-available? t-name (ship-cargo (captain-ship a-cap)))))
     (cond ((not sell-price) (error (format "I have no clue what a %s is" t-name)))
-	  ((not inventory-listing) (error (format "You don't have any %s in your hold" t-name)))
-	  ((> num (cadr inventory-listing)) (error (format "You don't have enough %s in your hold" t-name)))
-	  (t (remove-from-inventory! a-cap t-name num)
+	  ((not a-listing) (error (format "You don't have any %s in your hold" t-name)))
+	  ((> num (listing-amount a-listing)) (error (format "You don't have enough %s in your hold" t-name)))
+	  (t (remove-from-cargo! a-cap t-name num)
 	     (add-to-market! (captain-current-planet a-cap) t-name num)
-	     (setf (captain-credits a-cap) (+ (captain-credits a-cap) (* sell-price num)))))))
-;; sell (remove goods from hold, add them to the planet inventory, add credits to captain account)
+	     (setf (captain-credits a-cap) (+ (captain-credits a-cap) (* sell-price num)))
+	     (record-trade-history! a-cap 'sell (captain-current-planet a-cap) num (capitalize t-name) (listing-price a-listing))))))
 
 (defun add-to-market! (p-name t-name num)
   "Add [num] [t-good] to [p-name]s market"
   (let* ((market (planet-market (planet-name->planet p-name)))
-	 (listing (tradegood-available? t-name market)))
-    (if listing
-	(setf (cadr listing) (+ (cadr listing) num))
-      (setf market (cons (list (capitalize t-name) num (going-rate p-name t-name)) market)))))
+	 (a-listing (tradegood-available? t-name market)))
+    (if a-listing
+	(setf (listing-amount a-listing) (+ (listing-amount a-listing) num))
+      (setf market (cons (make-listing :name (capitalize t-name) :amount num :price (going-rate p-name t-name)) market)))))
 
 (defun add-to-cargo! (a-cap t-name num)
   "Add [num] [t-good] to [a-cap]s inventory"
-  (let ((listing (assoc (capitalize t-name) (ship-cargo (captain-ship a-cap))))
+  (let ((a-listing (tradegood-available? t-name (ship-cargo (captain-ship a-cap))))
 	(ship (captain-ship a-cap))
 	(good (tradegood-name->tradegood t-name)))
     (cond ((and (fuel? good) (> (ship-fuel-space ship) 0)); Fill out fuel-cells before filling out cargo hold if there's space
@@ -95,17 +95,18 @@
 		 (setf (ship-fuel ship) (+ (ship-fuel ship) num))
 	       (progn (setf (ship-fuel ship) (ship-fuel-cap ship))
 		      (add-to-cargo! a-cap t-name (- num f-space))))))
-	  (listing (setf (cadr listing) (+ (cadr listing) num))) ;; If there's already some [good] in inventory, just add it to the pile
+	  (a-listing (setf (listing-amount a-listing) (+ (listing-amount a-listing) num)))
 	  (t (setf (ship-cargo (captain-ship a-cap))
-		   (cons (list (capitalize t-name) num) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
+		   (cons (make-listing :name (capitalize t-name) :amount num) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
 
-(defun remove-from-inventory! (a-cap t-name num)
+(defun remove-from-cargo! (a-cap t-name num)
   "Remove [num] [t-good] from [a-cap]s inventory"
   (let* ((cargo (ship-cargo (captain-ship a-cap)))
-	 (listing (assoc (capitalize t-name) cargo)))
-    (if (= (cadr listing) num)
-	(setf (ship-cargo (captain-ship a-cap)) (remove-if (lambda (l) (string= (capitalize t-name) (car l))) cargo))
-      (setf (cadr listing) (- (cadr listing) num)))))
+	 (a-listing (tradegood-available? t-name cargo)))
+    (if (= (listing-amount a-listing) num)
+	(setf (ship-cargo (captain-ship a-cap))
+	      (remove-if (lambda (l) (string= (capitalize t-name) (listing-name l))) cargo))
+      (setf (listing-amount a-listing) (- (listing-amount a-listing) num)))))
 
 (defun record-trade-history! (a-cap type planet amount t-name price/unit)
   (let ((trade (make-trade-record 
@@ -130,9 +131,10 @@
   (and (tradegood-p g)
        (eq (tradegood-type g) 'fuel)))
 
-(defun tradegood-available? (t-name market)
-  "Takes a tradegood name and a market, returns that tradegoods stats on the market (nil if it is unavailable)"
-  (assoc (capitalize t-name) market))
+(defun tradegood-available? (t-name inv)
+  "Takes a tradegood name and an inventory, returns that tradegoods stats in that inventory (nil if it is unavailable)"
+  (let ((n (capitalize t-name)))
+    (find-if (lambda (l) (string= n (listing-name l))) inv)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Additional Getters ;;;;;;;;
@@ -141,9 +143,9 @@
   "Given a planet name and tradegood name, returns the price/unit of tradegood on planet"
   (let* ((plt (planet-name->planet p-name))
 	 (good (tradegood-name->tradegood t-name))
-	 (listing (tradegood-available? t-name (planet-market plt))))
-    (cond (listing (caddr listing))
-	  ((and (not listing) good) 300) ;; TODO: calculate going rate based on planet-tech-level/item-tech-level/item-base-price/population/productivity
+	 (a-listing (tradegood-available? t-name (planet-market plt))))
+    (cond ((listing-p a-listing) (listing-price a-listing))
+	  ((and (not a-listing) good) 300) ;; TODO: calculate going rate based on planet-tech-level/item-tech-level/item-base-price/population/productivity
 	  (t nil)))) ;; If we've gotten here, it means that the tradegood given doesn't exist in game
 
 (defun planet-info (p)
@@ -169,10 +171,10 @@
 		      (ship-name s))))))
 
 (defun market-info (m)
-  "Takes a market and prints all goods available on it"
-  (mapcar (lambda (single-good)
+  "Takes a market and returns the formatted output of all goods available on it"
+  (mapcar (lambda (a-listing)
 	    (format "--[ %s ]--\nIn Stock: %s\nPrice/unit: %s\n\n" 
-		    (car single-good) (cadr single-good) (caddr single-good)))
+		    (listing-name a-listing) (listing-amount a-listing) (listing-price a-listing)))
 	  m))
 
 (defun list-local-planets (a-cap)
@@ -206,7 +208,7 @@
 (defun ship-cargo-space (s)
   "Returns amount of free cargo space in the given ship"
   (- (ship-cargo-cap s)
-     (apply '+ (mapcar (lambda (g) (or (cadr g) 0)) (ship-cargo s)))))
+     (apply '+ (mapcar (lambda (a-listing) (or (listing-amount a-listing) 0)) (ship-cargo s)))))
 
 (defun ship-fuel-space (s)
   "Returns amount of free fuel space in the given ship"

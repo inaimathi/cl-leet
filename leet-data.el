@@ -15,7 +15,7 @@
 (defstruct tradegood
   (base-price nil :read-only t)  ;; Base price per unit
   tech-level ;; How advanced must a planet be to have them, and about how many will there be at a time? This may change over time. Production rate should be calculated from this.
-  (type nil :read-only t) ;; right now either "goods" "fuel" "gear"
+  (type nil :read-only t) ;; right now either 'goods 'fuel ('gear to be added later)
   (name nil :read-only t)
   (unit nil :read-only t))
 
@@ -212,20 +212,20 @@
 
 ;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))
-(defvar commander (make-captain :name "Mal"
-				:credits 10000
-				:reputation 0
-				:xp 0
-				:current-planet (planet-name (car galaxy))
-				:trade-history '()
-				:ship (make-ship :name "Serenity"
-						 :cargo-cap 10
-						 :cargo nil
-						 :frame 'firefly
-						 :engine 'standard
-						 :speed 20
-						 :fuel-consumption 1
-						 :fuel-cap 150
-						 :fuel 150)))
+(defvar current-captain (make-captain :name "Mal"
+				      :credits 10000
+				      :reputation 0
+				      :xp 0
+				      :current-planet (planet-name (car galaxy))
+				      :trade-history '()
+				      :ship (make-ship :name "Serenity"
+						       :cargo-cap 10
+						       :cargo nil
+						       :frame 'firefly
+						       :engine 'standard
+						       :speed 20
+						       :fuel-consumption 1
+						       :fuel-cap 150
+						       :fuel 150)))
 
 (provide 'leet-data)

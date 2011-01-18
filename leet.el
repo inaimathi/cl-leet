@@ -5,75 +5,75 @@
 ;; These are all side-effect functions, but don't have the bang because they may require the user to type them out
 (defun cap-info ()
   (interactive)
-  (insert (captain-info commander)))
+  (insert (captain-info current-captain)))
 
 (defun plt-info ()
   (interactive)
-  (insert (planet-info (planet-name->planet (captain-current-planet commander)))))
+  (insert (planet-info (planet-name->planet (captain-current-planet current-captain)))))
 
 (defun market ()
   (interactive)
   (mapcar 'insert 
-	  (market-info (planet-market (planet-name->planet (captain-current-planet commander))))))
+	  (market-info (planet-market (planet-name->planet (captain-current-planet current-captain))))))
 
 (defun cargo ()
   (interactive)
-  (insert (inventory (captain-ship commander))))
+  (insert (inventory (captain-ship current-captain))))
 
 (defun local-planets ()
   (interactive)
   (mapcar (lambda (p) (insert p "\n"))
-	  (list-local-planets commander)))
+	  (list-local-planets current-captain)))
 
 (defun travel (p)
-  (interactive (list (completing-read "Planet Name: " (list-local-planets commander))))
-  (move-to-planet! commander (planet-name->planet p)))
+  (interactive (list (completing-read "Planet Name: " (list-local-planets current-captain))))
+  (move-to-planet! current-captain (planet-name->planet p)))
 
 (defun buy (t-name num)
   (interactive "sTradegood: \nnAmount: ")
-  (purchase! commander t-name num))
+  (purchase! current-captain t-name num))
 
 (defun sell (t-name num)
   (interactive "sTradegood: \nnAmount: ")
-  (convey! commander t-name num))
+  (convey! current-captain t-name num))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Actions ;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun move-to-planet! (cmdr p)
-  "Takes a commander and a planet, and moves the commander to the planet if its within rangex"
-  (let* ((fuel (ship-fuel (captain-ship cmdr)))
-	 (current-planet (planet-name->planet (captain-current-planet cmdr)))
+(defun move-to-planet! (a-cap p)
+  "Takes a captain and a planet, and moves the captain to the planet if its within rangex"
+  (let* ((fuel (ship-fuel (captain-ship a-cap)))
+	 (current-planet (planet-name->planet (captain-current-planet a-cap)))
 	 (distance (planet-distance current-planet p))
-	 (fuel-range (/ fuel (ship-fuel-consumption (captain-ship cmdr)))))
+	 (fuel-range (/ fuel (ship-fuel-consumption (captain-ship a-cap)))))
     (if (>= fuel-range distance)
-	(setf (captain-current-planet cmdr) (planet-name p)
-	      (ship-fuel (captain-ship cmdr)) (round (- fuel (* distance (ship-fuel-consumption (captain-ship cmdr))))))
+	(setf (captain-current-planet a-cap) (planet-name p)
+	      (ship-fuel (captain-ship a-cap)) (round (- fuel (* distance (ship-fuel-consumption (captain-ship a-cap))))))
       (error "Planet out of range"))))
 
-(defun purchase! (cmdr t-name num)
+(defun purchase! (a-cap t-name num)
   "Check if a purchase order is valid, and if so, fulfill it"
-  (let ((good (tradegood-available? t-name (planet-market (planet-name->planet (captain-current-planet cmdr))))))
+  (let ((good (tradegood-available? t-name (planet-market (planet-name->planet (captain-current-planet a-cap))))))
     (cond ((not good) (error "That's not available at this planet"))
 	  ((< (cadr good) num) (error (format "They don't have that many %s" t-name)))
-	  ((< (captain-credits cmdr) (* num (caddr good))) (error (format "You can't afford that many %s" t-name)))
-	  ((not (enough-space? cmdr t-name num)) (error "You don't have enough room in your cargo hold"))
+	  ((< (captain-credits a-cap) (* num (caddr good))) (error (format "You can't afford that many %s" t-name)))
+	  ((not (enough-space? a-cap t-name num)) (error "You don't have enough room in your cargo hold"))
 	  (t (setf (cadr good) (- (cadr good) num) ;; Remoe [num] [t-name] from the planet
-		   (captain-credits cmdr) (- (captain-credits cmdr) (* num (caddr good)))) ;; Remove (* [num] [price]) credits from captains' account
-	     (add-to-cargo! cmdr t-name num)
-	     (record-trade-history! cmdr 'buy (captain-current-planet cmdr) num (capitalize t-name) (caddr good))
+		   (captain-credits a-cap) (- (captain-credits a-cap) (* num (caddr good)))) ;; Remove (* [num] [price]) credits from captains' account
+	     (add-to-cargo! a-cap t-name num)
+	     (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (capitalize t-name) (caddr good))
 	     (format "Bought %s %s" num t-name)))))
 
-(defun convey! (cmdr t-name num)
+(defun convey! (a-cap t-name num)
   "Check if a sell order is valid, and if so, fulfill it"
-  (let ((sell-price (going-rate (captain-current-planet cmdr) t-name))
-	(inventory-listing (assoc (capitalize t-name) (ship-cargo (captain-ship cmdr)))))
+  (let ((sell-price (going-rate (captain-current-planet a-cap) t-name))
+	(inventory-listing (assoc (capitalize t-name) (ship-cargo (captain-ship a-cap)))))
     (cond ((not sell-price) (error (format "I have no clue what a %s is" t-name)))
 	  ((not inventory-listing) (error (format "You don't have any %s in your hold" t-name)))
 	  ((> num (cadr inventory-listing)) (error (format "You don't have enough %s in your hold" t-name)))
-	  (t (remove-from-inventory! cmdr t-name num)
-	     (add-to-market! (captain-current-planet cmdr) t-name num)
-	     (setf (captain-credits cmdr) (+ (captain-credits cmdr) (* sell-price num)))))))
+	  (t (remove-from-inventory! a-cap t-name num)
+	     (add-to-market! (captain-current-planet a-cap) t-name num)
+	     (setf (captain-credits a-cap) (+ (captain-credits a-cap) (* sell-price num)))))))
 ;; sell (remove goods from hold, add them to the planet inventory, add credits to captain account)
 
 (defun add-to-market! (p-name t-name num)
@@ -84,43 +84,43 @@
 	(setf (cadr listing) (+ (cadr listing) num))
       (setf market (cons (list (capitalize t-name) num (going-rate p-name t-name)) market)))))
 
-(defun add-to-cargo! (cmdr t-name num)
-  "Add [num] [t-good] to [cmdr]s inventory"
-  (let ((listing (assoc (capitalize t-name) (ship-cargo (captain-ship cmdr))))
-	(ship (captain-ship cmdr))
+(defun add-to-cargo! (a-cap t-name num)
+  "Add [num] [t-good] to [a-cap]s inventory"
+  (let ((listing (assoc (capitalize t-name) (ship-cargo (captain-ship a-cap))))
+	(ship (captain-ship a-cap))
 	(good (tradegood-name->tradegood t-name)))
     (cond ((and (fuel? good) (> (ship-fuel-space ship) 0)); Fill out fuel-cells before filling out cargo hold if there's space
 	   (let ((f-space (ship-fuel-space ship)))
 	     (if (>= f-space num)
 		 (setf (ship-fuel ship) (+ (ship-fuel ship) num))
 	       (progn (setf (ship-fuel ship) (ship-fuel-cap ship))
-		      (add-to-cargo! cmdr t-name (- num f-space))))))
+		      (add-to-cargo! a-cap t-name (- num f-space))))))
 	  (listing (setf (cadr listing) (+ (cadr listing) num))) ;; If there's already some [good] in inventory, just add it to the pile
-	  (t (setf (ship-cargo (captain-ship cmdr))
-		   (cons (list (capitalize t-name) num) (ship-cargo (captain-ship cmdr)))))))) ;; otherwise add a new entry
+	  (t (setf (ship-cargo (captain-ship a-cap))
+		   (cons (list (capitalize t-name) num) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
 
-(defun remove-from-inventory! (cmdr t-name num)
-  "Remove [num] [t-good] from [cmdr]s inventory"
-  (let* ((cargo (ship-cargo (captain-ship cmdr)))
+(defun remove-from-inventory! (a-cap t-name num)
+  "Remove [num] [t-good] from [a-cap]s inventory"
+  (let* ((cargo (ship-cargo (captain-ship a-cap)))
 	 (listing (assoc (capitalize t-name) cargo)))
     (if (= (cadr listing) num)
-	(setf (ship-cargo (captain-ship cmdr)) (remove-if (lambda (l) (string= (capitalize t-name) (car l))) cargo))
+	(setf (ship-cargo (captain-ship a-cap)) (remove-if (lambda (l) (string= (capitalize t-name) (car l))) cargo))
       (setf (cadr listing) (- (cadr listing) num)))))
 
-(defun record-trade-history! (cmdr type planet amount t-name price/unit)
+(defun record-trade-history! (a-cap type planet amount t-name price/unit)
   (let ((trade (make-trade-record 
 		:type type :planet planet
 		:amount amount :good t-name :price/unit price/unit)))
-    (setf (captain-trade-history cmdr) (cons trade (captain-trade-history cmdr)))))
+    (setf (captain-trade-history a-cap) (cons trade (captain-trade-history a-cap)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Oddly Specific Predicates;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun enough-space? (cmdr t-name num)
+(defun enough-space? (a-cap t-name num)
   "Takes a [captain], [tradegood-name] and [amount]. Returns true if there is enough room for [amount] [tradegood-name] in [captain]s' ship."
   (let ((g (tradegood-name->tradegood t-name))
-	(c-space (ship-cargo-space (captain-ship cmdr)))
-	(f-space (ship-fuel-space (captain-ship cmdr))))
+	(c-space (ship-cargo-space (captain-ship a-cap)))
+	(f-space (ship-fuel-space (captain-ship a-cap))))
     (if (fuel? g)
 	(or (>= c-space num) (>= f-space num) (>= (+ c-space f-space) num))
       (>= c-space num))))
@@ -143,7 +143,7 @@
 	 (good (tradegood-name->tradegood t-name))
 	 (listing (tradegood-available? t-name (planet-market plt))))
     (cond (listing (caddr listing))
-	  ((and (not listing) good) 300) ;; TODO: calculate going rate based on planet-tech-level/item-tech-level/item-base-price
+	  ((and (not listing) good) 300) ;; TODO: calculate going rate based on planet-tech-level/item-tech-level/item-base-price/population/productivity
 	  (t nil)))) ;; If we've gotten here, it means that the tradegood given doesn't exist in game
 
 (defun planet-info (p)
@@ -151,9 +151,9 @@
 	  (planet-name p) (planet-description p) (planet-radius p) (planet-population p) 
 	  (planet-government p) (planet-tech-level p)))
 
-(defun captain-info (cmdr)
+(defun captain-info (a-cap)
   (format "--==[ %s ]==--\nCredits: %s\nReputation: %s\nXP: %s\nCurrent Planet: %s\nShip: %s\n\n"
-	  (captain-name cmdr) (captain-credits cmdr) (captain-reputation cmdr) (captain-xp cmdr) (captain-current-planet cmdr) (ship-name (captain-ship cmdr))))
+	  (captain-name a-cap) (captain-credits a-cap) (captain-reputation a-cap) (captain-xp a-cap) (captain-current-planet a-cap) (ship-name (captain-ship a-cap))))
   
 (defun inventory (s)
   "Takes a ship and outputs the contents of its cargo bay"
@@ -175,12 +175,12 @@
 		    (car single-good) (cadr single-good) (caddr single-good)))
 	  m))
 
-(defun list-local-planets (cmdr)
-  "Takes a commander and outputs all directly reachable planets given their ships fuel and fuel-consumption"
+(defun list-local-planets (a-cap)
+  "Takes a captain and outputs all directly reachable planets given their ships fuel and fuel-consumption"
   (mapcar (lambda (p) (planet-name p))
-	  (systems-in-range (/ (ship-fuel (captain-ship commander)) 
-			       (ship-fuel-consumption (captain-ship commander)))
-			    (planet-name->planet (captain-current-planet commander)))))
+	  (systems-in-range (/ (ship-fuel (captain-ship current-captain)) 
+			       (ship-fuel-consumption (captain-ship current-captain)))
+			    (planet-name->planet (captain-current-planet current-captain)))))
 
 (defun systems-in-range (a-range p)
   "Returns a list of planets within [a-range] of planet [p]"

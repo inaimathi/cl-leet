@@ -163,12 +163,14 @@
 
 (defvar planet-desc-grammar
   #s(hash-table size 65 test eql rehash-size 1.5 rehash-threshold 0.8 data 
-		(root ((sentence-start planet-fact ".")) 
-		      sentence-start ("" "The planet" "The world" "This planet" "This world") 
+		(root (("This world" planet-fact ".")
+		       ("The planet" planet-fact ".")
+		       ("The world" planet-fact ".")
+		       ("This planet" planet-fact ".")
+		       (planet-fact ".")) 
 		      planet-fact ((" " reputation " for " subject) 
-				   (" " emphasis " " reputation " for " subject) 
-				   (" " emphasis " " reputation " for " subject " and " subject) 
-				   (" " emphasis " " reputation " for " subject " but " adj-opposing-force " by " historic-event)
+				   (" " reputation " for " subject " and " subject) 
+				   (" " reputation " for " subject " but " adj-opposing-force " by " historic-event)
 				   (" " adj-opposing-force " by " historic-event) 
 				   (", a " adj-negative " " syn-planet))
 		      subject (("its " adjective " " place) 
@@ -192,7 +194,7 @@
 		      fauna ("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" "wasp" "moth" "grub" "ant") 
 		      flora ((fauna "-weed") "plant" "tulip" "banana" "corn" "carrot") 
 		      scenery ("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes") 
-		      reputation ("fabled" "notable" "well known" "famous" "noted") 
+		      reputation ((emphasis " " reputation) "fabled" "notable" "well known" "famous" "noted") 
 		      emphasis ("very" "mildly" "most" "reasonably") 
 		      drink ("juice" "brandy" "water" "brew" "gargle blasters") 
 		      sport ("hockey" "cricket" "karate" "polo" "tennis" "quiddich") 

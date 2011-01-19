@@ -106,14 +106,15 @@
 
 ;; Generators ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun generate-planet ()
-  (let* ((gov (random 8))
-	 (econ (if (> gov 0) (logior (logand (lsh (random 3) -8) 7) 2) (logand (lsh (random 3) -8) 7)))
-	 (tech (+ (logand (lsh (random 3) -8) 3) (logxor econ 7) (lsh gov -1)))
-	 (pop (+ (* 4 tech) econ gov 1))
-	 (prod (* (+ (logxor econ 7) 3) (+ 4 gov) pop 8)))
+  (let* ((rad (* (roll-dice 6 10) 100))
+	 (gov (max 2 (roll-dice 4 3 -4)))
+	 (econ (- (roll-dice 3 6) (- gov (roll-dice 2 6))))
+	 (tech (+ (random 3) (round (* econ .7)) (- gov 1)))
+	 (pop (min (+ (* 4 tech) econ gov 1) (* 100000 rad)))
+	 (prod (* (- (+ econ tech) gov) pop)))
     (make-planet :name (capitalize (grammar->string planet-name-grammar))
 		 :description (grammar->string planet-desc-grammar)
-		 :radius (+ 1000 (random 7000))
+		 :radius rad
 		 :x (random 300) :y (random 300) :z (random 300)
 		 :market (generate-market tech)
 		 :government gov :economy econ :tech-level tech :population pop :productivity prod
@@ -124,6 +125,8 @@
     (mapcar (lambda (g)
 	      (make-listing :name (tradegood-name g) :amount 300 :price (tradegood-base-price g)))
 	    possible-goods)))
+
+;; dieString.match(/(\d*)d(\d+)([\+\-]\d+)?/)
 
 ;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
 (defun grammar->string (grammar)

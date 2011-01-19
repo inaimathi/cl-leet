@@ -5,14 +5,22 @@
 ;; :market (generate-market tech)
 ;; :government gov :economy econ :tech-level tech :population pop :productivity prod
 
-(defvar test-gal (mapcar (lambda (n) (generate-planet)) (make-list 3000 0)))
-(defvar *stats* `((government . nil)
+(defvar *test-gal* nil)
+(defvar *stats* nil)
+
+(defun gen-set ()
+  (progn (reset-data)
+	 (graph-galaxy *test-gal*)))
+
+(defun reset-data ()
+  (setf *test-gal* (mapcar (lambda (n) (generate-planet)) (make-list 3000 0)))
+  (setf *stats* `((government . nil)
 		  (economy . nil)
 		  (tech-level . nil)
 		  (population . nil)
 		  (name . nil)
 		  (description . nil)
-		  (radius . nil)))
+		  (radius . nil))))
 
 (defun graph-galaxy (gal)
   (progn (planets->stats! gal)

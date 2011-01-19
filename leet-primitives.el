@@ -6,6 +6,11 @@
 (defun pick (a-list) (nth (random (length a-list)) a-list))
 (defun pick-g (key grammar) (pick (gethash key grammar))) ;;pick specialized to grammars
 
+(defun roll-dice (num-dice die-type &optional mod) ;;The simplest non-uniform dice roller I could think up without resorting to the grab-bag
+  (let* ((rolls (mapcar (lambda (die) (+ 1 (random die)))
+			(make-list num-dice die-type))))
+    (apply '+ (cons (or mod 0) rolls))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; These were used to help generate the planet-name grammar from a bunch of cool-sounding names
 (defun break-string (str fragment-length)

@@ -76,7 +76,7 @@
 		 :radius rad
 		 :x (random 300) :y (random 300) :z (random 300)
 		 :market (generate-market gov econ pop tech prod)
-		 :government gov :economy econ :tech-level tech :population pop :productivity prod))) ;; numeric versions of these stats, in case I need to recalculate something later
+		 :tech-level tech :productivity prod))) ;; numeric versions of these stats, in case I need to recalculate something later
 
 (defun generate-market (tech econ pop prod gov)
   (let ((possible-goods (filter (lambda (g) (>= tech (tradegood-tech-level g))) tradegoods)))

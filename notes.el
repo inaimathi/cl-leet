@@ -1,5 +1,7 @@
 Re-think how the grammars work at some point. It might be better to implement this as strings/regexps rather than lists and merging.
 
+The semi-tail-recursion is coming back to bite you in the ass, by the by; statistical distribution of names and descriptions have some odd peaks (I'm assuming these are from the sequence clipping you do to save nesting depth)
+
 
 This game will likely be much more efficient in a relational model because you want to reference by different things at different times. (Sometimes you'll want planets by x/y/z coord, sometimes by name and sometimes by tech level. Same story for goods, you want to be able to get them by tech-level, name or price. This is just in-game, btw, for other metrics, it makes even more sense to make the database external.)
 

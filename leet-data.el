@@ -9,8 +9,7 @@
   economy
   tech-level
   population
-  productivity
-  stats)
+  productivity)
 
 (defstruct tradegood
   (base-price nil :read-only t)  ;; Base price per unit
@@ -53,80 +52,39 @@
 ;; Basic Tradegood Data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (This is up here instead of with the generated data because the market generator needs it)
 (defvar tradegoods
-  (list (make-tradegood :base-price 19
-			:unit "hammock"
-			:type 'goods
-			:tech-level 2
-			:name "Food")
-	(make-tradegood :base-price 20
-			:unit "roll"
-			:type 'goods
-			:tech-level 4
-			:name "Textiles")
-	(make-tradegood :base-price 140 
-			:unit "group"
-			:type 'goods
-			:tech-level 0
-			:name "Slaves")
-	(make-tradegood :base-price 83
-			:unit "bottle"
-			:type 'goods
-			:tech-level 3
-			:name "Liquor")
-	(make-tradegood :base-price 196
-			:unit "sack"
-			:type 'goods
-			:tech-level 6
-			:name "Luxuries")
-	(make-tradegood :base-price 154 
-			:unit "chip"
-			:type 'goods
-			:tech-level 8
-			:name "Computers")
-	(make-tradegood :base-price 117
-			:unit "unit"
-			:type 'goods
-			:tech-level 7
-			:name "Machinery")
-	(make-tradegood :base-price 124
-			:unit "unit"
-			:type 'goods
-			:tech-level 6
-			:name "Firearms")
-	(make-tradegood :base-price 32
-			:unit "ton"
-			:type 'goods
-			:tech-level 0
-			:name "Minerals")
-	(make-tradegood :base-price 30
-			:unit "gallon"
-			:type 'fuel
-			:tech-level 1
-			:name "Fuel")))
+  (list (make-tradegood :base-price 32 :unit "ton" :type 'goods :tech-level 0 :name "Minerals")
+	(make-tradegood :base-price 140 :unit "group" :type 'goods :tech-level 0 :name "Slaves")
+	(make-tradegood :base-price 30 :unit "gallon" :type 'fuel :tech-level 1 :name "Fuel")
+	(make-tradegood :base-price 19 :unit "hammock" :type 'goods :tech-level 2 :name "Food")
+	(make-tradegood :base-price 83 :unit "bottle" :type 'goods :tech-level 3 :name "Liquor")
+	(make-tradegood :base-price 20 :unit "roll" :type 'goods :tech-level 4 :name "Textiles")
+	(make-tradegood :base-price 124 :unit "unit" :type 'goods :tech-level 6 :name "Firearms")
+	(make-tradegood :base-price 196 :unit "sack" :type 'goods :tech-level 6 :name "Luxuries")
+	(make-tradegood :base-price 154 :unit "chip" :type 'goods :tech-level 8 :name "Computers")
+	(make-tradegood :base-price 117 :unit "unit" :type 'goods :tech-level 7 :name "Machinery")))
 
 ;; Generators ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun generate-planet ()
-  (let* ((rad (* (roll-dice 6 10) 100))
-	 (gov (max 2 (roll-dice 4 3 -4)))
-	 (econ (- (roll-dice 3 6) (- gov (roll-dice 2 6))))
-	 (tech (+ (random 3) (round (* econ .7)) (- gov 1)))
-	 (pop (min (+ (* 4 tech) econ gov 1) (* 100000 rad)))
+  (let* ((rad (roll-dice 6 10))
+	 (gov (max 1 (roll-dice 4 3 -4)))
+	 (econ (max 1 (- (roll-dice 3 6) (- gov (roll-dice 2 6)))))
+	 (tech (max 2 (+ (random 10) (round (* econ .7)) (- gov 9))))
+	 (pop (min (+ (* 4 tech) econ gov) rad))
 	 (prod (* (- (+ econ tech) gov) pop)))
     (make-planet :name (capitalize (grammar->string planet-name-grammar))
 		 :description (grammar->string planet-desc-grammar)
 		 :radius rad
 		 :x (random 300) :y (random 300) :z (random 300)
-		 :market (generate-market tech)
-		 :government gov :economy econ :tech-level tech :population pop :productivity prod
-		 :stats (list :gov gov :econ econ :tech tech :pop pop :prod prod)))) ;; numeric versions of these stats, in case I need to recalculate something later
+		 :market (generate-market gov econ pop tech prod)
+		 :government gov :economy econ :tech-level tech :population pop :productivity prod))) ;; numeric versions of these stats, in case I need to recalculate something later
 
-(defun generate-market (tech-level)
-  (let ((possible-goods (filter (lambda (g) (>= tech-level (tradegood-tech-level g))) tradegoods)))
+(defun generate-market (tech econ pop prod gov)
+  (let ((possible-goods (filter (lambda (g) (>= tech (tradegood-tech-level g))) tradegoods)))
     (mapcar (lambda (g)
-	      (make-listing :name (tradegood-name g) :amount 300 :price (tradegood-base-price g)))
+	      (let* ((amt (max 10 (/ (+ (- (* econ prod) gov) tech) (+ 1 (tradegood-tech-level g)))))
+		     (pri (* (- (/ amt pop) tech) (tradegood-base-price g)))) ;; A complete system would take into consideration type of good (raw-material, processed-good, tech-intensive) and apply slightly different transformations
+		(make-listing :name (tradegood-name g) :amount amt :price pri)))
 	    possible-goods)))
-
-;; dieString.match(/(\d*)d(\d+)([\+\-]\d+)?/)
 
 ;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
 (defun grammar->string (grammar)

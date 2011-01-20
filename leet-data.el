@@ -5,10 +5,10 @@
   (radius nil :read-only t)
   x y z
   market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
-  government
-  economy
+  illegal
+  mass-produced
+  scarce
   tech-level
-  population
   productivity)
 
 (defstruct tradegood

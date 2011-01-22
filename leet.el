@@ -144,9 +144,9 @@
   (let* ((plt (planet-name->planet p-name))
 	 (good (tradegood-name->tradegood t-name))
 	 (a-listing (tradegood-available? t-name (planet-market plt))))
-    (cond ((listing-p a-listing) (listing-price a-listing))
-	  ((and (not a-listing) good) 300) ;; TODO: calculate going rate based on planet-tech-level/item-tech-level/item-base-price/population/productivity
-	  (t nil)))) ;; If we've gotten here, it means that the tradegood given doesn't exist in game
+    (cond ((listing-p a-listing) (listing-price a-listing)) ;; The good is on the market here; use the latest generated price for it
+	  ((and (not a-listing) good) (generate-price (planet-radius plt) (planet-tech-level plt) (tradegood-tech-level good) (tradegood-base-price good) (roll-dice 2 4) (roll-dice 2 4))) 
+	  (t nil)))) ;; If we've gotten here, it means that the tradegood given doesn't exist in game  
 
 (defun planet-info (p)
   (format "--==[ %s ]==--\n%s\nSize: % 10s\nPopulation: %s\nGovernment: %s\nTech-level: %s\n\n"

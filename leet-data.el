@@ -63,22 +63,27 @@
 
 ;; Generators ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun generate-planet ()
-  (let* ((planet-size (roll-dice 6 10))
+  (let* ((rad (roll-dice 6 10))
 	 (tech (roll-dice 2 4 (random 4)))
-	 (prod (roll-dice 4 6 (/ planet-size 2))))
+	 (prod (roll-dice 4 6 (/ rad 2))))
     (make-planet :name (capitalize (grammar->string planet-name-grammar))
 		 :description (grammar->string planet-desc-grammar)
-		 :radius planet-size
+		 :radius rad
 		 :x (random 300) :y (random 300) :z (random 300)
-		 :market (generate-market tech prod)
+		 :market (generate-market rad tech prod)
 		 :tech-level tech
 		 :productivity prod)))
 
-(defun generate-market (tech prod)
+(defun generate-price (radius tech-level good-tech-level base-price substitutes complements)
+  (let ((supply (/ (+ radius tech-level) (max 1 good-tech-level)))
+	(demand (+ (roll-dice radius 10) (- good-tech-level substitutes complements))))
+    (+ base-price (/ demand (max 1 supply)))))
+
+(defun generate-market (rad tech prod)
   (let ((possible-goods (filter (lambda (g) (>= tech (tradegood-tech-level g))) tradegoods)))
     (mapcar (lambda (g)
 	      (let* ((amt (max 0 (/ (* prod tech) (+ 1 (tradegood-tech-level g)))))
-		     (pri (/ (tradegood-base-price g) (+ amt tech))))
+		     (pri (generate-price rad tech (tradegood-tech-level g) (tradegood-base-price g) (roll-dice 2 4) (roll-dice 2 4))))
 		(make-listing :name (tradegood-name g) 
 			      :amount amt :price pri)))
 	    possible-goods)))

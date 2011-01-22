@@ -26,9 +26,10 @@ supply
 ;; This is getting iiiiinteresting.
 
 (let* ((supply (/ (+ 2d4 radius tech-level) (product-tech-level p)))
-       (demand (+ [radius]d10 (- (product-tech-level p) (length substitues)) (length complements)))
-       (price (* (product-base-price p) (/ supply demand)))))
-
+       (demand (+ [radius]d10 (- (product-tech-level p) (length substitues)) (length complements))))
+  (* (product-base-price p)
+     (/ demand supply)
+     (/ complements substitutes)))
 
 ;;Goods/purchasing
 gear is a good that doesn't take up cargo space, and has some sort of effect on your ship instead (this should be illustrated by an "effect" field. It should contain a function that takes a ship and returns a modified ship)

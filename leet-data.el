@@ -5,16 +5,14 @@
   (radius nil :read-only t)
   x y z
   market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
-  illegal
-  mass-produced
-  scarce
   tech-level
   productivity)
 
 (defstruct tradegood
   (base-price nil :read-only t)  ;; Base price per unit
-  tech-level ;; How advanced must a planet be to have them, and about how many will there be at a time? This may change over time. Production rate should be calculated from this.
-  (type nil :read-only t) ;; right now either 'goods 'fuel ('gear to be added later)
+  tech-level ;; How advanced must a planet be to have them, and about how many will there be at a time? This may change over time.
+  (type nil :read-only t) ;; right now either 'goods 'fuel ('gear to be added later). This will be used as "substitute"
+  complement-type
   (name nil :read-only t)
   (unit nil :read-only t))
 
@@ -60,30 +58,29 @@
 	(make-tradegood :base-price 20 :unit "roll" :type 'goods :tech-level 4 :name "Textiles")
 	(make-tradegood :base-price 124 :unit "unit" :type 'goods :tech-level 6 :name "Firearms")
 	(make-tradegood :base-price 196 :unit "sack" :type 'goods :tech-level 6 :name "Luxuries")
-	(make-tradegood :base-price 154 :unit "chip" :type 'goods :tech-level 8 :name "Computers")
-	(make-tradegood :base-price 117 :unit "unit" :type 'goods :tech-level 7 :name "Machinery")))
+	(make-tradegood :base-price 117 :unit "unit" :type 'goods :tech-level 7 :name "Machinery")
+	(make-tradegood :base-price 154 :unit "chip" :type 'goods :tech-level 8 :name "Computers")))
 
 ;; Generators ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun generate-planet ()
-  (let* ((rad (roll-dice 6 10))
-	 (gov (max 1 (roll-dice 4 3 -4)))
-	 (econ (max 1 (- (roll-dice 3 6) (- gov (roll-dice 2 6)))))
-	 (tech (max 2 (+ (random 10) (round (* econ .7)) (- gov 9))))
-	 (pop (min (+ (* 4 tech) econ gov) rad))
-	 (prod (* (- (+ econ tech) gov) pop)))
+  (let* ((planet-size (roll-dice 6 10))
+	 (tech (roll-dice 2 4 (random 4)))
+	 (prod (roll-dice 4 6 (/ planet-size 2))))
     (make-planet :name (capitalize (grammar->string planet-name-grammar))
 		 :description (grammar->string planet-desc-grammar)
-		 :radius rad
+		 :radius planet-size
 		 :x (random 300) :y (random 300) :z (random 300)
-		 :market (generate-market gov econ pop tech prod)
-		 :tech-level tech :productivity prod))) ;; numeric versions of these stats, in case I need to recalculate something later
+		 :market (generate-market tech prod)
+		 :tech-level tech
+		 :productivity prod)))
 
-(defun generate-market (tech econ pop prod gov)
+(defun generate-market (tech prod)
   (let ((possible-goods (filter (lambda (g) (>= tech (tradegood-tech-level g))) tradegoods)))
     (mapcar (lambda (g)
-	      (let* ((amt (max 10 (/ (+ (- (* econ prod) gov) tech) (+ 1 (tradegood-tech-level g)))))
-		     (pri (* (- (/ amt pop) tech) (tradegood-base-price g)))) ;; A complete system would take into consideration type of good (raw-material, processed-good, tech-intensive) and apply slightly different transformations
-		(make-listing :name (tradegood-name g) :amount amt :price pri)))
+	      (let* ((amt (max 0 (/ (* prod tech) (+ 1 (tradegood-tech-level g)))))
+		     (pri (/ (tradegood-base-price g) (+ amt tech))))
+		(make-listing :name (tradegood-name g) 
+			      :amount amt :price pri)))
 	    possible-goods)))
 
 ;;A grammar is a hash table with a key 'root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)

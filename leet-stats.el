@@ -23,11 +23,8 @@
 (defun reset-data ()
   (progn 
     (setf *test-gal* (mapcar (lambda (n) (generate-planet)) (make-list 3000 0)))
-    (setf *stats* `((government . nil)
-		    (economy . nil)
-		    (tech-level . nil)
-		    (population . nil)
-		    (market-mod . nil)
+    (setf *stats* `((tech-level . nil)
+		    (productivity . nil)
 		    (radius . nil)))))
 
 (defun graph-galaxy (gal)
@@ -39,11 +36,8 @@
 
 (defun add-planet! (p)
   (progn
-    (add-stat! 'government (planet-government p))
-    (add-stat! 'economy (planet-economy p))
     (add-stat! 'tech-level (planet-tech-level p))
-    (add-stat! 'population (planet-population p))
-    (add-stat! 'market-mod (max 10 (+ (- (* (planet-economy p) (planet-productivity p)) (planet-government p)) (planet-tech-level p))))
+    (add-stat! 'productivity (planet-productivity p))
     (add-stat! 'radius (planet-radius p))))
 
 (defun add-stat! (stat addition)

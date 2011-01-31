@@ -1,34 +1,4 @@
 
-leet-test.el,81
-(defvar test-cap 3,27
-(defvar test-cap2 19,426
-(deftest test-fuel-space35,830
-
-leet-primitives.el,161
-(defun filter 1,0
-(defun pick 6,352
-(defun pick-g 7,412
-(defun break-string 11,694
-(defun partition-string 19,986
-(defun word-list->planet-grammar 25,1131
-
-leet-data.el,453
-(defstruct planet2,42
-(defstruct tradegood15,313
-(defstruct listing22,708
-(defstruct trade-record27,753
-(defstruct captain 34,840
-(defstruct ship42,935
-(defvar tradegoods55,1191
-(defun generate-planet 108,2294
-(defun generate-market 122,3088
-(defun grammar->string 129,3972
-(defun expand-grammar-tc 132,4060
-(defvar planet-name-grammar 142,4593
-(defvar planet-desc-grammar164,5767
-(defvar galaxy 216,8969
-(defvar current-captain 217,9042
-
 leet.el,886
 (defun cap-info 6,207
 (defun plt-info 10,286
@@ -49,16 +19,67 @@ leet.el,886
 (defun fuel? 129,6326
 (defun tradegood-available? 134,6459
 (defun going-rate 142,6809
-(defun planet-info 151,7391
-(defun captain-info 156,7643
-(defun inventory 160,7932
-(defun market-info 173,8435
-(defun list-local-planets 180,8724
-(defun systems-in-range 187,9112
-(defun planet-distance 193,9306
-(defun planet-name->planet 200,9590
-(defun tradegood-name->tradegood 204,9796
-(defun ship-cargo-space 208,10026
-(defun ship-fuel-space 213,10233
+(defun planet-info 151,7499
+(defun captain-info 156,7751
+(defun inventory 160,8040
+(defun market-info 173,8543
+(defun list-local-planets 180,8832
+(defun systems-in-range 187,9220
+(defun planet-distance 193,9414
+(defun planet-name->planet 200,9698
+(defun tradegood-name->tradegood 204,9904
+(defun ship-cargo-space 208,10134
+(defun ship-fuel-space 213,10341
+
+test-framework.el,74
+(defmacro deftest 1,0
+(defmacro check 4,81
+(defun report-result 13,465
+
+leet-data.el,480
+(defstruct planet2,42
+(defstruct tradegood11,269
+(defstruct listing19,669
+(defstruct trade-record24,714
+(defstruct captain 31,801
+(defstruct ship39,896
+(defvar tradegoods52,1152
+(defun generate-planet 65,2133
+(defun generate-price 77,2546
+(defun generate-market 82,2835
+(defun grammar->string 92,3900
+(defun expand-grammar-tc 95,3988
+(defvar planet-name-grammar 105,4521
+(defvar planet-desc-grammar127,5695
+(defvar galaxy 179,8897
+(defvar current-captain 180,8970
+
+leet-primitives.el,186
+(defun filter 1,0
+(defun pick 6,352
+(defun pick-g 7,412
+(defun roll-dice 9,502
+(defun break-string 16,971
+(defun partition-string 24,1263
+(defun word-list->planet-grammar 30,1408
+
+leet-test.el,81
+(defvar test-cap 3,27
+(defvar test-cap2 19,426
+(deftest test-fuel-space35,830
+
+leet-stats.el,341
+(defvar *test-gal* 8,319
+(defvar *stats* 9,343
+(defun generate-name-data 11,365
+(defun generate-data-set 18,641
+(defun reset-data 23,738
+(defun graph-galaxy 30,942
+(defun planets->stats! 34,1028
+(defun add-planet! 37,1109
+(defun add-stat! 43,1290
+(defun list->data 52,1683
+(defun display-stats 61,1918
+(defun print-graph 66,2080
 
 notes.el,0

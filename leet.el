@@ -41,7 +41,7 @@
 ;;Actions ;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun move-to-planet! (a-cap p)
-  "Takes a captain and a planet, and moves the captain to the planet if its within rangex"
+  "Takes a captain and a planet, and moves the captain to the planet if its within range"
   (let* ((fuel (ship-fuel (captain-ship a-cap)))
 	 (current-planet (planet-name->planet (captain-current-planet a-cap)))
 	 (distance (planet-distance current-planet p))

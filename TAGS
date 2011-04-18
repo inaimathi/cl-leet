@@ -1,85 +1,46 @@
 
-leet.el,886
-(defun cap-info 6,207
-(defun plt-info 10,286
-(defun market 14,411
-(defun cargo 19,562
-(defun local-planets 23,650
-(defun travel 28,772
-(defun buy 32,946
-(defun sell 36,1055
-(defun move-to-planet! 43,1256
-(defun purchase! 54,1862
-(defun convey! 67,2944
-(defun add-to-market! 79,3776
-(defun add-to-cargo! 87,4189
-(defun remove-from-cargo! 102,5062
-(defun record-trade-history! 111,5508
-(defun enough-space? 120,5881
-(defun fuel? 129,6326
-(defun tradegood-available? 134,6459
-(defun going-rate 142,6809
-(defun planet-info 151,7499
-(defun captain-info 156,7751
-(defun inventory 160,8040
-(defun market-info 173,8543
-(defun list-local-planets 180,8832
-(defun systems-in-range 187,9220
-(defun planet-distance 193,9414
-(defun planet-name->planet 200,9698
-(defun tradegood-name->tradegood 204,9904
-(defun ship-cargo-space 208,10134
-(defun ship-fuel-space 213,10341
+model.lisp,487
+(defstruct planet3,64
+(defstruct tradegood12,291
+(defstruct listing20,691
+(defstruct trade-record25,736
+(defstruct captain 32,823
+(defstruct ship40,918
+(defvar tradegoods53,1174
+(defun generate-planet 66,2155
+(defun generate-price 78,2568
+(defun generate-market 83,2857
+(defun grammar->string 93,3917
+(defun expand-grammar-tc 96,4005
+(defparameter *planet-name-grammar*106,4538
+(defvar planet-desc-grammar127,5574
+(defvar galaxy 178,8686
+(defvar current-captain 179,8759
 
-test-framework.el,74
-(defmacro deftest 1,0
-(defmacro check 4,81
-(defun report-result 13,465
+view.lisp,68
+(defmacro page-template 3,23
+(define-easy-handler (captain 14,620
 
-leet-data.el,480
-(defstruct planet2,42
-(defstruct tradegood11,269
-(defstruct listing19,669
-(defstruct trade-record24,714
-(defstruct captain 31,801
-(defstruct ship39,896
-(defvar tradegoods52,1152
-(defun generate-planet 65,2133
-(defun generate-price 77,2546
-(defun generate-market 82,2835
-(defun grammar->string 92,3900
-(defun expand-grammar-tc 95,3988
-(defvar planet-name-grammar 105,4521
-(defvar planet-desc-grammar127,5695
-(defvar galaxy 179,8897
-(defvar current-captain 180,8970
+util.lisp,393
+(defmacro web-folders 4,82
+(defmacro html-to-stout 10,333
+(defmacro html-to-str 14,469
+(defmacro def-tag-list 18,631
+(def-tag-list css-links 23,826
+(def-tag-list js-links 24,946
+(defun link-group 27,1093
+(defmacro link-uri 36,1542
+(defmacro zoom-link-uri 40,1700
+(defun get-cipher 45,1883
+(defun encrypt 47,1982
+(defun decrypt 53,2186
+(defun to-str 60,2454
+(defun blank? 62,2626
 
-leet-primitives.el,186
-(defun filter 1,0
-(defun pick 6,352
-(defun pick-g 7,412
-(defun roll-dice 9,502
-(defun break-string 16,971
-(defun partition-string 24,1263
-(defun word-list->planet-grammar 30,1408
+package.lisp,123
+(defpackage :cl-leet1,0
+(defparameter *db-conn-spec* 13,565
+(defparameter *mdx-private-key* 16,717
+(defun start 18,810
 
-leet-test.el,81
-(defvar test-cap 3,27
-(defvar test-cap2 19,426
-(deftest test-fuel-space35,830
-
-leet-stats.el,341
-(defvar *test-gal* 8,319
-(defvar *stats* 9,343
-(defun generate-name-data 11,365
-(defun generate-data-set 18,641
-(defun reset-data 23,738
-(defun graph-galaxy 30,942
-(defun planets->stats! 34,1028
-(defun add-planet! 37,1109
-(defun add-stat! 43,1290
-(defun list->data 52,1683
-(defun display-stats 61,1918
-(defun print-graph 66,2080
-
-notes.el,0
+primitives.lisp,0

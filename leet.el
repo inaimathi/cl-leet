@@ -203,7 +203,7 @@
 
 (defun tradegood-name->tradegood (t-name)
   "Given a tradegood name, returns that tradegoods' struct (or nil if it doesn't exist in the game)"
-  (find-if (lambda (g) (string= (tradegood-name g) (capitalize t-name))) tradegoods))
+  (find-if (lambda (g) (string= (tradegood-name g) (capitalize t-name))) *tradegoods*))
 
 (defun ship-cargo-space (s)
   "Returns amount of free cargo space in the given ship"

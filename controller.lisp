@@ -1,45 +1,6 @@
-(require 'leet-primitives)
-(require 'leet-data)
+(in-package :cl-leet)
 
-;; Commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; These are all side-effect functions, but don't have the bang because they may require the user to type them out
-(defun cap-info ()
-  (interactive)
-  (insert (captain-info current-captain)))
-
-(defun plt-info ()
-  (interactive)
-  (insert (planet-info (planet-name->planet (captain-current-planet current-captain)))))
-
-(defun market ()
-  (interactive)
-  (mapcar 'insert 
-	  (market-info (planet-market (planet-name->planet (captain-current-planet current-captain))))))
-
-(defun cargo ()
-  (interactive)
-  (insert (inventory (captain-ship current-captain))))
-
-(defun local-planets ()
-  (interactive)
-  (mapcar (lambda (p) (insert p "\n"))
-	  (list-local-planets current-captain)))
-
-(defun travel (p)
-  (interactive (list (completing-read "Planet Name: " (list-local-planets current-captain))))
-  (move-to-planet! current-captain (planet-name->planet p)))
-
-(defun buy (t-name num)
-  (interactive "sTradegood: \nnAmount: ")
-  (purchase! current-captain t-name num))
-
-(defun sell (t-name num)
-  (interactive "sTradegood: \nnAmount: ")
-  (convey! current-captain t-name num))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;Actions ;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Actions
 (defun move-to-planet! (a-cap p)
   "Takes a captain and a planet, and moves the captain to the planet if its within range"
   (let* ((fuel (ship-fuel (captain-ship a-cap)))
@@ -55,26 +16,26 @@
   "Check if a purchase order is valid, and if so, fulfill it"
   (let ((a-listing (tradegood-available? t-name (planet-market (planet-name->planet (captain-current-planet a-cap))))))
     (cond ((not a-listing) (error "That's not available at this planet"))
-	  ((< (listing-amount a-listing) num) (error (format "They don't have that many %s" t-name)))
-	  ((< (captain-credits a-cap) (* num (listing-price a-listing))) (error (format "You can't afford that many %s" t-name)))
+	  ((< (listing-amount a-listing) num) (error (format nil "They don't have that many ~a" t-name)))
+	  ((< (captain-credits a-cap) (* num (listing-price a-listing))) (error (format nil "You can't afford that many ~a" t-name)))
 	  ((not (enough-space? a-cap t-name num)) (error "You don't have enough room in your cargo hold"))
 	  (t (setf (listing-amount a-listing) (- (listing-amount a-listing) num) ;; Remoe [num] [t-name] from the planet
 		   (captain-credits a-cap) (- (captain-credits a-cap) (* num (listing-price a-listing)))) ;; Remove (* [num] [price]) credits from captains' account
 	     (add-to-cargo! a-cap t-name num)
-	     (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (capitalize t-name) (listing-price a-listing))
-	     (format "Bought %s %s" num t-name)))))
+	     (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))
+	     (format nil "Bought ~a ~a" num t-name)))))
 
 (defun convey! (a-cap t-name num)
   "Check if a sell order is valid, and if so, fulfill it"
   (let ((sell-price (going-rate (captain-current-planet a-cap) t-name))
 	(a-listing (tradegood-available? t-name (ship-cargo (captain-ship a-cap)))))
-    (cond ((not sell-price) (error (format "I have no clue what a %s is" t-name)))
-	  ((not a-listing) (error (format "You don't have any %s in your hold" t-name)))
-	  ((> num (listing-amount a-listing)) (error (format "You don't have enough %s in your hold" t-name)))
+    (cond ((not sell-price) (error (format nil "I have no clue what a ~a is" t-name)))
+	  ((not a-listing) (error (format nil "You don't have any ~a in your hold" t-name)))
+	  ((> num (listing-amount a-listing)) (error (format nil "You don't have enough ~a in your hold" t-name)))
 	  (t (remove-from-cargo! a-cap t-name num)
 	     (add-to-market! (captain-current-planet a-cap) t-name num)
 	     (setf (captain-credits a-cap) (+ (captain-credits a-cap) (* sell-price num)))
-	     (record-trade-history! a-cap 'sell (captain-current-planet a-cap) num (capitalize t-name) (listing-price a-listing))))))
+	     (record-trade-history! a-cap 'sell (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))))))
 
 (defun add-to-market! (p-name t-name num)
   "Add [num] [t-good] to [p-name]s market"
@@ -82,7 +43,7 @@
 	 (a-listing (tradegood-available? t-name market)))
     (if a-listing
 	(setf (listing-amount a-listing) (+ (listing-amount a-listing) num))
-      (setf market (cons (make-listing :name (capitalize t-name) :amount num :price (going-rate p-name t-name)) market)))))
+      (setf market (cons (make-listing :name (string-capitalize t-name) :amount num :price (going-rate p-name t-name)) market)))))
 
 (defun add-to-cargo! (a-cap t-name num)
   "Add [num] [t-good] to [a-cap]s inventory"
@@ -97,7 +58,7 @@
 		      (add-to-cargo! a-cap t-name (- num f-space))))))
 	  (a-listing (setf (listing-amount a-listing) (+ (listing-amount a-listing) num)))
 	  (t (setf (ship-cargo (captain-ship a-cap))
-		   (cons (make-listing :name (capitalize t-name) :amount num) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
+		   (cons (make-listing :name (string-capitalize t-name) :amount num) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
 
 (defun remove-from-cargo! (a-cap t-name num)
   "Remove [num] [t-good] from [a-cap]s inventory"
@@ -105,7 +66,7 @@
 	 (a-listing (tradegood-available? t-name cargo)))
     (if (= (listing-amount a-listing) num)
 	(setf (ship-cargo (captain-ship a-cap))
-	      (remove-if (lambda (l) (string= (capitalize t-name) (listing-name l))) cargo))
+	      (remove-if (lambda (l) (string= (string-capitalize t-name) (listing-name l))) cargo))
       (setf (listing-amount a-listing) (- (listing-amount a-listing) num)))))
 
 (defun record-trade-history! (a-cap type planet amount t-name price/unit)
@@ -133,7 +94,7 @@
 
 (defun tradegood-available? (t-name inv)
   "Takes a tradegood name and an inventory, returns that tradegoods stats in that inventory (nil if it is unavailable)"
-  (let ((n (capitalize t-name)))
+  (let ((n (string-capitalize t-name)))
     (find-if (lambda (l) (string= n (listing-name l))) inv)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -149,31 +110,30 @@
 	  (t nil)))) ;; If we've gotten here, it means that the tradegood given doesn't exist in game  
 
 (defun planet-info (p)
-  (format "--==[ %s ]==--\n%s\nSize: % 10s\nPopulation: %s\nGovernment: %s\nTech-level: %s\n\n"
-	  (planet-name p) (planet-description p) (planet-radius p) (planet-population p) 
-	  (planet-government p) (planet-tech-level p)))
+  (format nil "--==[ ~a ]==--~%~a~%Size: % 10s~%Tech-level: ~a~%~%"
+	  (planet-name p) (planet-description p) (planet-radius p) (planet-tech-level p)))
 
 (defun captain-info (a-cap)
-  (format "--==[ %s ]==--\nCredits: %s\nReputation: %s\nXP: %s\nCurrent Planet: %s\nShip: %s\n\n"
+  (format nil "--==[ ~a ]==--~%Credits: ~a~%Reputation: ~a~%XP: ~a~%Current Planet: ~a~%Ship: ~a~%~%"
 	  (captain-name a-cap) (captain-credits a-cap) (captain-reputation a-cap) (captain-xp a-cap) (captain-current-planet a-cap) (ship-name (captain-ship a-cap))))
   
 (defun inventory (s)
   "Takes a ship and outputs the contents of its cargo bay"
   (let ((cargo (ship-cargo s))
 	(fuel (ship-fuel s)))
-    (format "%s\n%s\n\n" 
+    (format nil "~a~%~a~%~%" 
 	    (if cargo
-		(mapcar (lambda (i) (format "%s" i)) cargo)
-	      (format "%s has nothing in her hold at the moment." (ship-name s)))
+		(mapcar (lambda (i) (format nil "~a" i)) cargo)
+	      (format nil "~a has nothing in her hold at the moment." (ship-name s)))
 	    (if (> fuel 0)
-		(format "Fuel Cells: %s/%s" fuel (ship-fuel-cap s))
-	      (format "%s has nothing left in her fuel cells. Bust out the distress beacon, or abandon ship."  
+		(format nil "Fuel Cells: ~a/~a" fuel (ship-fuel-cap s))
+	      (format nil "~a has nothing left in her fuel cells. Bust out the distress beacon, or abandon ship."  
 		      (ship-name s))))))
 
 (defun market-info (m)
   "Takes a market and returns the formatted output of all goods available on it"
   (mapcar (lambda (a-listing)
-	    (format "--[ %s ]--\nIn Stock: %s\nPrice/unit: %s\n\n" 
+	    (format nil "--[ ~a ]--~%In Stock: ~a~%Price/unit: ~a~%~%" 
 		    (listing-name a-listing) (listing-amount a-listing) (listing-price a-listing)))
 	  m))
 
@@ -186,9 +146,9 @@
 
 (defun systems-in-range (a-range p)
   "Returns a list of planets within [a-range] of planet [p]"
-  (filter (lambda (other-planet)
-	    (> a-range (planet-distance p other-planet)))
-	  galaxy))
+  (remove-if-not (lambda (other-planet)
+		   (> a-range (planet-distance p other-planet)))
+		 galaxy))
 
 (defun planet-distance (p1 p2)
   "Given two planets, returns the distance between them"
@@ -203,7 +163,7 @@
 
 (defun tradegood-name->tradegood (t-name)
   "Given a tradegood name, returns that tradegoods' struct (or nil if it doesn't exist in the game)"
-  (find-if (lambda (g) (string= (tradegood-name g) (capitalize t-name))) *tradegoods*))
+  (find-if (lambda (g) (string= (tradegood-name g) (string-capitalize t-name))) *tradegoods*))
 
 (defun ship-cargo-space (s)
   "Returns amount of free cargo space in the given ship"
@@ -213,5 +173,3 @@
 (defun ship-fuel-space (s)
   "Returns amount of free fuel space in the given ship"
   (- (ship-fuel-cap s) (ship-fuel s)))
-
-(provide 'leet)

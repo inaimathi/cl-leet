@@ -29,5 +29,7 @@
   :description "Common Lisp port"
   :depends-on (:cl-who :parenscript :cl-css :clsql :clsql-mysql :hunchentoot :ironclad :cl-base64)
   :components ((:file "package")
-	       (:file "model" :depends-on ("package"))
-	       (:file "view" :depends-on ("package" "model"))))
+	       (:file "util" :depends-on ("package"))
+	       (:file "model" :depends-on ("package" "util"))
+	       (:file "controller" :depends-on ("package" "util" "model"))
+	       (:file "view" :depends-on ("package" "util" "model"))))

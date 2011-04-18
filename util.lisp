@@ -1,5 +1,4 @@
 (in-package :cl-leet)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;general hunchentoot macros
 (defmacro web-folders (&body body)
   "Sets up folder dispatchers for the given folders"

@@ -10,7 +10,18 @@
 		   (:body ,@body)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; basic interface
-
 (define-easy-handler (captain :uri "/") ()
   (page-template (:title "Welcome")
     (:h1 "Testing testing")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; interface components
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Commands (these should all be converted to links/ajax handlers in the interface)
+(defun cap-info () (captain-info current-captain))
+(defun plt-info () (planet-info (planet-name->planet (captain-current-planet current-captain))))
+(defun market () (market-info (planet-market (planet-name->planet (captain-current-planet current-captain)))))
+(defun cargo () (inventory (captain-ship current-captain)))
+(defun local-planets () (list-local-planets current-captain))
+(defun travel (p) (move-to-planet! current-captain (planet-name->planet p)))
+(defun buy (t-name num) (purchase! current-captain t-name num))
+(defun sell (t-name num) (convey! current-captain t-name num))

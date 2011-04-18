@@ -1,52 +1,16 @@
 (in-package :cl-leet)
 ;; Structs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defstruct planet
-  name
-  description
-  radius
-  x y z
-  market ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
-  tech-level
-  productivity)
+(defstruct tradegood base-price tech-level complement-type name unit
+	   type) ;; right now either 'goods 'fuel ('gear to be added later). This will be used as "substitute"
+(defstruct listing name amount price)
 
-(defstruct tradegood
-  base-price  ;; Base price per unit
-  tech-level ;; How advanced must a planet be to have them, and about how many will there be at a time? This may change over time.
-  type ;; right now either 'goods 'fuel ('gear to be added later). This will be used as "substitute"
-  complement-type
-  name
-  unit)
+(defstruct planet name description radius x y z tech-level productivity
+	   market) ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
 
-(defstruct listing
-  name
-  amount
-  price)
+(defstruct captain name ship credits reputation xp current-planet trade-history)
+(defstruct ship name frame engine speed fuel-consumption fuel-cap fuel cargo-cap cargo)
 
-(defstruct trade-record
-  type ;;'buy or 'sell
-  planet
-  good
-  amount
-  price/unit)
-
-(defstruct captain 
-  name ship
-  credits
-  reputation
-  xp
-  current-planet
-  trade-history)
-
-(defstruct ship
-  name
-  frame
-  engine
-  speed
-  fuel-consumption
-  fuel-cap
-  fuel
-  cargo-cap
-  cargo)
+(defstruct trade-record planet good amount price/unit type) ;;'buy or 'sell
 
 ;; Basic Tradegood Data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (This is up here instead of with the generated data because the market generator needs it)
@@ -86,7 +50,7 @@
 	      (let* ((amt (max 0 (/ (* prod tech) (+ 1 (tradegood-tech-level g)))))
 		     (pri (generate-price rad tech (tradegood-tech-level g) (tradegood-base-price g) (roll-dice 2 4) (roll-dice 2 4))))
 		(make-listing :name (tradegood-name g) 
-			      :amount amt :price pri)))
+			      :amount amt :price (round pri))))
 	    possible-goods)))
 
 ;;A grammar is a plist with a key :root whose value is a list whose elements each recursively correspond either to terminals (strings) or to further keys in the grammar. With simple grammars (like planet-name below), a valid approach would also have been returning a list of symbols instead of a string (even then though, there would be problems with "-" and "'"). For more complex stuff (like the description generator), a lot of stuff that the engine did is easier to do with strings serving as terminals (the drawback is that you manually need to put spaces in productions of multiple non-terminals)
@@ -174,25 +138,25 @@
 	:adj-threat '("killer" "deadly" "evil" "lethal" "vicious") 
 	:adj-activity '("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules") 
 	:adj-opposing-force '("beset" "plagued" "ravaged" "cursed" "scourged") 
-	:syn-planet '("planet" "world" "place" "little planet" "dump"))))
+	:syn-planet '("planet" "world" "place" "little planet" "dump")))
 
 ;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (defvar galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15 0)))
-;; (defvar current-captain (make-captain :name "Mal"
-;; 				      :credits 10000
-;; 				      :reputation 0
-;; 				      :xp 0
-;; 				      :current-planet (planet-name (car galaxy))
-;; 				      :trade-history nil
-;; 				      :ship (make-ship :name "Serenity"
-;; 						       :cargo-cap 10
-;; 						       :cargo nil
-;; 						       :frame 'firefly
-;; 						       :engine 'standard
-;; 						       :speed 20
-;; 						       :fuel-consumption 1
-;; 						       :fuel-cap 150
-;; 						       :fuel 150)))
+(defparameter galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15)))
+(defparameter current-captain (make-captain :name "Mal"
+					    :credits 10000
+					    :reputation 0
+					    :xp 0
+					    :current-planet (planet-name (car galaxy))
+					    :trade-history nil
+					    :ship (make-ship :name "Serenity"
+							     :cargo-cap 10
+							     :cargo nil
+							     :frame 'firefly
+							     :engine 'standard
+							     :speed 20
+							     :fuel-consumption 1
+							     :fuel-cap 150
+							     :fuel 150)))
 
 ;; (defvar test-cap2 (make-captain :name "Picard"
 ;; 				:credits 60000

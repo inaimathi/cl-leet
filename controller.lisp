@@ -7,11 +7,6 @@
       (move-captain! a-cap p)
       (error "Planet out of range")))
 
-
-    (if (>= fuel-range distance)
-	(move-captain! a-cap p fuel)
-	(error "Planet out of range"))))
-
 (defun purchase! (a-cap t-name num)
   "Check if a purchase order is valid, and if so, fulfill it"
   (let ((a-listing (tradegood-available? t-name (planet-market (planet-name->planet (captain-current-planet a-cap))))))

@@ -21,4 +21,4 @@ In theory, the grammars and generated variables can be stored more efficiently i
 ;;;;; Basic game process
 - create commander
 - trade/quest/travel loop
-- ("quitting" is just logging out, "loading" is just logging in)
+- ("quitting" is just logging out, "loading" is just logging in) ;;not if I support OpenID

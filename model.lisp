@@ -39,7 +39,7 @@
   "Takes a ship and outputs the contents of its cargo bay"
   (let ((cargo (ship-cargo s))
 	(fuel (ship-fuel s)))
-    (list :cargo (when cargo (mapcar (lambda (i) (format nil "~a" i)) cargo))
+    (list :cargo cargo
 	  :fuel fuel
 	  :fuel-cap (ship-fuel-cap s))))
 
@@ -152,9 +152,10 @@
 
 (defun systems-in-range (a-range p)
   "Returns a list of planets within [a-range] of planet [p]"
-  (remove-if-not (lambda (other-planet)
-		   (> a-range (planet-distance p other-planet)))
-		 galaxy))
+  (remove-if (lambda (other-planet) (equalp p other-planet))
+	     (remove-if-not (lambda (other-planet)
+			      (> a-range (planet-distance p other-planet)))
+			    galaxy)))
 
 (defun planet-distance (p1 p2)
   "Given two planets, returns the distance between them"

@@ -1,0 +1,217 @@
+This material is Open Game Content, and is licensed for public use under the terms of the Open Game License v1.0a.
+CREATURE TYPES
+
+A creature’s type determines many of its characteristics and abilities: physical ability scores, Hit Die type, base attack bonus, saving throw bonuses, skill points, feats, and special qualities. Mental ability scores (Intelligence, Wisdom, and Charisma) can vary widely among creatures of a type; unless a type description specifies a particular score for one of these abilities, the GM will assign values as he or she deems appropriate.
+A creature belongs to one of the fifteen types described below. A single creature cannot have more than one type.
+Table: Creature Saves and Base Attack Bonuses provides the modifiers to a creature’s saving throws and attack rolls based on its type and Hit Dice.
+
+Table: Creature Saves and Base Attack BonusesCreature’s Hit DiceGood Save BonusPoor Save BonusBase Attack Bonus (A)Base Attack Bonus (B)Base Attack Bonus (C)1 or less+2+0+0+1+02+3+0+1+2+03+3+1+2+3+14+4+1+3+4+15+4+1+3+5+26+5+2+4+6/+1+27+5+2+5+7/+2+38+6+2+6/+1+8/+3+49+6+3+6/+1+9/+4+410+7+3+7/+2+10/+5+511+7+3+8/+3+11/+6/+1+512+8+4+9/+4+12/+7/+2+6/+113+8+4+9/+4+13/+8/+3+6/+114+9+4+10/+5+14/+9/+4+7/+215+9+5+11/+6/+1+15/+10/+5+7/+216+10+5+12/+7/+2+16/+11/+6/+1+8/+317+10+5+12/+7/+2+17/+12/+7/+2+8/+318+11+6+13/+8/+3+18/+13/+8/+3+9/+419+11+6+14/+9/+4+19/+14/+9/+4+9/+420+12+6+15/+10/+5+20/+15/+10/+5+10/+5Base Attack Bonus (A): Use this column for aberrations, animals, constructs, elementals, giants, humanoids, oozes, plants, and vermin.
+Base Attack Bonus (B): Use this column for dragons, magical beasts, monstrous humanoids, and outsiders.
+Base Attack Bonus (C): Use this column for fey and undead.
+
+Aberration
+An aberration has a bizarre anatomy, strange abilities, an alien mindset, or any combination of the three. See Table: Aberrations for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Will.
+Skill Points: 2 x Int score, plus 2 points per Hit Dice beyond 1 HD.
+Feats: Int modifier (minimum +0), plus 1 feat per 4 Hit Dice beyond 1 HD.
+Aberrations share the following additional traits.
+Weapon and Armor Proficiency: Aberrations receive one of the following as a bonus feat: Archaic Weapons Proficiency or Simple Weapons Proficiency. They are proficient with their natural weapons and any weapon mentioned in their entries. Aberrations noted for wearing armor gain the Armor Proficiency bonus feat for whatever type of armor they are accustomed to wearing (light, medium, heavy), as well as all lighter types.
+Darkvision (Ex): Most aberrations have darkvision with a range of 60 feet.
+
+Table: AberrationsSizeStrDexConMinimum HDSlamBiteClawGoreColossal42–4310–1128–2932d82d64d82d84d6Gargantuan34–3510–1124–2516d81d84d62d62d8Huge26–2710–1120–218d81d62d82d42d6Large18–1912–1316–172d81d42d61d61d8Medium-size10–1114–1512–131d81d32d41d41d6Small6–716–1710–111/2 d81d21d61d31d4Tiny2–318–1910–111/4 d811d41d21d3Diminutive120–2110–111/8 d8—1d311d2Fine122–2310–111/16 d8—1d2—1
+Animal
+An animal is a nonhumanoid creature, usually a vertebrate with no magical abilities and no innate capacity for language or culture. See Table: Animals for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude and Reflex (some animals have different good saves).
+Skill Points: 10–15.
+Feats: None.
+Animals share the following additional traits.
+Weapon and Armor Proficiency: Animals are proficient with their natural weapons only. They are not proficient with armor.
+Ability Scores: Animals have Intelligence scores of 1 or 2 (predatory animals tend to have Intelligence scores of 2). No creature with an Intelligence score of 3 or higher can be an animal.
+Low-Light Vision (Ex): Most animals have low-light vision.
+
+Table: AnimalsSizeStrDexConMinimum HDSlamBiteClawGoreColossal42–4310–1128–2932d82d64d62d84d6Gargantuan34–3510–1124–2516d81d82d82d62d8Huge26–2710–1120–214d81d62d62d42d6Large18–1912–1316–172d81d41d81d61d8Medium-size10–1114–1512–131d81d31d61d41d6Small6–716–1710–111/2 d81d21d41d31d4Tiny2–318–1910–111/4 d811d31d21d3Diminutive120–2110–111/8 d8—1d211d2Fine122–2310–111/16 d8—1—1
+Construct
+A construct is an animated object or artificially constructed creature. See Table: Constructs for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d10.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: None.
+Skill Points: None.
+Feats: None.
+Constructs share the following additional traits.
+Weapon and Armor Proficiency: Constructs are proficient with their natural weapons only. They are not proficient with armor.
+Ability Scores: Constructs have no Constitution score and usually no Intelligence score.
+Extra Hit Points: Constructs gain extra hit points according to size, as shown on Table: Constructs.
+Darkvision (Ex): Most constructs have darkvision with a range of 60 feet.
+Immunities: Constructs are immune to mind-influencing effects and to poison, sleep, paralysis, stunning, disease, necromancy effects, and any effect that requires a Fortitude save unless the effect also works on objects or is harmless. They are not subject to critical hits, nonlethal damage, ability damage, ability drain, energy drain, or the effects of massive damage.
+Repairable: Constructs cannot heal damage on their own but can be repaired using the Repair skill. A successful Repair check (DC 30) heals 1d10 points of damage to a construct, and each check represents 1 hour of work. A construct reduced to 0 hit points is immediately destroyed and cannot be repaired.
+Special: Constructs cannot be raised from the dead.
+
+Table: ConstructsSizeStrDexConMinimum HDExtra Hit PointsSlamBiteClawGoreColossal44–476–7—32d101204d62d62d84d6Gargantuan36–396–7—16d10802d81d82d62d8Huge28–316–7—8d10402d61d62d42d6Large20–238–9—2d10201d81d41d61d8Medium-size12–1510–11—1d10101d61d31d41d6Small8–1112–13—1/2 d1051d41d21d31d4Tiny4–714–15—1/4 d10—1d311d21d3Diminutive2–516–17—1/8 d10—1d2—11d2Fine118–19—1/16 d10—1——1
+Dragon
+A dragon is a reptilian creature, usually winged, with magical or unusual abilities. See Table: Dragons for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d12.
+Base Attack Bonus: Total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude, Reflex, Will.
+Skill Points: 6 + Int modifier per Hit Dice beyond 1 HD.
+Feats: 1, plus 1 feat per 4 Hit Dice beyond 1 HD.
+Dragons share the following additional traits.
+Weapon and Armor Proficiency: Dragons are proficient with their natural weapons only. They are not proficient with armor.
+Darkvision (Ex): Most dragons have darkvision with a range of 60 feet.
+Immunities: Dragons are immune to sleep, hold, and paralysis effects.
+
+Table: DragonsSizeStrDexConMinimum HDSlamBiteClawGoreColossal46–476–730–3138d122d84d84d64d6Gargantuan38–396–726–2727d122d64d62d82d8Huge30–316–722–2319d121d82d82d62d6Large22–238–918–1910d121d62d61d81d8Medium-size14–1510–1114–157d121d41d81d61d6Small10–1112–1312–134d12—1d61d41d4Tiny6–714–1512–133d12—1d41d31d3Diminutive4–516–1712–131d12—1d31d21d2Fine4–518–1912–131/2 d12—1d211
+Elemental
+An elemental is a being composed of one of the four classical elements: air, earth, fire, or water. See Table: Elementals for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table 8–2: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Varies by element: Fortitude (earth, water) or Reflex (air, fire).
+Skill Points: 2 x Int score, plus 2 points per Hit Dice beyond 1 HD.
+Feats: Int modifier (minimum 0), plus 1 feat per 4 Hit Dice beyond 1 HD.
+Elementals share the following additional traits.
+Weapon and Armor Proficiency: Elementals are proficient with their natural weapons only. They are not proficient with armor.
+Darkvision (Ex): Most elementals have darkvision with a range of 60 feet.
+Immunities: Elementals are immune to poison, sleep, paralysis, and stunning. They are not subject to critical hits, flanking, or the effects of massive damage.
+Special: Elementals cannot be raised from the dead.
+
+Table: ElementalsSizeStrDexConMinimum HDSlamBiteClawGoreColossal44–456–728–2932d84d64d62d82d6Gargantuan36–376–724–2516d82d82d82d61d8Huge28–296–720–218d82d62d62d41d6Large20–218–916–174d81d81d81d61d4Medium-size12–1310–1112–132d81d61d61d41d3Small8–912–1310–111d81d41d41d31d2Tiny6–714–1510–111/2 d81d31d31d21Diminutive4–516–1710–111/4 d81d21d21—Fine4–518–1910–111/8 d811——
+Fey
+A fey is a creature with supernatural abilities and connections to nature or some other force or place. Fey are usually human-shaped. See Table: Fey for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d6.
+Base Attack Bonus: 1/2 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Will.
+Skill Points: 3 x Int score, plus 2 points per Hit Dice beyond 1 HD.
+Feats: 1 + Int modifier (minimum 0), plus 1 feat per 4 Hit Dice beyond 1 HD.
+Fey share the following additional traits.
+Weapon and Armor Proficiency: A fey receives either Archaic Weapons Proficiency or Simple Weapons Proficiency as a bonus feat. Fey are proficient with any weapon mentioned in their entries. Fey noted for wearing armor gain the bonus feat Armor Proficiency with whatever type of armor they are accustomed to wearing (light, medium, heavy), as well as all lighter types.
+Low-Light Vision (Ex): Most fey have low-light vision.
+
+Table: FeySizeStrDexConMinimum HDSlamBiteClawGoreColossal42–438–926–2732d62d62d82d84d6Gargantuan34–358–922–2316d61d82d62d62d8Huge26–278–918–198d61d61d82d42d6Large18–1910–1114–152d61d41d61d61d8Medium-size10–1112–1310–111d61d31d41d41d6Small6–714–168–91/2 d61d21d31d31d4Tiny2–316–178–91/4 d611d21d21d3Diminutive118–198–91/8 d6—111d2Fine120–218–91/16 d6———1
+Giant
+A giant is a humanoid creature of Large size or larger. Giants are known for their great strength. See Table: Giants for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude.
+Skill Points: 6 + Int modifier (minimum 1), plus 1 points per Hit Dice beyond 1 HD.
+Feats: 1, plus 1 feat per 4 Hit Dice beyond 1 HD.
+Giants share the following additional traits.
+Size: Giants must be Large or larger.
+Weapon and Armor Proficiency: Giants receive either Archaic Weapons Proficiency or Simple Weapons Proficiency as a bonus feat. They are proficient with their natural weapons and any weapon mentioned in their entries. Giants noted for wearing armor gain the bonus feat Armor Proficiency with whatever type of armor they are accustomed to wearing (light, medium, heavy), as well as all lighter types.
+Low-Light Vision (Ex): Most giants have low-light vision.
+
+Table: GiantsSizeStrDexConMinimum HDSlamBiteClawGoreColossal46–476–728–3132d82d62d82d84d6Gargantuan38–396–724–2716d81d82d62d62d8Huge30–316–720–238d81d61d82d42d6Large22–238–916–192d81d41d61d61d8
+Humanoid
+A humanoid usually has two arms, two legs, and one head, or a humanlike torso, arms, and head. A humanoid has few or no supernatural or extraordinary abilities. See Table: Humanoids for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Choose one (usually Reflex).
+Skill Points: 6 + Int modifier, plus 1 point per Hit Dice beyond 1 HD.
+Feats: 1, plus 1 feat per 4 Hit Dice beyond 1 HD.
+Humanoids share the following additional traits.
+Size: Humanoids must be Medium-size or smaller.
+Weapon and Armor Proficiency: Humanoids with more than 1 Hit Die receive one bonus feat selected from the following list: Archaic Weapons Proficiency, Armor Proficiency (light), or Simple Weapons Proficiency.
+Keen Sight (Ex): Humanoids accustomed to living underground may have darkvision with a range of 60 feet, low-light vision, or both (as noted in their entries).
+
+Table: Humanoids SizeStrDexConMinimum HDSlam1BiteClawGoreMedium-size10–1510–1310–111d81d31d41d41d6Small6–1112–158–91/2 d81d21d31d31d4Tiny2–714–178–91/4 d811d21d21d3Diminutive116–198–91/8 d8—111d2Fine118–218–91/16 d8———11 Unarmed attacks qualify as slam attacks that deal nonlethal damage.
+Magical Beast
+A magical beast is similar to an animal but can have an Intelligence score higher than 2. A magical beast might possess supernatural or extraordinary abilities, or it might be bizarre in appearance and habits. See Table: Magical Beasts for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d10.
+Base Attack Bonus: Total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude, Reflex.
+Skill Points: 2 x Int score, plus 1 point per Hit Dice beyond 1 HD, or 10–15 points if Int score is 1 or 2.
+Feats: 1 + Int modifier (minimum 0), plus 1 feat per 4 Hit Dice beyond 1 HD.
+Magical beasts share the following additional traits.
+Weapon and Armor Proficiency: Magical beasts are proficient with their natural weapons only. They are not proficient with armor.
+Keen Sight (Ex): Magical beasts have darkvision with a range of 60 feet and low-light vision (unless noted otherwise).
+
+Table: Magical beastsSizeStrDexConMinimum HDSlamBiteClawGoreColossal42–4310–1128–2932d102d64d62d84d6Gargantuan34–3510–1124–2516d101d82d82d62d8Huge26–2710–1120–218d101d62d62d42d6Large18–1912–1316–172d101d41d81d61d8Medium-size10–1114–1512–131d101d31d61d41d6Small6–716–1710–111/2 d101d21d41d31d4Tiny2–318–1910–111/4 d1011d31d21d3Diminutive120–2110–111/8 d10—1d211d2Fine122–2310–111/16 d10—1—1
+Monstrous Humanoid
+A monstrous humanoid is a humanoid creature with monstrous or animalistic features. A monstrous humanoid often possesses supernatural abilities as well. See Table: Monstrous Humanoids for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: Total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Reflex, Will.
+Skill Points: 2 x Int score, plus 2 points per Hit Dice beyond 1 HD.
+Feats: 1 + Int modifier (minimum 0), plus 1 feat per 4 Hit Dice beyond 1 HD.
+Monstrous humanoids share the following additional traits.
+Weapon and Armor Proficiency: Monstrous humanoids receive either Archaic Weapons Proficiency or Simple Weapons Proficiency as a bonus feat. They are proficient with their natural attacks and any weapon mentioned in their entries. Monstrous humanoids noted for wearing armor gain the bonus feat Armor Proficiency with whatever type of armor they are accustomed to wearing (light, medium, heavy), as well as all lighter types.
+Darkvision (Ex): Most monstrous humanoids have darkvision with a range of 60 feet.
+
+Table: Monstrous HumanoidsSizeStrDexConMinimum HDSlamBiteClawGoreColossal42–438–926–2732d82d62d82d84d6Gargantuan34–358–922–2316d81d82d62d62d8Huge26–278–918–198d81d61d82d42d6Large18–1910–1114–152d81d41d61d61d8Medium-size10–1112–1310–111d81d31d41d41d6Small6–714–158–91/2 d81d21d31d31d4Tiny2–316–178–91/4 d811d21d21d3Diminutive118–198–91/8 d8—111d2Fine120–218–91/16 d8———1
+Ooze
+An ooze is an amorphous or mutable creature. See Table: Oozes for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d10.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: None.
+Skill Points: None.
+Feats: None.
+Oozes share the following additional traits.
+Weapon and Armor Proficiency: Oozes are proficient with their natural weapons only, but not with armor.
+Ability Scores: Oozes have no Intelligence score.
+Extra Hit Points: An ooze has no natural armor rating but is difficult to kill because of its protoplasmic body. It gains extra hit points (in addition to those from its Hit Dice and Constitution score) according to size, as shown on Table: Oozes.
+Immunities: Oozes are immune to mind-affecting effects, poison, sleep, paralysis, stunning, gaze attacks, visual effects, illusions, and other attack forms that rely on sight. Oozes are not subject to critical hits, flanking, or the effects of massive damage.
+Blindsight (Ex): Most oozes have blindsight with a range of 60 feet.
+
+Table: OozesSizeStrDexConMinimum HDExtra Hit PointsSlamBiteClawGoreColossal44–456–726–2932d10404d64d62d82d6Gargantuan36–376–722–2516d10302d82d82d61d8Huge28–296–718–218d10202d62d62d41d6Large20–218–914–172d10151d81d81d61d4Medium-size12–1310–1110–131d10101d61d61d41d3Small8–912–138–91/2 d1051d41d41d31d2Tiny4–514–158–91/4 d10—1d31d31d21Diminutive2–316–178–91/8 d10—1d21d21—Fine2–318–198–91/16 d10—11——
+Outsider
+An outsider is a nonelemental creature originating from some other dimension, reality, or plane. See Table: Outsiders for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: Total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude, Reflex, Will.
+Skill Points: 8 + Int modifier per Hit Dice.
+Feats: 1, plus 1 feat per 4  Hit Dice beyond 1 HD.
+Outsiders share the following additional traits.
+Weapon and Armor Proficiency: Outsiders receive either Archaic Weapons Proficiency or Simple Weapons Proficiency as a bonus feat. They are proficient with their natural weapons and any weapon mentioned in their entries. Outsiders noted for wearing armor gain the bonus feat Armor Proficiency with whatever type of armor they are accustomed to wearing (light, medium, heavy), as well as all lighter types.
+Darkvision (Ex): Most outsiders have darkvision with a range of 60 feet.
+Special: Outsiders cannot be raised from the dead.
+
+Table: OutsidersSizeStrDexConMinimum HDSlamBiteClawGoreColossal44–476–728–2932d84d64d62d82d6Gargantuan36–396–724–2516d82d82d82d61d8Huge28–316–720–218d82d62d62d41d6Large20–238–916–172d81d81d81d61d4Medium-size12–1510–1112–131d81d61d61d41d3Small8–1112–1310–111/2 d81d41d41d31d2Tiny4–714–1510–111/4 d81d31d31d21Diminutive2–316–1710–111/8 d81d21d21—Fine2–318–1910–111/16 d811——
+Plant
+A plant is a vegetable creature. See Table: Plants for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude.
+Skill Points: None.
+Feats: None.
+Plants share the following additional traits.
+Weapon and Armor Proficiency: Plants are proficient with their natural weapons only. They are not proficient with armor.
+Immunities: Plants are immune to sleep, paralysis, stunning, and mind-affecting effects. They are not subject to critical hits or the effects of massive damage.
+Low-Light Vision (Ex): Most plants with visual sensory organs have low-light vision.
+Blindsight (Ex): Most plants without visual sensory organs have blindsight with a range of 60 feet.
+
+Table: PlantsSizeStrDexConMinimum HDSlamBiteClawGoreColossal44–456–728–2932d84d62d62d84d6Gargantuan36–376–724–2516d82d81d82d62d8Huge28–296–720–214d82d61d62d42d6Large20–218–916–172d81d81d41d61d8Medium-size12–1310–1112–131d81d61d31d41d6Small8–912–1310–111/2 d81d41d21d31d4Tiny4–514–1510–111/4 d81d311d21d3Diminutive2–316–1710–111/8 d81d2—11d2Fine2–318–1910–111/16 d81——1
+Undead
+An undead is a once-living creature animated by spiritual or supernatural forces. See Table: Undead for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d12.
+Base Attack Bonus: 1/2 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Will.
+Skill Points: 3 x Int score, plus 2 points per Hit Dice beyond 1 HD.
+Feats: 1 + Int modifier, plus 1 feat per 4 HD beyond 1 HD.
+Undead share the following additional traits.
+Weapon and Armor Proficiency: Undead receive either Archaic Weapons Proficiency or Simple Weapons Proficiency as a bonus feat. An undead is proficient with its natural weapons and any weapon mentioned in its entry. Undead noted for wearing armor gain the bonus feat Armor Proficiency with whatever type of armor they are accustomed to wearing (light, medium, heavy), as well as all lighter types.
+Ability Scores: An undead has no Constitution score. It uses its Charisma modifier for Concentration checks. 
+Darkvision (Ex): Most undead have darkvision with a range of 60 feet.
+Immunities: Undead are immune to poison, sleep, paralysis, stunning, disease, necromantic effects, and mind-affecting effects. They are not subject to critical hits, nonlethal damage, ability damage, ability drain, energy drain, or effects of massive damage, or any effect requiring a Fortitude save unless the effect also works on objects or is harmless.
+Healing: Undead cannot heal damage on their own if they have no Intelligence score. Undead can be healed with negative energy (usually only available through the use of magic). Most undead are destroyed immediately if reduced to 0 hit points or less. 
+Special: Undead cannot be raised from the dead.
+
+Table: UndeadSizeStrDexConMinimum HDSlamBiteClawGoreColossal44–456–7—32d124d64d62d82d6Gargantuan36–376–7—21d122d82d82d61d8Huge28–296–7—10d122d62d62d41d6Large20–218–9—4d121d81d81d61d4Medium-size12–1310–11—1d121d61d61d41d3Small8–912–13—1/2 d121d41d41d31d2Tiny4–514–15—1/4 d121d31d31d21Diminutive2–316–17—1/8 d121d21d21—Fine2–318–19—1/16 d1211——
+Vermin
+This type includes insects, arachnids, other arthropods, worms, and similar invertebrates. See Table: Vermin for physical ability scores, recommended minimum Hit Dice, and damage based on size.
+Hit Die: d8.
+Base Attack Bonus: 3/4 of total Hit Dice (see Table: Creature Saves and Base Attack Bonuses).
+Good Saving Throws: Fortitude.
+Skill Points: 10–15.
+Feats: None.
+Vermin share the following additional traits.
+Weapon and Armor Proficiency: Vermin are proficient with their natural weapons only. They are not proficient with armor.
+Ability Scores: Vermin have no Intelligence score.
+Potent Venom: Medium-size or larger poisonous vermin get a bonus to the save DC of their poison based on their size, as follows: Medium-size +2, Large +4, Huge +6, Gargantuan +8, Colossal +10.
+Darkvision (Ex): Most vermin with visual sensory organs have darkvision with a range of 60 feet.
+Blindsight (Ex): Most vermin without visual sensory organs have blindsight with a range of 60 feet.
+Immunities: Vermin are immune to mind-affecting effects.
+Resistance to Massive Damage (Ex): Vermin gain a +5 species bonus on Fortitude saves to negate the effects of massive damage.
+
+Table: VerminSizeStrDexConMinimum HDSlamBiteClawGoreColossal42–436–726–2732d82d64d62d84d6Gargantuan34–356–722–2316d81d82d82d62d8Huge26–276–718–198d81d62d62d42d6Large18–198–914–152d81d41d81d61d8Medium-size10–1110–1110–111d81d31d61d41d6Small6–712–138–91/2 d81d21d41d31d4Tiny2–314–158–91/4 d811d31d21d3Diminutive116–178–91/8 d8—1d211d2Fine118–198–91/16 d8—1—1

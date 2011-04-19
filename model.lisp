@@ -218,7 +218,7 @@
 	      (let* ((amt (max 0 (/ (* prod tech) (+ 1 (tradegood-tech-level g)))))
 		     (pri (generate-price rad tech (tradegood-tech-level g) (tradegood-base-price g) (roll-dice 2 4) (roll-dice 2 4))))
 		(make-listing :name (tradegood-name g) 
-			      :amount amt :price (round pri))))
+			      :amount (round amt) :price (round pri))))
 	    possible-goods)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Grammar functions

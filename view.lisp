@@ -12,9 +12,29 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; basic interface
 (define-easy-handler (captain :uri "/") ()
   (page-template (:title "Welcome")
-    (:h1 "Testing testing")))
+    (:h1 "Testing testing")
+    (:div :class "player-info" 
+	  (echo-alist (cap-info))
+	  (echo-alist (cargo)))
+    (:div :class "planet-info" 
+	  (echo-alist (plt-info))
+	  (echo-market (market)))
+    (:div :class "system-info"
+	  (str (local-planets)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; interface components
+(defun echo-alist (a-list)
+  (html-to-stout
+    (:ul (loop for (k v) on a-list by #'cddr
+	    do (htm (:li :class (format nil "~(~a~)" k)
+			  (:span :class "label" (str (format nil "~:(~a~):" k)))
+			  (str v)))))))
+
+(defun echo-market (market)  
+  (html-to-stout
+    (:table (:tr (:td "Name") (:td "# Stocked") (:td "Price"))
+	    (dolist (i market)
+	      (htm (:tr (loop for (k v) on i by #'cddr do (htm (:td (str v))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Commands (these should all be converted to links/ajax handlers in the interface)
 (defun cap-info () (captain-info current-captain))

@@ -1,5 +1,5 @@
 (defpackage :cl-leet
-  (:use :cl :cl-who :cl-css :parenscript :clsql :hunchentoot) ;; :cl-ppcre :cl-fad :formlets :trivial-shell
+  (:use :cl :cl-who :cl-css :parenscript :hunchentoot) ;; :cl-ppcre :cl-fad :formlets :trivial-shell :clsql
   (:shadow :start)
   (:import-from :ironclad 
    		:encrypt-in-place :decrypt-in-place :make-cipher :octets-to-integer :integer-to-octets

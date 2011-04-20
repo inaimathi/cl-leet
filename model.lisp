@@ -1,5 +1,6 @@
 (in-package :cl-leet)
-;; Structs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Structs
 (defstruct tradegood base-price tech-level complement-type name unit
 	   type) ;; right now either 'goods 'fuel ('gear to be added later). This will be used as "substitute"
 (defstruct listing name amount price)
@@ -113,6 +114,17 @@
 	      (remove-if (lambda (l) (string= (string-capitalize t-name) (listing-name l))) cargo))
 	(setf (listing-amount a-listing) (- (listing-amount a-listing) num)))))
 
+(defun market-produce! (productivity a-market)
+  (mapcar (lambda (l)
+	    (let ((tech-level (max 1 (tradegood-tech-level (tradegood-name->tradegood (listing-name l))))))
+	      (setf (listing-amount l) (+ (listing-amount l) (round (/ productivity tech-level))))))
+	  a-market))
+
+(defun galaxy-produce! ()
+  (mapcar (lambda (a-planet)
+	    (market-produce! (planet-productivity a-planet) (planet-market a-planet)))
+	  *galaxy*))
+	      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Oddly Specific Predicates;;
 (defun enough-space? (a-cap t-name num)
   "Takes a [captain], [tradegood-name] and [amount]. Returns true if there is enough room for [amount] [tradegood-name] in [captain]s' ship."
@@ -155,7 +167,7 @@
   (remove-if (lambda (other-planet) (equalp p other-planet))
 	     (remove-if-not (lambda (other-planet)
 			      (> a-range (planet-distance p other-planet)))
-			    galaxy)))
+			    *galaxy*)))
 
 (defun planet-distance (p1 p2)
   "Given two planets, returns the distance between them"
@@ -166,7 +178,7 @@
 
 (defun planet-name->planet (p-name)
   "Given a planet name, returns that planets' struct (or nil if the planet doesn't exist in the game)"
-  (find-if (lambda (p) (string= (planet-name p) p-name)) galaxy))
+  (find-if (lambda (p) (string= (planet-name p) p-name)) *galaxy*))
 
 (defun tradegood-name->tradegood (t-name)
   "Given a tradegood name, returns that tradegoods' struct (or nil if it doesn't exist in the game)"
@@ -181,25 +193,11 @@
   "Returns amount of free fuel space in the given ship"
   (- (ship-fuel-cap s) (ship-fuel s)))
 
-;; Basic Tradegood Data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (This is up here instead of with the generated data because the market generator needs it)
-(defvar *tradegoods*
-  (list (make-tradegood :base-price 32 :unit "ton" :type 'goods :tech-level 0 :name "Minerals")
-	(make-tradegood :base-price 140 :unit "group" :type 'goods :tech-level 0 :name "Slaves")
-	(make-tradegood :base-price 30 :unit "gallon" :type 'fuel :tech-level 1 :name "Fuel")
-	(make-tradegood :base-price 19 :unit "hammock" :type 'goods :tech-level 2 :name "Food")
-	(make-tradegood :base-price 83 :unit "bottle" :type 'goods :tech-level 3 :name "Liquor")
-	(make-tradegood :base-price 20 :unit "roll" :type 'goods :tech-level 4 :name "Textiles")
-	(make-tradegood :base-price 124 :unit "unit" :type 'goods :tech-level 6 :name "Firearms")
-	(make-tradegood :base-price 196 :unit "sack" :type 'goods :tech-level 6 :name "Luxuries")
-	(make-tradegood :base-price 117 :unit "unit" :type 'goods :tech-level 7 :name "Machinery")
-	(make-tradegood :base-price 154 :unit "chip" :type 'goods :tech-level 8 :name "Computers")))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generators
 (defun generate-planet ()
   (let* ((rad (roll-dice 6 10))
 	 (tech (roll-dice 2 4 (random 4)))
-	 (prod (roll-dice 4 6 (/ rad 2))))
+	 (prod (round (roll-dice 4 6 (/ rad 2)))))
     (make-planet :name (string-capitalize (grammar->string *planet-name-grammar*))
 		 :description (grammar->string *planet-desc-grammar*)
 		 :radius rad
@@ -236,109 +234,3 @@
 	 (reduce (lambda (a b) 
 		   (concatenate 'string a (expand-production b grammar))) 
 		 (cons "" production)))))
-	
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Grammars
-(defparameter *planet-name-grammar*
-  (list :root '((:starter :link :ender) ;be mindful of name probabilities if you try to reduce duplication here
-		(:starter :partition :ender) 
-		(:starter :partition :link :ender) 
-		(:starter :partition :root) 
-		(:starter :link :link :ender) 
-		(:starter :ender))
-	:starter '((:starter :link)
-		   "aa" "ae" "al" "an" "ao" "ar" "at" "az" "be" "bi" "ce" "di" "ed" "en" "er" 
-		   "es" "ge" "in" "is" "la" "le" "ma" "on" "or" "qu" "ra" "re" "ri" "so" "te" 
-		   "ti" "us" "ve" "xe" "za")
-	:ender '((:link :ender) 
-		 "aa" "al" "at" "di" "ti" "so" "ce" "re" "za" "in" "ed" "or" "an" "ma" "ab" 
-		 "ge" "aq" "en" "ri" "ve" "ag" "qu" "us" "es" "ex" "ae" "on" "bi" "xe" "le" 
-		 "is" "er" "be" "la" "ar" "az" "io" "sb" "te" "ra" "ia" "nb")
-	:link '((:link :link) (:link :link)
-		"at" "an" "ri" "es" "ed" "bi" "ce" "us" "on" "er" "ti" "ve" "ra" "la" "le" 
-		"ge" "i" "u" "xe" "in" "di" "so" "ar" "e" "s" "na" "is" "za" "re" "ma" "or" 
-		"be" "en" "qu" "a" "n" "r" "te" "t")
-	:partition '("-" "'" " ")))
-
-(defvar *planet-desc-grammar*
-  (list :root '(("This world" :planet-fact ".")
-		("The planet" :planet-fact ".")
-		("The world" :planet-fact ".")
-		("This planet" :planet-fact ".")
-		(:planet-fact ".")) 
-	:planet-fact '((" " :reputation " for " :subject) 
-		       (" " :reputation " for " :subject " and " :subject) 
-		       (" " :reputation " for " :subject " but " :adj-opposing-force " by " :historic-event)
-		       (" " :adj-opposing-force " by " :historic-event) 
-		       (", a " :adj-negative " " :syn-planet))
-	:subject '(("its " :adjective " " :place) 
-		   ("its " :adjective " " :passtime) 
-		   ("the " :adj-fauna " " :fauna) 
-		   ("its inhabitants' " :adj-local-custom " " :inhabitant-property) 
-		   :passtime) 
-	:passtime '((:fauna " " :drink) (:fauna " " :food) 
-		    ("its " :adjective " " :fauna " " :food) 
-		    (:adj-activity " " :sport) 
-		    "cuisine" "night-life" "casinos" "sit-coms") 
-	:historic-event '((:adj-disaster " civil war") 
-			  (:adj-threat " " :adj-fauna " " :fauna "s") 
-			  ("a " :adj-threat " disease") 
-			  (:adj-disaster " earthquakes") 
-			  (:adj-disaster " solar activity")) 
-	:place '((:fauna :flora " plantations") (:adj-forest " forests") :scenery "forests" "mountains" "oceans")
-	:technology '(:passtime "food blenders" "tourists" "poetry" "discos") 
-	:inhabitant-property '(("loathing of " :technology) ("love for " :technology) 
-			       "shyness" "silliness" "mating traditions") 
-	:fauna '("talking tree" "crab" "bat" "lobster" "shrew" "beast" "bison" "snake" "wolf" "yak" "leopard" "cat" "monkey" "goat" "fish" "snail" "slug" "wasp" "moth" "grub" "ant") 
-	:flora '((:fauna "-weed") "plant" "tulip" "banana" "corn" "carrot") 
-	:scenery '("parking meters" "dust clouds" "ice bergs" "rock formations" "volcanoes") 
-	:reputation '((:emphasis " " :reputation) "fabled" "notable" "well known" "famous" "noted") 
-	:emphasis '("very" "mildly" "most" "reasonably") 
-	:drink '("juice" "brandy" "water" "brew" "gargle blasters") 
-	:sport '("hockey" "cricket" "karate" "polo" "tennis" "quiddich") 
-	:food '("meat" "cutlet" "steak" "burgers" "soup") 
-	:adjective '((:emphasis :adjective) 
-		     :adj-local-custom :adj-fauna :adj-forest :adj-disaster 
-		     "great" "pink" "fabulous" "hoopy" "funny" "wierd" "strange" "peculiar") 
-	:adj-fauna '(:adj-threat "mountain" "edible" "tree" "spotted" "exotic") 
-	:adj-negative '((:adj-negative ", " :adj-negative) "boring" "dull" "tedious" "revolting") 
-	:adj-local-custom '("ancient" "exceptional" "eccentric" "ingrained" "unusual") 
-	:adj-forest '("tropical" "vast" "dense" "rain" "impenetrable" "exuberant") 
-	:adj-disaster '("frequent" "occasional" "unpredictable" "dreadful" :adj-threat) 
-	:adj-threat '("killer" "deadly" "evil" "lethal" "vicious") 
-	:adj-activity '("ice" "mud" "zero-g" "virtual" "vacuum" "Australian, indoor-rules") 
-	:adj-opposing-force '("beset" "plagued" "ravaged" "cursed" "scourged") 
-	:syn-planet '("planet" "world" "place" "little planet" "dump")))
-
-;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defparameter galaxy (mapcar (lambda (n) (generate-planet)) (make-list 15)))
-(defparameter current-captain (make-captain :name "Mal"
-					    :credits 10000
-					    :reputation 0
-					    :xp 0
-					    :current-planet (planet-name (car galaxy))
-					    :trade-history nil
-					    :ship (make-ship :name "Serenity"
-							     :cargo-cap 10
-							     :cargo nil
-							     :frame 'firefly
-							     :engine 'standard
-							     :speed 20
-							     :fuel-consumption 1
-							     :fuel-cap 150
-							     :fuel 150)))
-
-;; (defvar test-cap2 (make-captain :name "Picard"
-;; 				:credits 60000
-;; 				:reputation 1337
-;; 				:xp 40000
-;; 				:current-planet (planet-name (car galaxy))
-;; 				:trade-history '()
-;; 				:ship (make-ship :name "Enterprise"
-;; 						 :cargo-cap 10
-;; 						 :cargo nil
-;; 						 :frame 'federation-starship
-;; 						 :engine 'federation-nacells
-;; 						 :speed 50
-;; 						 :fuel-consumption 0
-;; 						 :fuel-cap 40
-;; 						 :fuel 40)))

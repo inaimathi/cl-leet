@@ -5,9 +5,9 @@
    		:encrypt-in-place :decrypt-in-place :make-cipher :octets-to-integer :integer-to-octets
    		:digest-sequence :ascii-string-to-byte-array :byte-array-to-hex-string)
   (:import-from :cl-base64 :usb8-array-to-base64-string :base64-string-to-usb8-array)
-  (:import-from :clsql-mysql :mysql-insert-id :database-mysql-ptr)
-  ;; (:import-from :cl-smtp :send-email)
-  )
+;  (:import-from :clsql-mysql :mysql-insert-id :database-mysql-ptr)
+;  (:import-from :cl-smtp :send-email)
+  (:import-from :sb-thread :make-thread :terminate-thread))
 (in-package :cl-leet)
 
 (defparameter *db-conn-spec* '("localhost" "clleet" "leetadmin" "cl_l33t_DB"))
@@ -17,6 +17,11 @@
 
 (defun start ()
   (defvar *web-server* (hunchentoot:start (make-instance 'acceptor :port 4141)))
+  ;; (defvar *update-thread* 
+  ;;   (make-thread (lambda () 
+  ;; 		   (loop 
+  ;; 		      do (sleep 5)
+  ;; 		      do (
   ;(web-folders "js" "css" "docs")
   ;(load "js.lisp")
   )

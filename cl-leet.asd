@@ -31,5 +31,6 @@
   :components ((:file "package")
 	       (:file "util" :depends-on ("package"))
 	       (:file "model" :depends-on ("package" "util"))
+	       (:file "data" :depends-on ("package" "util" "model"))
 	       (:file "controller" :depends-on ("package" "util" "model"))
 	       (:file "view" :depends-on ("package" "util" "model"))))

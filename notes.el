@@ -22,3 +22,28 @@ In theory, the grammars and generated variables can be stored more efficiently i
 - create commander
 - trade/quest/travel loop
 - ("quitting" is just logging out, "loading" is just logging in) ;;not if I support OpenID
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; differences between d20 modern and the system I want to implement
+(defun differences ()
+  (list (no wealth checks
+	    (less abstraction between trade and the player)
+	    (no wealth stat/purchase DC)
+	    (possibility of crafting/trading system instead of forcing the Diablo-style drop system)
+	    (changes in a bunch of specific feats/abilities that interact with wealth checks))
+	(languages are not skills
+		   (a character has a languages slot in addition to other information
+		      (choose a number of starting languages equal to your int mod))
+		   (language skills are gone)
+		   (specific feats/abilities dealing with language checks need to change))))
+
+- Have you considered that conflating d20 and Elite like this may actually result in shittier gameplay? You might consider separating these games from each other.
+(defun starting-subset ()
+  (The subset I'd want to implement for starters is
+       (everything but
+		   (advanced classes)
+		   (non-humans)
+		   (FX (the modern magic-system))
+		   (wealth (use regular trading, this means some abilities get a bit tougher to implement))
+		   (Psionics)
+		   (vehicle combat))))
+

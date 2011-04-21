@@ -7,7 +7,8 @@
   (:import-from :cl-base64 :usb8-array-to-base64-string :base64-string-to-usb8-array)
 ;  (:import-from :clsql-mysql :mysql-insert-id :database-mysql-ptr)
 ;  (:import-from :cl-smtp :send-email)
-  (:import-from :sb-thread :make-thread :terminate-thread))
+  (:import-from :sb-thread :make-thread :terminate-thread)
+  (:export :start))
 (in-package :cl-leet)
 
 (defparameter *db-conn-spec* '("localhost" "clleet" "leetadmin" "cl_l33t_DB"))

@@ -14,7 +14,6 @@
 	(make-tradegood :base-price 117 :unit "unit" :type 'goods :tech-level 7 :name "Machinery")
 	(make-tradegood :base-price 154 :unit "chip" :type 'goods :tech-level 8 :name "Computers")))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Grammars
 (defparameter *planet-name-grammar*
   ;be mindful of name probabilities if you try to reduce duplication here
@@ -82,21 +81,21 @@
 
 ;; Generated data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defparameter *galaxy* (mapcar (lambda (n) (generate-planet)) (make-list 15)))
-(defparameter *current-captain* (make-captain :name "Mal"
-					      :credits 10000
-					      :reputation 0
-					      :xp 0
-					      :current-planet (planet-name (car *galaxy*))
-					      :trade-history nil
-					      :ship (make-ship :name "Serenity"
-							       :cargo-cap 10
-							       :cargo nil
-							       :frame 'firefly
-							       :engine 'standard
-							       :speed 20
-							       :fuel-consumption 1
-							       :fuel-cap 150
-							       :fuel 150)))
+(defparameter current-captain (make-captain :name "Mal"
+					    :credits 10000
+					    :reputation 0
+					    :xp 0
+					    :current-planet (planet-name (car *galaxy*))
+					    :trade-history nil
+					    :ship (make-ship :name "Serenity"
+							     :cargo-cap 10
+							     :cargo nil
+							     :frame 'firefly
+							     :engine 'standard
+							     :speed 20
+							     :fuel-consumption 1
+							     :fuel-cap 150
+							     :fuel 150)))
 
 ;; (defvar test-cap2 (make-captain :name "Picard"
 ;; 				:credits 60000

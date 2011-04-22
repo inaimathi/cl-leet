@@ -22,6 +22,23 @@
 (def-tag-list css-links (:link :href (format nil "/css/~a" target) :rel "stylesheet" :type "text/css" :media "screen"))
 (def-tag-list js-links (:script :type "text/javascript" :src (format nil "/js/~a" target)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; parenscript macros
+(defun compile-js (file-name js)
+  (with-open-file (stream file-name :direction :output :if-exists :supersede :if-does-not-exist :create)
+    (format stream js)))
+
+;; (defun ps-highlight (&optional (color "#0f0")) `(effect "highlight" (create :color ,color) 500))
+
+(defpsmacro $ (selector &body chains)
+  `(chain (j-query ,selector)
+	  ,@chains))
+
+(defpsmacro doc-ready (&body body)
+  `($ document
+      (ready (\ ,@body))))
+
+(defpsmacro \ (&body body) `(lambda () ,@body))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;document page shortcuts
 (defun link-group (label/uri-list &key current-link css-class)
   (flet ((label->class (l) (format nil "toolbar-button ~a btn-~a" (or css-class "") (regex-replace-all " " (string-downcase l) "-"))))

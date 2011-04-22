@@ -8,7 +8,7 @@
 (defstruct planet name description radius x y z tech-level productivity
 	   market) ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
 
-(defstruct captain name ship credits reputation xp current-planet trade-history)
+(defstruct captain name ship credits current-planet trade-history)
 (defstruct ship name frame engine speed fuel-consumption fuel-cap fuel cargo-cap cargo)
 
 (defstruct trade-record planet good amount price/unit type) ;;'buy or 'sell
@@ -18,8 +18,6 @@
 (defun captain-info (a-cap)
   (list :name (captain-name a-cap)
 	:credits (captain-credits a-cap)
-	:reputation (captain-reputation a-cap)
-	:xp (captain-xp a-cap)
 	:current-planet (captain-current-planet a-cap)
 	:ship-name (ship-name (captain-ship a-cap))))
 
@@ -50,6 +48,9 @@
 	  (systems-in-range (/ (ship-fuel (captain-ship a-cap)) 
 			       (ship-fuel-consumption (captain-ship a-cap)))
 			    (planet-name->planet (captain-current-planet a-cap)))))
+
+(defun list-galaxy () *galaxy*)
+;;  (sort (copy-list *galaxy*) (lambda (a b) (> (planet-z a) (planet-z b)))))
 
 ;;;;;;;;;; Inserts/Updates
 (defun record-trade-history! (a-cap type planet amount t-name price/unit)
@@ -201,7 +202,7 @@
     (make-planet :name (string-capitalize (grammar->string *planet-name-grammar*))
 		 :description (grammar->string *planet-desc-grammar*)
 		 :radius rad
-		 :x (random 300) :y (random 300) :z (random 300)
+		 :x (random 500) :y (random 500) :z (random 500)
 		 :market (generate-market rad tech prod)
 		 :tech-level tech
 		 :productivity prod)))

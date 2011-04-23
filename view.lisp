@@ -36,8 +36,8 @@
 						do ($ (+ ".top-layer .p-" i) (offset ($ (+ ".layer .p-" i) (offset))))))))))
 				 
 				 ($ document 
-				    (keydown (lambda (e) (if (= (@ e which) 16) (setf shift-p t))))
-				    (keyup (lambda (e) (if (= (@ e which) 16) (setf shift-p false)))))
+				    (keydown (lambda (e) (if (= (@ e which) 32) (setf shift-p t))))
+				    (keyup (lambda (e) (if (= (@ e which) 32) (setf shift-p false)))))
 				 
 				 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
 				 
@@ -56,7 +56,7 @@
   (redirect "/"))
 
 (define-easy-handler (travel :uri "/travel") (planet-name)
-    (move-to-planet! (session-value :captain) (planet-name->planet (base64-string-to-string planet-name)))
+    (move-to-planet! (session-value :captain) (planet-name->planet (base64-string-to-string planet-name :uri t)))
     (redirect "/"))
 
 (define-easy-handler (buy :uri "/buy") (tradegood num) 
@@ -108,7 +108,7 @@
 		   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
 			      (dolist (p (remove-if (lambda (p) (or (< (planet-z p) d) (> (planet-z p) (+ d 100)))) gal))
 				(if (member (planet-name p) locals :test #'string=)
-				    (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p))) :class (css-planet-class p current locals) :style (css-transform-planet d p)))
+				    (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t)) :target "_self" :class (css-planet-class p current locals) :style (css-transform-planet d p)))
 				    (htm (:div :class (css-planet-class p current locals) :style (css-transform-planet d p))))))))
 		 (:div :class "top-layer" :style (inline-css `(:z-index ,600 ,@(css-square 600))))))))) ;;600 is the width of the viewport
 

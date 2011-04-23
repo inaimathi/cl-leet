@@ -14,7 +14,7 @@ To use it
 - navigate to `http://localhost:4141`
 
 Click on green planets to travel to them (the red planet designates your current planet). 
-Hold `shift` to stop the map from rotating.
+Hold `space` to stop the map from rotating.
 Buy and sell using the interface on the right.
 
 Project Goals

@@ -13,8 +13,11 @@ License Info...
 ===============
 
 Elite for EMACS is based on Elite series by Ian Bell and David Braben.
+
 Original Elite, (C) 1984 Ian Bell and David Braben.
+
 Elite for EMACS uses code from original Elite and it is (C) 1984 Ian Bell and David Braben.
+
 Additional Code by Sami Salkosuo (sami@roguemail.net)
 
 cl-leet is a pure Common Lisp port of Elite for Emacs

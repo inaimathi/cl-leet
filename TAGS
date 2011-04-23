@@ -1,0 +1,92 @@
+
+model.lisp,1190
+(defstruct tradegood 4,62
+(defstruct listing 5,132
+(defstruct planet 7,171
+(defstruct captain 10,334
+(defstruct ship 11,396
+(defstruct trade-record 13,485
+(defun captain-info 17,620
+(defun planet-info 22,785
+(defun market-info 28,940
+(defun inventory 35,1123
+(defun list-local-planets 43,1329
+(defun list-galaxy 50,1687
+(defun record-trade-history! 53,1747
+(defun add-to-market! 59,2027
+(defun add-to-cargo! 67,2437
+(defun move-captain! 83,3334
+(defun process-purchase! 90,3707
+(defun process-sale! 98,4268
+(defun remove-from-cargo! 106,4735
+(defun market-produce! 115,5183
+(defun galaxy-produce! 121,5462
+(defun enough-space? 127,5678
+(defun fuel? 136,6123
+(defun tradegood-available? 140,6249
+(defun within-distance? 145,6513
+(defun going-rate 153,6868
+(defun planets-in-range 162,7513
+(defun planet-distance 169,7790
+(defun planet-name->planet 176,8079
+(defun tradegood-name->tradegood 180,8287
+(defun ship-cargo-space 184,8526
+(defun ship-fuel-space 189,8733
+(defun generate-captain 194,8909
+(defun generate-planet 206,9279
+(defun generate-market 217,9719
+(defun pick-g 226,10174
+(defun grammar->string 230,10288
+(defun expand-production 232,10357
+
+view.lisp,462
+(defmacro page-template 3,23
+(define-easy-handler (captain 13,501
+(define-easy-handler (new-game 54,2358
+(define-easy-handler (travel 58,2482
+(define-easy-handler (buy 62,2669
+(define-easy-handler (sell 66,2813
+(defun echo-alist 71,3008
+(defun echo-cargo 78,3226
+(defun echo-market 91,3809
+(defun echo-galaxy-map 101,4206
+(defun cap-info 116,5187
+(defun plt-info 117,5247
+(defun market 118,5353
+(defun cargo 119,5473
+(defun local-planets 120,5542
+
+controller.lisp,99
+(defun move-to-planet! 4,62
+(defun purchase! 10,287
+(defun convey! 19,956
+(defun start 29,1583
+
+util.lisp,388
+(defmacro web-folders 3,79
+(defmacro html-to-stout 9,330
+(defmacro html-to-str 13,466
+(defmacro def-tag-list 17,628
+(def-tag-list css-links 22,823
+(def-tag-list js-links 23,943
+(defun compile-js 26,1086
+(defpsmacro $ 32,1351
+(defpsmacro doc-ready 36,1434
+(defpsmacro \ 40,1512
+(defun get-cipher 43,1619
+(defun encrypt 45,1718
+(defun decrypt 51,1922
+(defun roll-dice 58,2190
+
+data.lisp,147
+(defvar *tradegoods*5,172
+(defparameter *planet-name-grammar*18,1155
+(defparameter *planet-desc-grammar*37,2185
+(defparameter *galaxy* 83,5026
+
+css.lisp,91
+(defun css-transform-planet 3,23
+(defun css-planet-class 9,443
+(defun css-square 16,700
+
+package.lisp,0

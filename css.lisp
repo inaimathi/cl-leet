@@ -17,6 +17,7 @@
   (let ((px (format nil "~apx" d)))
     (list :width px :height px)))
 
+(ensure-directories-exist "css/cl-leet.css")
 (compile-css "css/cl-leet.css"
 	     `((.panel :position absolute :left 620px)
 	       

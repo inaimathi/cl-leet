@@ -3,6 +3,40 @@ cl-leet v0.1
 Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo/elite-for-emacs/))
 but no longer shares any code.
 
+# THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
+#### (and is in fact not playable yet, in my opinion)
+
+To use it 
+
+- clone this repository
+- load it into your lisp
+- run `(cl-leet:start)`
+- navigate to `http://localhost:4141`
+
+Click on green planets to travel to them (the red planet designates your current planet). 
+Hold `shift` to stop the map from rotating.
+Buy and sell using the interface on the right.
+
+Project Goals
+=============
+
+## Fun
+
+Obviously. The point being that I'm trying to write a game that I'll actually have some fun playing, not just one for a hypothetical outside audience.
+
+## Simplicity
+
+Everything, especially the interface, should be as conceptually simple as possible. This doesn't mean the GUI should remain in the ugly pre-alpha phase, but that the number of actions a player can take should be fairly limited.
+
+## Browser-based
+
+The GUI will be browser based, the source is intended for people to develop, tweak and run their own servers. If you just want to play, I will eventually set up a server that you can simply browse to.
+
+## Programmatic
+
+It should be possible to play this game either by using the browser-based GUI, or by writing a script that interacts with the server through specified HTTP requests.
+
+
 Thanks to ...
 =============
 

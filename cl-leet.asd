@@ -27,10 +27,11 @@
   :maintainer "leo.zovic@gmail.com"
   :licence "GPL3"
   :description "Common Lisp port"
-  :depends-on (:cl-who :parenscript :cl-css :hunchentoot :ironclad :cl-base64) ;; :clsql :clsql-mysql
+  :depends-on (:cl-who :parenscript :cl-css :hunchentoot :ironclad :cl-base64)
   :components ((:file "package")
 	       (:file "util" :depends-on ("package"))
+	       (:file "css" :depends-on ("package" "util"))
 	       (:file "model" :depends-on ("package" "util"))
 	       (:file "data" :depends-on ("package" "util" "model"))
 	       (:file "controller" :depends-on ("package" "util" "model"))
-	       (:file "view" :depends-on ("package" "util" "model"))))
+	       (:file "view" :depends-on ("package" "util" "model" "css" "controller"))))

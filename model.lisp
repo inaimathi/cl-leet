@@ -5,7 +5,7 @@
 	   type) ;; right now either 'goods 'fuel ('gear to be added later). This will be used as "substitute"
 (defstruct listing name amount price)
 
-(defstruct planet name description radius x y z tech-level productivity
+(defstruct planet id name description radius x y z tech-level productivity
 	   market) ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
 
 (defstruct captain name ship credits current-planet trade-history)
@@ -50,7 +50,6 @@
 			    (planet-name->planet (captain-current-planet a-cap)))))
 
 (defun list-galaxy () *galaxy*)
-;;  (sort (copy-list *galaxy*) (lambda (a b) (> (planet-z a) (planet-z b)))))
 
 ;;;;;;;;;; Inserts/Updates
 (defun record-trade-history! (a-cap type planet amount t-name price/unit)
@@ -195,13 +194,14 @@
   (- (ship-fuel-cap s) (ship-fuel s)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generators
-(defun generate-planet ()
+(defun generate-planet (plan-id)
   (let* ((rad (roll-dice 6 10))
 	 (tech (roll-dice 2 4 (random 4)))
 	 (prod (round (roll-dice 4 6 (/ rad 2)))))
     (make-planet :name (string-capitalize (grammar->string *planet-name-grammar*))
 		 :description (grammar->string *planet-desc-grammar*)
 		 :radius rad
+		 :id plan-id
 		 :x (random 500) :y (random 500) :z (random 500)
 		 :market (generate-market rad tech prod)
 		 :tech-level tech

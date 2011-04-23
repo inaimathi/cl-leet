@@ -9,80 +9,73 @@
 		   (:title ,(format nil "~@[~A - ~]l33t" title))
 		   (:body ,@body)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TEST
-;;;;;;;;;; simple faux-3d engine (it's not real 3d, but it should still let me give the illusion to viewers).
-(defun css-square (d)
-  (let ((px (format nil "~apx" d)))
-    (list :width px :height px)))
-
-(define-easy-handler (nemo-orange-test :uri "/") ()
-  (page-template (:title "Test")
-    (:div :class "debug")
-    (:div :id "enclosure"
-	  (dolist (d (list 600 560 520 480 440 400))
-	    (htm (:div :class "layer" :style (inline-css `(:opacity ,(float (/ d 800)) ,@(css-square d)))
-		       (dotimes (i 50) (htm (:div :class "grid-square" :style (inline-css (css-square (- (/ d 5) 1))))))))))
-
-    (:script :type "text/javascript"
-	     (str (ps (defvar shift-p false)
-		      (doc-ready
-		       ($ "#enclosure" (mousemove 
-					(lambda (e)
-					  (unless shift-p
-					    (let* ((local-x (- (@ e page-x) ($ "#enclosure" (offset) left)))
-						   (local-y (- (@ e page-y) ($ "#enclosure" (offset) top))))
-					      ($ ".layer" (each (\ (update-layer this local-x local-y)))))))))
-		       ($ document 
-			  (keydown (lambda (e) (if (= (@ e which) 16) (setf shift-p t))))
-			  (keyup (lambda (e) (if (= (@ e which) 16) (setf shift-p false))))))
-				     
-		      (defun update-layer (target-layer local-x local-y)
-			($ target-layer (css (create :left (- 0 (/ local-x (/ ($ "#enclosure" (width)) (- ($ target-layer (width)) ($ "#enclosure" (width))))))
-						     :top (- 0 (/ local-y (* ($ "#enclosure" (height)) (- ($ target-layer (height)) ($ "#enclosure" (height)))))))))))))))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; TEST
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; basic interface
 (define-easy-handler (captain :uri "/") ()
+  (unless (session-value :captain) (redirect "/new-game"))
   (page-template (:title "Welcome")
     (echo-galaxy-map)
-    (:div :class "player-info" 
-	  (echo-alist (cap-info))
-	  (echo-cargo (cargo)))
-    (:div :class "planet-info" 
-	  (echo-alist (plt-info))
-	  (echo-market (market)))
-    (:div :class "system-info"
-	  (dolist (p (local-planets))
-	    (htm (:a :href (format nil "/travel?planet-name=~a" p) (str p)))))
-
+    (:div :class "panel"
+	  (:div :class "player-info" 
+		(echo-alist (cap-info))
+		(echo-cargo (cargo)))
+	  (:div :class "planet-info" 
+		(echo-alist (plt-info))
+		(echo-market (market))))
     (:script :type "text/javascript"
-	     (str (ps (defvar shift-p false)
-		      (doc-ready
-		       ($ ".galaxy-box" (mousemove 
-					(lambda (e)
-					  (unless shift-p
-					    (let* ((local-x (- (@ e page-x) ($ ".galaxy-box" (offset) left)))
-						   (local-y (- (@ e page-y) ($ ".galaxy-box" (offset) top))))
-					      ($ ".layer" (each (\ (update-layer this local-x local-y)))))))))
-		       ($ document 
-			  (keydown (lambda (e) (if (= (@ e which) 16) (setf shift-p t))))
-			  (keyup (lambda (e) (if (= (@ e which) 16) (setf shift-p false))))))
+    	     (str (ps (defvar shift-p false)
+    		      (doc-ready ($ ".galaxy-box" 
+				    (mousemove 
+				     (lambda (e)
+				       (unless shift-p
+					 (let* ((local-x (- (@ e page-x) ($ ".galaxy-box" (offset) left)))
+						(local-y (- (@ e page-y) ($ ".galaxy-box" (offset) top))))
+					   ($ ".layer" 
+					      (each (\ (update-layer this local-x local-y))))
+
+					   (loop for i from 1 to (@ ($ ".planet") length)
+						do ($ (+ ".top-layer .p-" i) (offset ($ (+ ".layer .p-" i) (offset))))))))))
+				 
+				 ($ document 
+				    (keydown (lambda (e) (if (= (@ e which) 16) (setf shift-p t))))
+				    (keyup (lambda (e) (if (= (@ e which) 16) (setf shift-p false)))))
+				 
+				 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
+				 
+				 ($ ".top-layer .planet" 
+				    (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
+				    (hover (\ ($ this (css (create :opacity "1" :background-color "#666"))))
+					   (\ ($ this (css (create :opacity "0.2" :background-color "#000")))))))
 		      
-		      (defun update-layer (target-layer local-x local-y)
-			($ target-layer (css (create :left (- 0 (/ local-x (/ ($ ".galaxy-box" (width)) (- ($ target-layer (width)) ($ ".galaxy-box" (width))))))
-						     :top (- 0 (/ local-y (* ($ ".galaxy-box" (height)) (- ($ target-layer (height)) ($ ".galaxy-box" (height)))))))))))))))
+    		      (defun update-layer (target-layer local-x local-y)
+    			($ target-layer (css (create :left (- 0 (/ local-x (/ ($ ".galaxy-box" (width)) (- ($ target-layer (width)) ($ ".galaxy-box" (width))))))
+    						     :top (- 0 (/ local-y (* ($ ".galaxy-box" (height)) (- ($ target-layer (height)) ($ ".galaxy-box" (height)))))))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; action handlers
+(define-easy-handler (new-game :uri "/new-game") ()
+  (setf (session-value :captain) 
+	(make-captain :name "Mal"
+		      :credits 10000
+		      :current-planet (planet-name (car *galaxy*))
+		      :trade-history nil
+		      :ship (make-ship :name "Serenity"
+					 :cargo-cap 10
+					 :cargo nil
+					 :speed 20
+					 :fuel-consumption 1
+					 :fuel-cap 300
+					 :fuel 300)))
+  (redirect "/"))
+
 (define-easy-handler (travel :uri "/travel") (planet-name)
-    (move-to-planet! current-captain (planet-name->planet planet-name))
+    (move-to-planet! (session-value :captain) (planet-name->planet planet-name))
     (redirect "/"))
 
 (define-easy-handler (buy :uri "/buy") (tradegood num) 
-  (purchase! current-captain tradegood (parse-integer num))
+  (purchase! (session-value :captain) tradegood (parse-integer num))
   (redirect "/"))
 
 (define-easy-handler (sell :uri "/sell") (tradegood num)
-  (convey! current-captain tradegood (parse-integer num))
+  (convey! (session-value :captain) tradegood (parse-integer num))
   (redirect "/"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; interface components
@@ -116,31 +109,23 @@
 				    (:input :name "num")
 				    (:input :type "submit" :value "Buy")))))))))
 
-(defun css-transform-planet (layer-size planet &optional (gal-size 500))
-  (let ((ratio (/ layer-size gal-size)))
-    (flet ((px (directive) (format nil "~apx" (round (* ratio directive)))))
-      (inline-css (list :left (px (planet-x planet)) :top (px (planet-y planet))
-			:border-radius (round (* ratio (planet-radius planet))) :height (px (* 2 (planet-radius planet))) :width (px (* 2 (planet-radius planet))))))))
-
-(defun css-planet-class (plt current-plt local-plt-list)
-  (cond ((string= current-plt plt) "planet current")
-	((member plt local-plt-list) "planet local")
-	(t "planet")))
-
 (defun echo-galaxy-map ()
   (html-to-stout
     (let ((current (getf (plt-info) :name))
 	  (locals (local-planets))
 	  (gal (list-galaxy)))
       (htm (:div :class "galaxy-box"
-		 (dolist (d (list 500 400 300 200 100))
+		 (dolist (d (list 100 200 300 400 500))
 		   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
 			      (dolist (p (remove-if (lambda (p) (or (< (planet-z p) d) (> (planet-z p) (+ d 100)))) gal))
-				(htm (:div :class (css-planet-class (planet-name p) current locals) :style (css-transform-planet d p))))))))))))
+				(if (member (planet-name p) locals :test #'string=)
+				    (htm (:a :href (format nil "/travel?planet-name=~a" (planet-name p)) :class (css-planet-class p current locals) :style (css-transform-planet d p)))
+				    (htm (:div :class (css-planet-class p current locals) :style (css-transform-planet d p))))))))
+		 (:div :class "top-layer" :style (inline-css `(:z-index ,600 ,@(css-square 600))))))))) ;;600 is the width of the viewport
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Commands (these should all be converted to links/ajax handlers in the interface)
-(defun cap-info () (captain-info current-captain))
-(defun plt-info () (planet-info (planet-name->planet (captain-current-planet current-captain))))
-(defun market () (market-info (planet-market (planet-name->planet (captain-current-planet current-captain)))))
-(defun cargo () (inventory (captain-ship current-captain)))
-(defun local-planets () (list-local-planets current-captain))
+(defun cap-info () (captain-info (session-value :captain)))
+(defun plt-info () (planet-info (planet-name->planet (captain-current-planet (session-value :captain)))))
+(defun market () (market-info (planet-market (planet-name->planet (captain-current-planet (session-value :captain))))))
+(defun cargo () (inventory (captain-ship (session-value :captain))))
+(defun local-planets () (list-local-planets (session-value :captain)))

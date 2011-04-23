@@ -24,3 +24,11 @@
 	  ((not a-listing) (error (format nil "You don't have any ~a in your hold" t-name)))
 	  ((> num (listing-amount a-listing)) (error (format nil "You don't have enough ~a in your hold" t-name)))
 	  (t (process-sale! a-cap a-listing sell-price num)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Server Control
+(defun start ()
+  (reset)
+  (defvar *web-server* (hunchentoot:start (make-instance 'acceptor :port 4141)))
+  (web-folders "js" "css" "img"))
+
+(defun reset () (defparameter *galaxy* (loop for i from 1 to 15 collect (generate-planet i))))

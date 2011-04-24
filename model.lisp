@@ -5,10 +5,10 @@
 (defstruct listing name amount price)
 
 (defstruct planet id name description radius x y z tech-level productivity
-	   market) ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
+	   local-goods banned-goods market) ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
 
 (defstruct captain ship credits current-planet trade-history)
-(defstruct ship name frame engine speed fuel-consumption fuel-cap fuel cargo-cap cargo)
+(defstruct ship fuel-consumption fuel-cap fuel cargo-cap cargo)
 
 (defstruct trade-record planet good amount price/unit type) ;;'buy or 'sell
 
@@ -16,8 +16,7 @@
 ;;;;;;;;;; Selects
 (defun captain-info (a-cap)
   (list :credits (captain-credits a-cap)
-	:current-planet (captain-current-planet a-cap)
-	:ship-name (ship-name (captain-ship a-cap))))
+	:current-planet (captain-current-planet a-cap)))
 
 (defun planet-info (p)
   (list :name (planet-name p)
@@ -26,19 +25,23 @@
 	:tech-level (planet-tech-level p)))
 
 (defun market-info (m)
-  (mapcar (lambda (a-listing)
-	    (list :name (listing-name a-listing)
-		  :in-stock (listing-amount a-listing)
-		  :price (listing-price a-listing)))
-	  m))
+  (flet ((by-tech-level (a b) (< (getf a :tech-level) (getf b :tech-level))))
+    (sort (mapcar (lambda (a-listing)
+		    (let ((name (listing-name a-listing)))
+		      (list :name name
+			    :in-stock (listing-amount a-listing)
+			    :price (listing-price a-listing)
+			    :tech-level (tradegood-tech-level (tradegood-name->tradegood name)))))
+		  m)
+	  #'by-tech-level)))
 
 (defun inventory (s)
   "Takes a ship and outputs the contents of its cargo bay"
-  (let ((cargo (ship-cargo s))
-	(fuel (ship-fuel s)))
-    (list :cargo cargo
-	  :fuel fuel
-	  :fuel-cap (ship-fuel-cap s))))
+  (list :cargo (ship-cargo s)
+	:cargo-cap (ship-cargo-cap s)
+	:fuel (ship-fuel s)
+	:fuel-cap (ship-fuel-cap s)
+	:fuel-consumption (ship-fuel-consumption s)))
 
 (defun list-local-planets (a-cap)
   "Takes a captain and outputs all directly reachable planets given their ships fuel and fuel-consumption"
@@ -62,9 +65,10 @@
 	 (a-listing (tradegood-available? t-name market)))
     (if a-listing
 	(setf (listing-amount a-listing) (+ (listing-amount a-listing) num))
-	(setf market (cons (make-listing :name (string-capitalize t-name) :amount num :price sell-price) market)))))
+	(progn (setf (planet-market (planet-name->planet p-name)) (cons (make-listing :name (string-capitalize t-name) :amount num :price sell-price) market))
+	       (incf (planet-tech-level (planet-name->planet p-name)) (roll-dice 1 4))))))
 
-(defun add-to-cargo! (a-cap t-name num)
+(defun add-to-cargo! (a-cap t-name num price)
   "Add [num] [t-good] to [a-cap]s inventory"
   (let ((a-listing (tradegood-available? t-name (ship-cargo (captain-ship a-cap))))
 	(ship (captain-ship a-cap))
@@ -77,7 +81,7 @@
 			(add-to-cargo! a-cap t-name (- num f-space))))))
 	  (a-listing (setf (listing-amount a-listing) (+ (listing-amount a-listing) num)))
 	  (t (setf (ship-cargo (captain-ship a-cap))
-		   (cons (make-listing :name (string-capitalize t-name) :amount num) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
+		   (cons (make-listing :name (string-capitalize t-name) :amount num :price price) (ship-cargo (captain-ship a-cap)))))))) ;; otherwise add a new entry
 
 ;;;;;;;;;; Updates/Deletes
 (defun move-captain! (a-cap p)
@@ -85,13 +89,13 @@
 	 (current-planet (planet-name->planet (captain-current-planet a-cap)))
 	 (distance (planet-distance current-planet p)))
     (setf (captain-current-planet a-cap) (planet-name p)
-	  (ship-fuel (captain-ship a-cap)) (round (- fuel (* distance (ship-fuel-consumption (captain-ship a-cap))))))))
+	  (ship-fuel (captain-ship a-cap)) (- fuel (round (* distance (ship-fuel-consumption (captain-ship a-cap))))))))
 
 (defun process-purchase! (a-cap a-listing num)
-  (let ((t-name (listing-name a-listing)))
-    (setf (listing-amount a-listing) (- (listing-amount a-listing) num) ;; Remoe [num] [t-name] from the planet
+    (let ((t-name (listing-name a-listing)))
+    (setf (listing-amount a-listing) (- (listing-amount a-listing) num) ;; Remove [num] [t-name] from the planet
 	  (captain-credits a-cap) (- (captain-credits a-cap) (* num (listing-price a-listing)))) ;; Remove (* [num] [price]) credits from captains' account
-    (add-to-cargo! a-cap t-name num)
+    (add-to-cargo! a-cap t-name num (listing-price a-listing))
     (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))
     (format nil "Bought ~a ~a" num t-name)))
 
@@ -112,16 +116,18 @@
 	      (remove-if (lambda (l) (string= (string-capitalize t-name) (listing-name l))) cargo))
 	(setf (listing-amount a-listing) (- (listing-amount a-listing) num)))))
 
-(defun market-produce! (productivity a-market)
-  (mapcar (lambda (l)
-	    (let ((tech-level (max 1 (tradegood-tech-level (tradegood-name->tradegood (listing-name l))))))
-	      (setf (listing-amount l) (+ (listing-amount l) (round (/ productivity tech-level))))))
-	  a-market))
-
 (defun galaxy-produce! ()
   (mapcar (lambda (a-planet)
 	    (market-produce! (planet-productivity a-planet) (planet-market a-planet)))
 	  *galaxy*))
+
+(defun market-produce! (productivity a-market)
+  (mapcar (lambda (l)
+	    (let* ((g (tradegood-name->tradegood (listing-name l)))
+		   (tech-level (max 1 (tradegood-tech-level g)))
+		   (produced (round (/ productivity tech-level))))
+	      (setf (listing-amount l) (+ (listing-amount l) (if (fuel? g) (* 2 produced) produced)))))
+	  a-market))
 	      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Oddly Specific Predicates;;
 (defun enough-space? (a-cap t-name num)
@@ -156,7 +162,7 @@
 	 (good (tradegood-name->tradegood t-name))
 	 (a-listing (tradegood-available? t-name (planet-market plt))))
     (cond ((listing-p a-listing) (listing-price a-listing)) ;; The good is on the market here; use the latest generated price for it
-	  ((and (not a-listing) good) (* (roll-dice 1 4) (apply #'roll-dice (tradegood-price good)))) ;; The tradegood is not on the market here (sell for betwen 1x and 4x going rate)
+	  ((and (not a-listing) good) (* (roll-dice 2 3) (apply #'roll-dice (tradegood-price good)))) ;; The tradegood is not on the market here (sell for 2d3x going rate)
 	  (t nil)))) ;; tradegood given doesn't exist in game  
 
 (defun planets-in-range (a-range p)
@@ -165,6 +171,11 @@
 	     (remove-if-not (lambda (other-planet)
 			      (> a-range (planet-distance p other-planet)))
 			    *galaxy*)))
+
+(defun planet-fuel-cost (a-cap p)
+  "Returns the amount of fuel [a-cap] would have to burn to reach [p]"
+  (let ((distance (planet-distance p (planet-name->planet (captain-current-planet a-cap)))))
+    (round (* distance (ship-fuel-consumption (captain-ship a-cap))))))
 
 (defun planet-distance (p1 p2)
   "Given two planets, returns the euclidean distance between them"
@@ -191,14 +202,12 @@
   (- (ship-fuel-cap s) (ship-fuel s)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generators
-(defun generate-captain () ;;kind of a misnomer, but I need that level of indirection in case I change the representation
+(defun generate-captain () ;;kind of a misnomer at the moment, but I need that level of indirection in case I change the representation
   (make-captain :credits 10000
 		:current-planet (planet-name (car *galaxy*))
 		:trade-history nil
-		:ship (make-ship :name "Serenity"
-				 :cargo-cap 50
+		:ship (make-ship :cargo-cap 50
 				 :cargo nil
-				 :speed 20
 				 :fuel-consumption 1
 				 :fuel-cap 300
 				 :fuel 300)))

@@ -35,11 +35,11 @@
 	:partition '("-" "'" " ")))
 
 (defparameter *planet-desc-grammar*
-  (list :root '((" is " :reputation " for " :subject) 
-		(" is " :reputation " for " :subject " and " :subject) 
-		(" is " :reputation " for " :subject " but " :adj-opposing-force " by " :historic-event)
-		(" is " :adj-opposing-force " by " :historic-event) 
-		(", a " :adj-negative " " :syn-planet))
+  (list :root '(("is " :reputation " for " :subject) 
+		("is " :reputation " for " :subject " and " :subject) 
+		("is " :reputation " for " :subject " but " :adj-opposing-force " by " :historic-event)
+		("is " :adj-opposing-force " by " :historic-event) 
+		("a " :adj-negative " " :syn-planet))
 	:subject '(("its " :adjective " " :place) 
 		   ("its " :adjective " " :passtime) 
 		   ("the " :adj-fauna " " :fauna) 
@@ -81,3 +81,4 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generated Data
 (defparameter *galaxy* (loop for i from 1 to 30 collect (generate-planet i)))
+(defparameter *captain* (generate-captain))

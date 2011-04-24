@@ -4,7 +4,7 @@ Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo
 but no longer shares any code.
 
 # THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
-#### (and is in fact not playable yet, in my opinion)
+##### but it has been upgraded from "unplayable" to "kinda playable". It'll still probably do awful things if you try multiplayer, but hey. Progress.
 
 To use it 
 
@@ -13,8 +13,9 @@ To use it
 - run `(cl-leet:start)`
 - navigate to `http://localhost:4141`
 
-Click on green planets to travel to them (the red planet designates your current planet). 
-Hold `space` to stop the map from rotating.
+Click on green planets to travel to them (the red planet designates your current planet).
+The tooltip shows you your destinations' name and description, as well as how much fuel it takes to get there.
+Hold `space` to stop the map from rotating for easier clicking and hovering.
 Buy and sell using the interface on the right.
 
 Project Goals

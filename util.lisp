@@ -27,17 +27,13 @@
   (with-open-file (stream file-name :direction :output :if-exists :supersede :if-does-not-exist :create)
     (format stream js)))
 
-;; (defun ps-highlight (&optional (color "#0f0")) `(effect "highlight" (create :color ,color) 500))
-
 (defpsmacro $ (selector &body chains)
-  `(chain (j-query ,selector)
-	  ,@chains))
-
-(defpsmacro doc-ready (&body body)
-  `($ document
-      (ready (\ ,@body))))
+  `(chain (j-query ,selector) ,@chains))
 
 (defpsmacro \ (&body body) `(lambda () ,@body))
+
+(defpsmacro doc-ready (&body body)
+  `($ document (ready (\ ,@body))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;basic encryption/decryption
 (defun get-cipher (key) (make-cipher :blowfish :mode :ecb :key (ascii-string-to-byte-array key)))
@@ -55,7 +51,7 @@
     (coerce (mapcar #'code-char (coerce msg 'list)) 'string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;other
-(defun roll-dice (num-dice die-type &optional mod) ;;The simplest non-uniform dice roller I could think up without resorting to the grab-bag
+(defun roll-dice (num-dice die-type &optional mod) ;;The simplest non-uniform dice roller I could think up without resorting to the grab-bag. Can you tell I'm a recovering D&D nerd yet?
   (let* ((rolls (mapcar (lambda (die) (+ 1 (random die)))
 			(make-list num-dice :initial-element die-type))))
     (apply #'+ (cons (or mod 0) rolls))))

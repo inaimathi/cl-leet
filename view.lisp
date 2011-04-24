@@ -14,6 +14,7 @@
   (unless (session-value :captain) (redirect "/new-game"))
   (page-template (:title "Welcome")
     (echo-galaxy-map)
+    (:div :id "tooltip")
     (:div :class "panel"
 	  (:div :class "player-info" 
 		(echo-alist (cap-info))
@@ -34,17 +35,26 @@
 
 					   (loop for i from 1 to (@ ($ ".planet") length)
 						do ($ (+ ".top-layer .p-" i) (offset ($ (+ ".layer .p-" i) (offset))))))))))
-				 
+
 				 ($ document 
 				    (keydown (lambda (e) (if (= (@ e which) 32) (setf shift-p t))))
-				    (keyup (lambda (e) (if (= (@ e which) 32) (setf shift-p false)))))
+				    (keyup (lambda (e) (if (= (@ e which) 32) (setf shift-p false))))
+				    (mousemove (lambda (e) 
+						 ($ "#tooltip" (css (create :top (+ 20 (@ e page-y)) :left (+ 20 (@ e page-x))))))))
 				 
 				 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
 				 
-				 ($ ".top-layer .planet" 
-				    (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
-				    (hover (\ ($ this (css (create :opacity "1" :background-color "#666"))))
-					   (\ ($ this (css (create :opacity "0.2" :background-color "#000")))))))
+				 (loop for i from 1 to (@ ($ ".planet") length)
+				      do ($ (+ ".top-layer .p-" i) 
+					    (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
+					    (hover (\ ($ this (css (create :opacity "1" :background-color "#666")))
+						      ($ "#tooltip" 
+							 (show)
+							 (html (who-ps-html (:h3 (@ js-galaxy (- i 1) name))
+									    (:p (@ js-galaxy (- i 1) description))
+									    (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (@ js-galaxy (- i 1) fuel))))))
+						   (\ ($ this (css (create :opacity "0.2" :background-color "#000")))
+						      ($ "#tooltip" (hide)))))))
 		      
     		      (defun update-layer (target-layer local-x local-y)
     			($ target-layer (css (create :left (- 0 (/ local-x (/ ($ ".galaxy-box" (width)) (- ($ target-layer (width)) ($ ".galaxy-box" (width))))))
@@ -56,7 +66,8 @@
   (redirect "/"))
 
 (define-easy-handler (travel :uri "/travel") (planet-name)
-    (move-to-planet! (session-value :captain) (planet-name->planet (base64-string-to-string planet-name :uri t)))
+    (move-to-planet! (session-value :captain) (planet-name->planet (base64-string-to-string planet-name :uri t)))    
+    (galaxy-produce!)
     (redirect "/"))
 
 (define-easy-handler (buy :uri "/buy") (tradegood num) 
@@ -98,12 +109,27 @@
 				    (:input :name "num")
 				    (:input :type "submit" :value "Buy")))))))))
 
-(defun echo-galaxy-map ()
+(defun planet-json (p)
+  `(create :name ,(planet-name p)
+	   :description ,(planet-description p)
+	   :radius ,(planet-radius p)
+	   :fuel ,(planet-fuel-cost *captain* p)
+	   ;; :market ,(market-info (planet-market p))
+	   ))
+
+(defun js-planets (gal)
+  `(defvar js-galaxy
+     (list ,@(loop for p in gal
+		collect (planet-json p)))))
+
+(defun echo-galaxy-map () ;;this is actually an even split between view and model code
   (html-to-stout
     (let ((current (getf (plt-info) :name))
 	  (locals (local-planets))
 	  (gal (list-galaxy)))
       (htm (:div :class "galaxy-box"
+		 (:script :type "text/javascript"
+			  (str (ps* (js-planets *galaxy*))))
 		 (dolist (d (list 100 200 300 400 500))
 		   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
 			      (dolist (p (remove-if (lambda (p) (or (< (planet-z p) d) (> (planet-z p) (+ d 100)))) gal))

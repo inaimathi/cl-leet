@@ -21,6 +21,14 @@
 	     `((body :font-family sans-serif)
 	       (.panel :position absolute :left 620px)
 	       
+	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :width 250px :color \#ddd :border "1px solid #fff" :display none)
+	       ("#tooltip h3" :margin 0px :padding 0px)
+	       ("#tooltip p" :margin-top 0px :padding-top 0px)
+	       ("#tooltip ul" :list-style-type none :padding 0px :margin "10px 0px 0px 0px")
+
+	       ;; game panel
+	       (.game-panel :margin-top 20px :font-weight bold)
+
 	       ;; galaxy display
 	       (.galaxy-box :width 600px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
 	       (".layer, .top-layer" :border "1px solid #aaa" :position absolute)
@@ -29,7 +37,4 @@
 	       (".planet.local" :background-color \#0f0 :border "1px solid #0c0")
 	       (".planet.current" :background-color \#f00 :border "1px solid #c00")
 
-	       (".planet:hover, .planet.local:hover, .planet.current:hover" :background-color \#666 :opacity 1)
-	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :width 250px :color \#ddd :border "1px solid #fff")
-	       ("#tooltip h3" :margin 0px :padding 0px)
-	       ("#tooltip p" :margin-top 0px :padding-top 0px)))
+	       (".planet:hover, .planet.local:hover, .planet.current:hover" :background-color \#666 :opacity 1)))

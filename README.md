@@ -14,7 +14,7 @@ To use it
 - navigate to `http://localhost:4141`
 
 Click on green planets to travel to them (the red planet designates your current planet).
-The tooltip shows you your destinations' name and description, as well as how much fuel it takes to get there.
+The tooltip shows you your destinations' name and description, how much fuel it takes to get there and a market summary.
 Hold `space` to stop the map from rotating for easier clicking and hovering.
 Buy and sell using the interface on the right.
 

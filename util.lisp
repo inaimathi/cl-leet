@@ -55,3 +55,7 @@
   (let* ((rolls (mapcar (lambda (die) (+ 1 (random die)))
 			(make-list num-dice :initial-element die-type))))
     (apply #'+ (cons (or mod 0) rolls))))
+
+(defmacro gets (place &rest indicators)
+  `(list ,@(loop for i in indicators
+	      collect `(getf ,place ,i))))

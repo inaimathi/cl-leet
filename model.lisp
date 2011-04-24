@@ -165,6 +165,10 @@
 	  ((and (not a-listing) good) (* (roll-dice 2 3) (apply #'roll-dice (tradegood-price good)))) ;; The tradegood is not on the market here (sell for 2d3x going rate)
 	  (t nil)))) ;; tradegood given doesn't exist in game  
 
+(defun planet-listing (a-cap t-name)
+  "Returns the listing for [t-name] on [a-cap]s' current planet. NIL if it isn't sold there."
+  (tradegood-available? "Fuel" (planet-market (planet-name->planet (captain-current-planet a-cap)))))
+
 (defun planets-in-range (a-range p)
   "Returns a list of planets within [a-range] of planet [p]"
   (remove-if (lambda (other-planet) (equalp p other-planet))

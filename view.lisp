@@ -18,10 +18,13 @@
     (:div :class "panel"
 	  (:div :class "player-info" 
 		(echo-alist (cap-info))
-		(echo-cargo (cargo)))
+		(echo-cargo (cargo))
+		(echo-refuel (session-value :captain)))
 	  (:div :class "planet-info" 
 		(echo-alist (plt-info))
-		(echo-market (market))))
+		(echo-market (market)))
+	  (:div :class "game-panel"
+		(:a :href "/new-game" "New Game")))
     (:script :type "text/javascript"
     	     (str (ps (defvar shift-p false)
     		      (doc-ready ($ ".galaxy-box" 
@@ -43,7 +46,7 @@
 						 ($ "#tooltip" (css (create :top (+ 20 (@ e page-y)) :left (+ 20 (@ e page-x))))))))
 				 
 				 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
-				 
+
 				 (loop for i from 1 to (@ ($ ".planet") length)
 				      do ($ (+ ".top-layer .p-" i) 
 					    (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
@@ -52,10 +55,15 @@
 							 (show)
 							 (html (who-ps-html (:h3 (@ js-galaxy (- i 1) name))
 									    (:p (@ js-galaxy (- i 1) description))
-									    (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (@ js-galaxy (- i 1) fuel))))))
+									    (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (@ js-galaxy (- i 1) fuel))
+									    (:ul (chain (market-html (@ js-galaxy (- i 1) market)) (join "")))))))
 						   (\ ($ this (css (create :opacity "0.2" :background-color "#000")))
 						      ($ "#tooltip" (hide)))))))
-		      
+
+		      (defun market-html (a-market)
+			(loop for i in a-market
+			     collect (who-ps-html (:li (:span :class "tradegood" (@ i 0)) ": " (:span :class "price" (@ i 1))))))
+
     		      (defun update-layer (target-layer local-x local-y)
     			($ target-layer (css (create :left (- 0 (/ local-x (/ ($ ".galaxy-box" (width)) (- ($ target-layer (width)) ($ ".galaxy-box" (width))))))
     						     :top (- 0 (/ local-y (* ($ ".galaxy-box" (height)) (- ($ target-layer (height)) ($ ".galaxy-box" (height)))))))))))))))
@@ -99,6 +107,19 @@
 					     (:input :name "num")
 					     (:input :type "submit" :value "Sell")))))))))))	    
 
+(defun echo-refuel (a-cap)
+  (let* ((fuel-needed (ship-fuel-space (captain-ship a-cap)))
+	 (local-fuel (planet-listing a-cap "Fuel"))
+	 (fuel-afford (/ (captain-credits a-cap) (listing-price local-fuel)))
+	 (fuel-available (listing-amount local-fuel))
+	 (f (min fuel-needed fuel-afford fuel-available)))
+    (html-to-stout
+      (if (= 0 f)
+	  (htm (:p "Refuel"))
+	  (htm (:a :href (format nil "/buy?tradegood=Fuel&num=~a" f) "Refuel"))))))
+
+    
+
 (defun echo-market (market)  
   (html-to-stout
     (:table (:tr (:td "Name") (:td "# Stocked") (:td "Price") (:td))
@@ -109,18 +130,18 @@
 				    (:input :name "num")
 				    (:input :type "submit" :value "Buy")))))))))
 
-(defun planet-json (p)
+(defun planet-json (a-cap p)
   `(create :name ,(planet-name p)
 	   :description ,(planet-description p)
 	   :radius ,(planet-radius p)
-	   :fuel ,(planet-fuel-cost *captain* p)
-	   ;; :market ,(market-info (planet-market p))
-	   ))
+	   :fuel ,(planet-fuel-cost a-cap p)
+	   :market (list ,@(mapcar (lambda (g) `(list ,(listing-name g) ,(listing-price g)))
+				   (planet-market p)))))
 
-(defun js-planets (gal)
+(defun js-planets (a-cap gal)
   `(defvar js-galaxy
      (list ,@(loop for p in gal
-		collect (planet-json p)))))
+		collect (planet-json a-cap p)))))
 
 (defun echo-galaxy-map () ;;this is actually an even split between view and model code
   (html-to-stout
@@ -129,7 +150,7 @@
 	  (gal (list-galaxy)))
       (htm (:div :class "galaxy-box"
 		 (:script :type "text/javascript"
-			  (str (ps* (js-planets *galaxy*))))
+			  (str (ps* (js-planets (session-value :captain) *galaxy*))))
 		 (dolist (d (list 100 200 300 400 500))
 		   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
 			      (dolist (p (remove-if (lambda (p) (or (< (planet-z p) d) (> (planet-z p) (+ d 100)))) gal))

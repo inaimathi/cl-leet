@@ -29,4 +29,5 @@
 (defun start ()
   (defvar *web-server* (hunchentoot:start (make-instance 'acceptor :port 4141)))
   (setf *show-lisp-errors-p* t)
-  (web-folders "js" "css" "img"))
+  (web-folders "js" "css" "img")
+  (load "js.lisp"))

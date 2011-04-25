@@ -22,19 +22,6 @@
 (def-tag-list css-links (:link :href (format nil "/css/~a" target) :rel "stylesheet" :type "text/css" :media "screen"))
 (def-tag-list js-links (:script :type "text/javascript" :src (format nil "/js/~a" target)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; parenscript macros
-(defun compile-js (file-name js)
-  (with-open-file (stream file-name :direction :output :if-exists :supersede :if-does-not-exist :create)
-    (format stream js)))
-
-(defpsmacro $ (selector &body chains)
-  `(chain (j-query ,selector) ,@chains))
-
-(defpsmacro \ (&body body) `(lambda () ,@body))
-
-(defpsmacro doc-ready (&body body)
-  `($ document (ready (\ ,@body))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;basic encryption/decryption
 (defun get-cipher (key) (make-cipher :blowfish :mode :ecb :key (ascii-string-to-byte-array key)))
 
@@ -59,3 +46,5 @@
 (defmacro gets (place &rest indicators)
   `(list ,@(loop for i in indicators
 	      collect `(getf ,place ,i))))
+
+(defun mean (&rest numbers) (round (/ (apply #'+ numbers) (length numbers))))

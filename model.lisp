@@ -14,37 +14,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Queries
 ;;;;;;;;;; Selects
-(defun captain-info (a-cap)
-  (list :credits (captain-credits a-cap)
-	:current-planet (captain-current-planet a-cap)))
-
-(defun planet-info (p)
-  (list :name (planet-name p)
-	:description (planet-description p)
-	:radius (planet-radius p)
-	:tech-level (planet-tech-level p)))
-
-(defun market-info (m)
-  (flet ((by-tech-level (a b) (< (getf a :tech-level) (getf b :tech-level))))
-    (sort (mapcar (lambda (a-listing)
-		    (let ((name (listing-name a-listing)))
-		      (list :name name
-			    :in-stock (listing-amount a-listing)
-			    :price (listing-price a-listing)
-			    :tech-level (tradegood-tech-level (tradegood-name->tradegood name)))))
-		  m)
-	  #'by-tech-level)))
-
-(defun inventory (s)
-  "Takes a ship and outputs the contents of its cargo bay"
-  (list :cargo (ship-cargo s)
-	:cargo-cap (ship-cargo-cap s)
-	:fuel (ship-fuel s)
-	:fuel-cap (ship-fuel-cap s)
-	:fuel-consumption (ship-fuel-consumption s)))
-
 (defun list-local-planets (a-cap)
-  "Takes a captain and outputs all directly reachable planets given their ships fuel and fuel-consumption"
+  "Takes a captain and returns all directly reachable planets given their ships fuel and fuel-consumption"
   (mapcar (lambda (p) (planet-name p))
 	  (planets-in-range (/ (ship-fuel (captain-ship a-cap)) 
 			       (ship-fuel-consumption (captain-ship a-cap)))
@@ -117,17 +88,17 @@
 	(setf (listing-amount a-listing) (- (listing-amount a-listing) num)))))
 
 (defun galaxy-produce! ()
-  (mapcar (lambda (a-planet)
-	    (market-produce! (planet-productivity a-planet) (planet-market a-planet)))
-	  *galaxy*))
+  (dolist (a-planet *galaxy*)
+    (market-produce! (planet-productivity a-planet) (planet-market a-planet))))
 
 (defun market-produce! (productivity a-market)
-  (mapcar (lambda (l)
-	    (let* ((g (tradegood-name->tradegood (listing-name l)))
-		   (tech-level (max 1 (tradegood-tech-level g)))
-		   (produced (round (/ productivity tech-level))))
-	      (setf (listing-amount l) (+ (listing-amount l) (if (fuel? g) (* 2 produced) produced)))))
-	  a-market))
+  (dolist (l a-market)
+    (let* ((g (tradegood-name->tradegood (listing-name l)))
+	   (tech-level (max 1 (tradegood-tech-level g)))
+	   (produced (+ (roll-dice 2 20) (round (/ productivity tech-level))))
+	   (new-price (mean (apply #'roll-dice (tradegood-price g)) (listing-price l))))
+      (setf (listing-amount l) (+ (listing-amount l) (if (fuel? g) (* 2 produced) produced))
+	    (listing-price l) new-price))))
 	      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Oddly Specific Predicates;;
 (defun enough-space? (a-cap t-name num)
@@ -198,8 +169,11 @@
 
 (defun ship-cargo-space (s)
   "Returns amount of free cargo space in the given ship"
-  (- (ship-cargo-cap s)
-     (apply '+ (mapcar (lambda (a-listing) (or (listing-amount a-listing) 0)) (ship-cargo s)))))
+  (- (ship-cargo-cap s) (ship-cargo-total s)))
+
+(defun ship-cargo-total (s)
+  "Returns amount of used space in the given ship"
+  (apply '+ (mapcar (lambda (a-listing) (listing-amount a-listing)) (ship-cargo s))))
 
 (defun ship-fuel-space (s)
   "Returns amount of free fuel space in the cells of a given ship"

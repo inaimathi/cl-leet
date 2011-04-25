@@ -55,17 +55,20 @@
 			   ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
 
 			   (loop for i from 1 to (@ ($ ".planet") length)
-			      do ($ (+ ".top-layer .p-" i) 
-				    (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
-				    (hover (\ ($ this (css (create :opacity "1" :background-color "#666")))
-					      ($ "#tooltip" 
-						 (show)
-						 (html (who-ps-html (:h3 (@ js-galaxy (- i 1) name))
-								    (:p (@ js-galaxy (- i 1) description))
-								    (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (@ js-galaxy (- i 1) fuel))
-								    (:ul (chain (market-html (@ js-galaxy (- i 1) market)) (join "")))))))
-					   (\ ($ this (css (create :opacity "0.2" :background-color "#000")))
-					      ($ "#tooltip" (hide)))))))
+			      do (planet-tooltip (+ ".top-layer .p-" i) i)))
+
+		(defun planet-tooltip (planet id)
+		  ($ planet
+		     (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
+		     (hover (\ ($ planet (css (create :opacity "1" :background-color "#666")))
+		  	       ($ "#tooltip" 
+		  		  (show)
+		  		  (html (who-ps-html (:h3 (@ js-galaxy (- id 1) name))
+		  				     (:p (@ js-galaxy (- id 1) description))
+		  				     (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (@ js-galaxy (- id 1) fuel))
+		  				     (:ul (chain (market-html (@ js-galaxy (- id 1) market)) (join "")))))))
+		  	    (\ ($ planet (css (create :opacity "0.2" :background-color "#000")))
+		  	       ($ "#tooltip" (hide))))))
 
 		(defun market-html (a-market)
 		  (loop for i in (chain a-market (sort (lambda (a b) (< (@ a 3) (@ b 3)))))

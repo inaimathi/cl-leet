@@ -4,13 +4,21 @@
 (defstruct tradegood price tech-level complement-type name unit type)
 (defstruct listing name amount price)
 
-(defstruct planet id name description radius x y z tech-level productivity
-	   local-goods banned-goods market) ;; (list (:tradegood [tradegood] :price [price] :quantity [quantity]) ...)
+(defstruct planet id name description 
+	   radius x y z 
+	   tech-level productivity market
+	   local-goods banned-goods 
+	   (:copier 'copy-planet))
+
+(defun copy-planet (p)
+  (let ((a-copy (copy-structure p)))
+    (setf (planet-market a-copy) (mapcar #'copy-structure (planet-market p)))
+    a-copy))
 
 (defstruct captain ship credits current-planet trade-history)
 (defstruct ship fuel-consumption fuel-cap fuel cargo-cap cargo)
 
-(defstruct trade-record planet good amount price/unit type) ;;'buy or 'sell
+(defstruct trade-record planet good amount price/unit type)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Queries
 ;;;;;;;;;; Selects

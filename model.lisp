@@ -15,7 +15,7 @@
     (setf (planet-market a-copy) (mapcar #'copy-structure (planet-market p)))
     a-copy))
 
-(defstruct captain ship credits current-planet trade-history)
+(defstruct captain ship credits current-planet trade-history transaction)
 (defstruct ship fuel-consumption fuel-cap fuel cargo-cap cargo)
 
 (defstruct trade-record planet good amount price/unit type)
@@ -32,11 +32,33 @@
 (defun list-galaxy () *galaxy*)
 
 ;;;;;;;;;; Inserts/Updates
-(defun record-trade-history! (a-cap type planet amount t-name price/unit)
+(defun commit-transactions! (a-cap)
+  "Takes a captain and applies their latest transactions to the global record"
+  (let* ((good/change-pairs nil)
+	 (condensed (loop for trade in (captain-transaction a-cap)
+		       if (assoc (trade-record-good trade) good/change-pairs)
+			 (incf (cdr (assoc (trade-record-good trade) good/change-pairs)) (trade-change trade))
+		       else (setf good/change-pairs (cons `(,(trade-record-good trade) . ,(trade-change trade)) 
+							  good/change-pairs)))))
+    (dolist (change condensed)
+      (destructuring-bind (name . num) change
+	;; commit change here
+	;; there has GOT to be a better way of doing this. Maybe record a transaction as ([pointer-to-listing] . [change]) instead of a naive trade-record? it would certainly be simpler to commit (and would be 0tiny instead of 0scary)
+	))))
+
+(defun trade-change (a-trade)
+  (case (trade-record-type a-trade)
+    ('sell (trade-record-amount a-trade))
+    ('buy (- (trade-record-amount a-trade)))
+    (otherwise (error (format nil "trade-change: Invalid trade record type - ~a" a-trade)))))
+
+(defun record-trade! (a-cap type planet amount t-name price/unit)
+  "Records an action to trade history and to the current transaction"
   (let ((trade (make-trade-record 
 		:type type :planet planet
 		:amount amount :good t-name :price/unit price/unit)))
-    (setf (captain-trade-history a-cap) (cons trade (captain-trade-history a-cap)))))
+    (setf (captain-trade-history a-cap) (cons trade (captain-trade-history a-cap))
+	  (captain-transaction a-cap) (cons trade (captain-transaction a-cap)))))
 
 (defun add-to-market! (p-name t-name num sell-price)
   "Add [num] [t-good] to [p-name]s market"
@@ -75,7 +97,7 @@
     (setf (listing-amount a-listing) (- (listing-amount a-listing) num) ;; Remove [num] [t-name] from the planet
 	  (captain-credits a-cap) (- (captain-credits a-cap) (* num (listing-price a-listing)))) ;; Remove (* [num] [price]) credits from captains' account
     (add-to-cargo! a-cap t-name num (listing-price a-listing))
-    (record-trade-history! a-cap 'buy (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))
+    (record-trade! a-cap 'buy (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))
     (format nil "Bought ~a ~a" num t-name)))
 
 (defun process-sale! (a-cap a-listing sell-price num)
@@ -83,7 +105,7 @@
     (remove-from-cargo! a-cap t-name num)
     (add-to-market! (captain-current-planet a-cap) t-name num sell-price)
     (setf (captain-credits a-cap) (+ (captain-credits a-cap) (* sell-price num)))
-    (record-trade-history! a-cap 'sell (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))
+    (record-trade! a-cap 'sell (captain-current-planet a-cap) num (string-capitalize t-name) (listing-price a-listing))
     (format nil "Sold ~a ~a" num t-name)))
 
 (defun remove-from-cargo! (a-cap t-name num)

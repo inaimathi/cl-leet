@@ -14,7 +14,7 @@
   (unless (session-value :captain) (redirect "/new-game"))
   (let* ((a-cap (session-value :captain))
 	 (s (captain-ship a-cap))
-	 (p (planet-name->planet (captain-current-planet a-cap))))
+	 (p (captain-current-planet a-cap)))
     (page-template (:title "Welcome")
       (echo-galaxy-map a-cap)
       (:div :id "tooltip")
@@ -29,7 +29,7 @@
 		  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
 		       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
 		       (:p (:span :class "label" "Tech Level: ") (str (planet-tech-level p))))
-		  (echo-inventory (planet-market (planet-name->planet (captain-current-planet a-cap)))))
+		  (echo-inventory (planet-market (captain-current-planet a-cap))))
 	    (:div :class "game-panel"
 		  (:a :href "/new-game" "New Game"))))))
 
@@ -39,7 +39,7 @@
   (redirect "/"))
 
 (define-easy-handler (travel :uri "/travel") (planet-name)
-  (move-to-planet! (session-value :captain) (planet-name->planet (base64-string-to-string planet-name :uri t)))    
+  (move-to-planet! (session-value :captain) (lookup-planet (base64-string-to-string planet-name :uri t) *galaxy*))
   (galaxy-produce!)
   (redirect "/"))
 
@@ -66,7 +66,7 @@
 
 (defun echo-refuel (a-cap)
   (let* ((fuel-needed (ship-fuel-space (captain-ship a-cap)))
-	 (local-fuel (planet-listing a-cap "Fuel"))
+	 (local-fuel (lookup-listing "Fuel" (captain-current-planet a-cap)))
 	 (fuel-afford (/ (captain-credits a-cap) (listing-price local-fuel)))
 	 (fuel-available (listing-amount local-fuel))
 	 (f (min fuel-needed fuel-afford fuel-available)))

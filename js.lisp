@@ -23,7 +23,7 @@
 	   :market (list ,@(mapcar (lambda (g) 
 				     `(list ,(listing-name g) 
 					    ,(listing-price g) 
-					    ,(tradegood-tech-level (tradegood-name->tradegood (listing-name g)))))
+					    ,(tradegood-tech-level (lookup-tradegood (listing-name g)))))
 				   (planet-market p)))))
 
 (defun js-planets (a-cap gal)

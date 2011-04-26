@@ -4,19 +4,21 @@ Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo
 but no longer shares any code.
 
 # THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
-##### but it has been upgraded from "unplayable" to "kinda playable". It'll still probably do awful things if you try multiplayer, but hey. Progress.
+##### but it has been upgraded from "kinda playable" to "mostly playable". It's still snippy about you buying more things than you can afford, or more than is available on a planet, but multiple people should now be able to play on the same server without anything exploding.
 
 To use it 
 
 - clone this repository
 - load it into your lisp
 - run `(cl-leet:start)`
-- navigate to `http://localhost:4141`
+- navigate to `http://localhost:4141` (and have other players navigate to `http://[your ip here]:4141`)
 
 Click on green planets to travel to them (the red planet designates your current planet).
 The tooltip shows you your destinations' name and description, how much fuel it takes to get there and a market summary.
 Hold `space` to stop the map from rotating for easier clicking and hovering.
-Buy and sell using the interface on the right.
+Buy and sell using the interface on the right. 
+"Refuel" is just a shortcut to buy as much fuel as you need/can afford/is available.
+"New Game" is for when you screw yourself over badly enough that you need to start a new captain.
 
 Project Goals
 =============

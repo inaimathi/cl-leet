@@ -20,16 +20,16 @@
       (:div :id "tooltip")
       (:div :class "panel"
 	    (:div :class "player-info" 
-		  (:p (:span :class "label" "Credits: ") (str (captain-credits a-cap)))
-		  (:p (:span :class "label" "Fuel: ") (str (format nil "~a/~a" (ship-fuel s) (ship-fuel-cap s))))
-		  (:p (:span :class "label" "Cargo: ") (str (format nil "~a/~a" (ship-cargo-total s) (ship-cargo-cap s))))
-		  (echo-inventory (ship-cargo (captain-ship a-cap)) :form 'sell)
-		  (echo-refuel a-cap))
+	    	  (:p (:span :class "label" "Credits: ") (str (captain-credits a-cap)))
+	    	  (:p (:span :class "label" "Fuel: ") (str (format nil "~a/~a" (ship-fuel s) (ship-fuel-cap s))))
+	    	  (:p (:span :class "label" "Cargo: ") (str (format nil "~a/~a" (ship-cargo-total s) (ship-cargo-cap s))))
+	    	  (echo-inventory (ship-cargo (captain-ship a-cap)) :form 'sell)
+	    	  (echo-refuel a-cap))
 	    (:div :class "planet-info" 
-		  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
-		       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
-		       (:p (:span :class "label" "Tech Level: ") (str (planet-tech-level p))))
-		  (echo-inventory (planet-market (captain-current-planet a-cap))))
+	    	  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
+	    	       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
+	    	       (:p (:span :class "label" "Tech Level: ") (str (planet-tech-level p))))
+	    	  (echo-inventory (planet-market (captain-current-planet a-cap))))
 	    (:div :class "game-panel"
 		  (:a :href "/new-game" "New Game"))))))
 
@@ -39,7 +39,7 @@
   (redirect "/"))
 
 (define-easy-handler (travel :uri "/travel") (planet-name)
-  (move-to-planet! (session-value :captain) (lookup-planet (base64-string-to-string planet-name :uri t) *galaxy*))
+  (move-to-planet! (session-value :captain) (lookup-planet (base64-string-to-string planet-name :uri t)))
   (galaxy-produce!)
   (redirect "/"))
 
@@ -66,14 +66,15 @@
 
 (defun echo-refuel (a-cap)
   (let* ((fuel-needed (ship-fuel-space (captain-ship a-cap)))
-	 (local-fuel (lookup-listing "Fuel" (captain-current-planet a-cap)))
-	 (fuel-afford (/ (captain-credits a-cap) (listing-price local-fuel)))
+	 (local-fuel (lookup-listing "Fuel" (planet-market (captain-current-planet a-cap))))
+	 (fuel-afford (floor (/ (captain-credits a-cap) (listing-price local-fuel))))
 	 (fuel-available (listing-amount local-fuel))
 	 (f (min fuel-needed fuel-afford fuel-available)))
     (html-to-stout
       (if (= 0 f)
 	  (htm (:p "Refuel"))
-	  (htm (:a :href (format nil "/buy?tradegood=Fuel&num=~a" f) "Refuel"))))))    
+	  (htm (:a :href (format nil "/buy?tradegood=Fuel&num=~a" f) 
+		   (str (format nil "Refuel (~a fuel for ~a credits)" f (* f (listing-price local-fuel))))))))))
 
 (defun echo-galaxy-map (a-cap)
   (html-to-stout

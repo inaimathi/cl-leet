@@ -36,9 +36,9 @@
 
 (defparameter *planet-desc-grammar*
   (list :root '(("is " :reputation " for " :subject) 
-		("is " :emphasis :reputation " for " :subject)
+		("is " :emphasis " " :reputation " for " :subject)
 		("is " :reputation " for " :subject " and " :subject) 
-		("is " :emphasis :reputation " for " :subject " and " :subject)
+		("is " :emphasis " " :reputation " for " :subject " and " :subject)
 		("is " :reputation " for " :subject " but " :adj-opposing-force " by " :historic-event)
 		("is " :adj-opposing-force " by " :historic-event) 
 		("a " :adj-negative " " :syn-planet))

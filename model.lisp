@@ -15,7 +15,7 @@
     (setf (planet-market a-copy) (mapcar #'copy-structure (planet-market p)))
     a-copy))
 
-(defstruct captain ship credits current-planet planet-pointer trade-history transaction)
+(defstruct captain ship credits current-planet trade-history transaction)
 (defstruct ship fuel-consumption fuel-cap fuel cargo-cap cargo)
 
 (defstruct trade planet good amount price/unit type)
@@ -34,9 +34,10 @@
 ;;;;;;;;;; Inserts/Updates
 (defun commit-transactions! (a-cap)
   "Takes a captain and applies their latest transactions to the global record"
-  (let ((ts (captain-transaction a-cap)))
+  (let ((ts (captain-transaction a-cap))
+	(p (lookup-planet (planet-name (captain-current-planet a-cap)))))
     (when ts (loop for (a-listing amt-change) in ts
-		do (incf (listing-amount a-listing) amt-change)))
+		do (add-to-market! p (listing-name a-listing) (listing-price a-listing) amt-change)))
     (setf (captain-transaction a-cap) nil)))
 
 (defun trade-change (type amount)
@@ -45,15 +46,14 @@
     ('buy (- amount))
     (otherwise (error (format nil "trade-change: Invalid trade record type - ~a" a-trade)))))
 
-(defun record-trade! (a-cap type a-planet amount a-listing)
+(defun record-trade! (a-cap type amount a-listing)
   "Records an action to trade history and to the current transaction"
   (let ((change (trade-change type amount))
-	(listing-pointer (lookup-listing (listing-name a-listing) (planet-market (captain-planet-pointer a-cap))))
 	(a-trade (make-trade 
-		  :type type :planet a-planet
+		  :type type :planet (captain-current-planet a-cap)
 		  :amount amount :good (listing-name a-listing) :price/unit (listing-price a-listing))))
     (setf (captain-trade-history a-cap) (cons a-trade (captain-trade-history a-cap))
-	  (captain-transaction a-cap) (cons (list listing-pointer change) (captain-transaction a-cap)))))
+	  (captain-transaction a-cap) (cons (list a-listing change) (captain-transaction a-cap)))))
 
 (defun add-to-market! (a-planet t-name num sell-price)
   "Add [num] [t-good] to [a-planet]s market"
@@ -86,7 +86,6 @@
 	 (distance (planet-distance current-planet p)))
     (commit-transactions! a-cap)
     (setf (captain-current-planet a-cap) (copy-planet p)
-	  (captain-planet-pointer a-cap) p
 	  (ship-fuel (captain-ship a-cap)) (- fuel (round (* distance (ship-fuel-consumption (captain-ship a-cap))))))))
 
 (defun process-purchase! (a-cap a-listing num)
@@ -94,14 +93,14 @@
       (setf (listing-amount a-listing) (- (listing-amount a-listing) num) ;; Remove [num] [t-name] from the planet
 	    (captain-credits a-cap) (- (captain-credits a-cap) (* num (listing-price a-listing)))) ;; Remove (* [num] [price]) credits from captains' account
       (add-to-cargo! a-cap t-name num (listing-price a-listing))
-      (record-trade! a-cap 'buy (captain-current-planet a-cap) num a-listing)))
+      (record-trade! a-cap 'buy num a-listing)))
 
 (defun process-sale! (a-cap a-listing sell-price num)
   (let ((t-name (listing-name a-listing)))
     (remove-from-cargo! a-cap t-name num)
     (add-to-market! (captain-current-planet a-cap) t-name num sell-price)
     (setf (captain-credits a-cap) (+ (captain-credits a-cap) (* sell-price num)))
-    (record-trade! a-cap 'sell (captain-current-planet a-cap) num a-listing)))
+    (record-trade! a-cap 'sell num a-listing)))
 
 (defun remove-from-cargo! (a-cap t-name num)
   "Remove [num] [t-good] from [a-cap]s inventory"
@@ -174,8 +173,8 @@
 	     (diff-sq (planet-y p1) (planet-y p2))
 	     (diff-sq (planet-x p1) (planet-x p2))))))
 
-(defun lookup-planet (p-name galaxy)
-  "Look up [p-name] in [galaxy] (nil if the planet doesn't exist in [galaxy])"
+(defun lookup-planet (p-name)
+  "Look up [p-name] (nil if the planet doesn't exist in *galaxy*)"
   (find-if (lambda (p) (string= (planet-name p) p-name)) *galaxy*))
 
 (defun lookup-listing (t-name inventory)
@@ -203,7 +202,6 @@
 (defun generate-captain ()
   (make-captain :credits 10000
 		:current-planet (copy-planet (car *galaxy*))
-		:planet-pointer (car *galaxy*)
 		:trade-history nil
 		:ship (make-ship :cargo-cap 50
 				 :cargo nil

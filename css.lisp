@@ -9,7 +9,7 @@
 (defun css-planet-class (plt current-plt local-plt-list)
   (format nil "planet p-~a~@[ ~a~]"
 	  (planet-id plt)
-	  (cond ((string= current-plt (planet-name plt)) "current")
+	  (cond ((string= (planet-name current-plt) (planet-name plt)) "current")
 		((member (planet-name plt) local-plt-list :test #'string=) "local")
 		(t nil))))
 

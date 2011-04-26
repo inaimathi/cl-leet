@@ -4,7 +4,7 @@ Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo
 but no longer shares any code.
 
 # THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
-##### but it has been upgraded from "kinda playable" to "mostly playable". It's still snippy about you buying more things than you can afford, or more than is available on a planet, but multiple people should now be able to play on the same server without anything exploding.
+##### but it has been upgraded from "kinda playable" to "mostly playable but ugly". It's still snippy about you buying more things than you can afford, or more than is available on a planet, but multiple people should now be able to play on the same server without anything exploding.
 
 To use it 
 

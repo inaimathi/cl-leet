@@ -59,7 +59,7 @@ Additional Code by Sami Salkosuo (sami@roguemail.net)
 
 cl-leet is a pure Common Lisp port of Elite for Emacs
 It uses none of the original codebase (except for individual syllables 
-in the planet descriptions)
+in the planet names and descriptions)
 
 Copyright (C) 2011 Leo Zovic aka Inaimathi
 
@@ -77,5 +77,5 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
 
 For the sake of convenience, this program includes a minified copy of
-[jQuery 1.5.2](http://jquery.com/). jQuery is released under an [MIT-style license](http://jquery.org/license).
-The uncompressed source code can be obtained from [their downloads page](http://docs.jquery.com/Downloading_jQuery#Current_Release).
+[jQuery 1.5.2](http://jquery.com/) and [jQueryUI 1.8.12](http://jqueryui.com/). jQuery and jQueryUI are released under a dual [GNU/MIT-style license](http://jquery.org/license). 
+The uncompressed source code can be obtained from their [downloads](http://docs.jquery.com/Downloading_jQuery#Current_Release) [pages](http://jqueryui.com/download).

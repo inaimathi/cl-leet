@@ -4,8 +4,8 @@
   `(with-html-output-to-string (*standard-output* nil :prologue t :indent t)
      (:html :xmlns "http://www.w3.org/1999/xhtml" :xml\:lang "en" :lang "en"
 	    (:head (:meta :http-equiv "Content-Type" :content "text/html;charset=utf-8")
-		   (css-links "cl-leet.css")
-		   (js-links "jquery-1.5.2.min.js" "cl-leet.js")
+		   (css-links "cl-leet.css" "ui-lightness/jquery-ui-1.8.12.custom.css")
+		   (js-links "jquery-1.5.2.min.js" "jquery-ui-1.8.12.custom.min.js" "cl-leet.js")
 		   (:title ,(format nil "~@[~A - ~]l33t" title))
 		   (:body ,@body)))))
 
@@ -60,7 +60,8 @@
 			    (htm (:tr (:td (str (listing-name i))) (:td (str (listing-amount i))) (:td (str (listing-price i)))
 				      (when form (htm (:td (:form :action (format nil "/~(~a~)" form)
 								  (:input :name "tradegood" :type "hidden" :value (listing-name i))
-								  (:input :name "num")
+								  (:input :class "num-field" :name "num" :type "hidden")
+								  (:span :class "inventory-slider" (str (listing-amount i)))
 								  (:input :type "submit" :value (str (string-capitalize form)))))))))))))
 	(htm (:p (str empty))))))
 

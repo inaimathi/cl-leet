@@ -213,7 +213,7 @@
   (loop for i from 1 to num-planets
      collect (generate-planet i 500)))
 
-(defun generate-planet (plan-id (&optional galaxy-dimension))
+(defun generate-planet (plan-id &optional (galaxy-dimension 500))
   (let* ((rad (roll-dice 4 12))
 	 (tech (roll-dice 3 4))
 	 (prod (round (roll-dice 2 6 (+ rad tech)))))

@@ -4,7 +4,7 @@ Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo
 but no longer shares any code.
 
 # THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
-##### but it has been upgraded from "kinda playable" to "mostly playable but ugly". It's still snippy about you buying more things than you can afford, or more than is available on a planet, but multiple people should now be able to play on the same server without anything exploding.
+##### but it has been upgraded from "mostly playable but ugly" to "almost completely playable and passably looking". It's still snippy about purchasing/conveying in some edge cases, but it shold be ok for the most part.
 
 To use it 
 
@@ -75,6 +75,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see [http://www.gnu.org/licenses/](http://www.gnu.org/licenses/).
+
+Any art assets included with the codebase are released under [CC BY-SA 2.5](http://creativecommons.org/licenses/by-sa/2.5/ca/) 
+with the note that you don't need to do any additional attribution if you're just running a cl-leet server.
 
 For the sake of convenience, this program includes a minified copy of
 [jQuery 1.5.2](http://jquery.com/) and [jQueryUI 1.8.12](http://jqueryui.com/). jQuery and jQueryUI are released under a dual [GNU/MIT-style license](http://jquery.org/license). 

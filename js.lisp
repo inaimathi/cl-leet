@@ -43,12 +43,12 @@
 		 (defvar modified-player-cargo (parse-int ($ "#player-cargo-cap" (text))))
 		 
 		 ;;setting up the "3D" map
-		 ($ ".galaxy-box" 
+		 ($ ".viewport" 
 		    (mousemove 
 		     (lambda (e)
 		       (unless shift-p
-			 (let* ((local-x (- (@ e page-x) ($ ".galaxy-box" (offset) left)))
-				(local-y (- (@ e page-y) ($ ".galaxy-box" (offset) top))))
+			 (let* ((local-x (- (@ e page-x) ($ ".viewport" (offset) left)))
+				(local-y (- (@ e page-y) ($ ".viewport" (offset) top))))
 			   ($ ".layer" 
 			      (each (\ (update-layer this local-x local-y))))
 			   
@@ -119,5 +119,5 @@
 		     collect (who-ps-html (:li (:span :class "tradegood" (@ i 0)) ": " (:span :class "price" (@ i 1) " credits")))))
 
 		(defun update-layer (target-layer local-x local-y)
-		  ($ target-layer (css (create :left (- 0 (/ local-x (/ ($ ".galaxy-box" (width)) (- ($ target-layer (width)) ($ ".galaxy-box" (width))))))
-					       :top (- 0 (/ local-y (* ($ ".galaxy-box" (height)) (- ($ target-layer (height)) ($ ".galaxy-box" (height))))))))))))
+		  ($ target-layer (css (create :left (- 0 (/ local-x (/ ($ ".viewport" (width)) (- ($ target-layer (width)) ($ ".viewport" (width))))))
+					       :top (- 0 (/ local-y (* ($ ".viewport" (height)) (- ($ target-layer (height)) ($ ".viewport" (height))))))))))))

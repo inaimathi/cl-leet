@@ -4,7 +4,7 @@
   `(with-html-output-to-string (*standard-output* nil :prologue t :indent t)
      (:html :xmlns "http://www.w3.org/1999/xhtml" :xml\:lang "en" :lang "en"
 	    (:head (:meta :http-equiv "Content-Type" :content "text/html;charset=utf-8")
-		   (css-links "cl-leet.css" "ui-lightness/jquery-ui-1.8.12.custom.css")
+		   (css-links "cl-leet.css" "ui-lightness/jquery-ui-1.8.12.custom.css" "default-theme/theme.css")
 		   (js-links "jquery-1.5.2.min.js" "jquery-ui-1.8.12.custom.min.js" "cl-leet.js")
 		   (:title ,(format nil "~@[~A - ~]l33t" title))
 		   (:body ,@body)))))
@@ -83,15 +83,16 @@
 	  (locals (list-local-planets a-cap))
 	  (gal (list-galaxy))
 	  (viewport-width 600))
-      (htm (:div :class "galaxy-box"
-		 (:script :type "text/javascript"
-			  (str (ps* (js-planets a-cap *galaxy*))))
-		 (dolist (d (list 350 400 450 500 550))
-		   (let ((visual-d (* 2 (- d 300))))
-		     (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
-				(dolist (p (remove-if-not (lambda (p) (and (< (planet-z p) visual-d) (> (planet-z p) (- visual-d 100)))) gal))
-				  (if (member (planet-name p) locals :test #'string=)
-				      (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
-					       :class (css-planet-class p current locals) :style (css-transform-planet d p)))
-				      (htm (:div :class (css-planet-class p current locals) :style (css-transform-planet d p)))))))))
-		   (:div :class "top-layer" :style (inline-css `(:z-index ,viewport-width ,@(css-square viewport-width)))))))))
+      (htm (:div :class "galaxy-display"
+		 (:div :class "viewport"
+		       (:script :type "text/javascript"
+				(str (ps* (js-planets a-cap *galaxy*))))
+		       (dolist (d (list 350 400 450 500 550))
+			 (let ((visual-d (* 2 (- d 300))))
+			   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
+				      (dolist (p (remove-if-not (lambda (p) (and (< (planet-z p) visual-d) (> (planet-z p) (- visual-d 100)))) gal))
+					(if (member (planet-name p) locals :test #'string=)
+					    (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
+						     :class (css-planet-class p current locals) :style (css-transform-planet d p)))
+					    (htm (:div :class (css-planet-class p current locals) :style (css-transform-planet d p)))))))))
+		       (:div :class "top-layer" :style (inline-css `(:z-index ,viewport-width ,@(css-square viewport-width))))))))))

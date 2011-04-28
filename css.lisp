@@ -17,9 +17,11 @@
   (let ((px (format nil "~apx" d)))
     (list :width px :height px)))
 
+(defvar css-side-panel '(:padding 5px :width 310px :margin-bottom 10px :font-size small))
+
 (compile-css "css/cl-leet.css"
 	     `((body :font-family sans-serif)
-	       (.panel :position absolute :left 620px)
+	       (.panel :position absolute :left 660px)
 	       
 	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
 	       ("#tooltip h3" :margin 0px :padding 0px)
@@ -29,18 +31,18 @@
 	       (\#refuel-tooltip :display none)
 
 	       ;; player info
-	       (.player-info :border "1px solid #000" :padding 5px :margin-bottom 10px)
+	       (.player-info ,@css-side-panel)
 	       (".player-info p" :margin-top 0px)
 
 	       ;; planet info
-	       (.planet-info :border "1px solid #000" :padding 5px)
+	       (.planet-info ,@css-side-panel)
 	       (.planet-name :font-weight bold)
 	       (".planet-info p" :margin-top 0px)
 
-	       (".inventory-slider" :display block :float left :width 100px :margin-top 8px)
+	       (".inventory-slider" :display block :float left :width 80px :margin-top 8px)
 
 	       ;; galaxy display
-	       (.galaxy-box :width 600px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
+	       (.viewport :width 600px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
 	       (".layer, .top-layer" :border "1px solid #aaa" :position absolute)
 
 	       (.planet :position absolute :background-color \#00f :border "1px solid #00c" :border-radius 40px)
@@ -48,3 +50,12 @@
 	       (".planet.current" :background-color \#f00 :border "1px solid #c00")
 
 	       (".planet:hover, .planet.local:hover, .planet.current:hover" :background-color \#666 :opacity 1)))
+
+(compile-css "css/default-theme/theme.css"
+	     `((body :background-image "url(/css/default-theme/pattern.png)")
+	       (.galaxy-display :background-image "url(/css/default-theme/galaxy-display.png)" :height 665px :width 620px :position absolute :padding "35px 0px 0px 20px")
+	       (.viewport :background-image "url(/css/default-theme/screen-reflection.png)")
+
+	       (".panel p" :padding-left 30px :padding-right 30px)
+
+	       (".planet-info, .player-info" :background-image "url(/css/default-theme/side-panel.png)")))

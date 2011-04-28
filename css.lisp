@@ -21,13 +21,23 @@
 	     `((body :font-family sans-serif)
 	       (.panel :position absolute :left 620px)
 	       
-	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :width 250px :color \#ddd :border "1px solid #fff" :display none)
+	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
 	       ("#tooltip h3" :margin 0px :padding 0px)
 	       ("#tooltip p" :margin-top 0px :padding-top 0px)
 	       ("#tooltip ul" :list-style-type none :padding 0px :margin "10px 0px 0px 0px")
 
-	       ;; game panel
-	       (.game-panel :margin-top 20px :font-weight bold)
+	       (\#refuel-tooltip :display none)
+
+	       ;; player info
+	       (.player-info :border "1px solid #000" :padding 5px :margin-bottom 10px)
+	       (".player-info p" :margin-top 0px)
+
+	       ;; planet info
+	       (.planet-info :border "1px solid #000" :padding 5px)
+	       (.planet-name :font-weight bold)
+	       (".planet-info p" :margin-top 0px)
+
+	       (".inventory-slider" :display block :float left :width 100px :margin-top 8px)
 
 	       ;; galaxy display
 	       (.galaxy-box :width 600px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)

@@ -20,18 +20,17 @@
       (:div :id "tooltip")
       (:div :class "panel"
 	    (:div :class "player-info" 
-	    	  (:p (:span :class "label" "Credits: ") (str (captain-credits a-cap)))
-	    	  (:p (:span :class "label" "Fuel: ") (str (format nil "~a/~a" (ship-fuel s) (ship-fuel-cap s))))
-	    	  (:p (:span :class "label" "Cargo: ") (str (format nil "~a/~a" (ship-cargo-total s) (ship-cargo-cap s))))
+	    	  (:p (:span :class "label" "Credits: ") (:span :id "player-credits" (str (captain-credits a-cap))))
+	    	  (:p (:span :class "label" "Fuel: ") (str (format nil "~a / ~a" (ship-fuel s) (ship-fuel-cap s))))
+	    	  (:p (:span :class "label" "Cargo: ") (:span :id "player-cargo" (str (ship-cargo-total s))) "/" (:span :id "player-cargo-cap" (str (ship-cargo-cap s))))
 	    	  (echo-inventory (ship-cargo (captain-ship a-cap)) :form 'sell)
-	    	  (echo-refuel a-cap))
+	    	  (echo-refuel a-cap) (:a :href "/new-game" "New Game"))
 	    (:div :class "planet-info" 
 	    	  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
 	    	       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
 	    	       (:p (:span :class "label" "Tech Level: ") (str (planet-tech-level p))))
-	    	  (echo-inventory (planet-market (captain-current-planet a-cap))))
-	    (:div :class "game-panel"
-		  (:a :href "/new-game" "New Game"))))))
+		  (:div :id "market-inventory"
+			(echo-inventory (planet-market (captain-current-planet a-cap)))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; action handlers
 (define-easy-handler (new-game :uri "/new-game") ()
@@ -57,10 +56,10 @@
     (if list-of-listings
 	(htm (:table (:tr (:td "Name") (:td "# Stocked") (:td "Price") (when form (htm (:td)))
 			  (dolist (i list-of-listings)
-			    (htm (:tr (:td (str (listing-name i))) (:td (str (listing-amount i))) (:td (str (listing-price i)))
+			    (htm (:tr (:td (str (listing-name i))) (:td :class "listing-amount" (str (listing-amount i))) (:td :class "listing-price" (str (listing-price i)))
 				      (when form (htm (:td (:form :action (format nil "/~(~a~)" form)
 								  (:input :name "tradegood" :type "hidden" :value (listing-name i))
-								  (:input :class "num-field" :name "num" :type "hidden")
+								  (:input :class "num-field" :name "num" :type "hidden" :value 0)
 								  (:span :class "inventory-slider" (str (listing-amount i)))
 								  (:input :type "submit" :value (str (string-capitalize form)))))))))))))
 	(htm (:p (str empty))))))
@@ -72,10 +71,11 @@
 	 (fuel-available (listing-amount local-fuel))
 	 (f (min fuel-needed fuel-afford fuel-available)))
     (html-to-stout
-      (if (= 0 f)
-	  (htm (:p "Refuel"))
-	  (htm (:a :href (format nil "/buy?tradegood=Fuel&num=~a" f) 
-		   (str (format nil "Refuel (~a fuel for ~a credits)" f (* f (listing-price local-fuel))))))))))
+      (:span :class "refuel-button"
+	     (if (= 0 f)
+		 (htm "Refuel")
+		 (htm (:a :class "refuel-button" :href (format nil "/buy?tradegood=Fuel&num=~a" f) (str "Refuel"))
+		      (:span :id "refuel-tooltip" (str (format nil "~a fuel for ~a credits" f (* f (listing-price local-fuel)))))))))))
 
 (defun echo-galaxy-map (a-cap)
   (html-to-stout

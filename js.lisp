@@ -31,31 +31,75 @@
      (list ,@(loop for p in gal
 		collect (planet-json a-cap p)))))
 
+(defpsmacro tooltip (selector contents)
+  `($ ,selector (hover (\ ($ "#tooltip" (show) (html ,contents)))
+		       (\ ($ "#tooltip" (hide))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; js files
 (compile-js "js/cl-leet.js"
-	    (ps (defvar shift-p false)
-		(doc-ready ($ ".galaxy-box" 
-			      (mousemove 
-			       (lambda (e)
-				 (unless shift-p
-				   (let* ((local-x (- (@ e page-x) ($ ".galaxy-box" (offset) left)))
-					  (local-y (- (@ e page-y) ($ ".galaxy-box" (offset) top))))
-				     ($ ".layer" 
-					(each (\ (update-layer this local-x local-y))))
-
-				     (loop for i from 1 to (@ ($ ".planet") length)
-					do ($ (+ ".top-layer .p-" i) (offset ($ (+ ".layer .p-" i) (offset))))))))))
-
-			   ($ document 
-			      (keydown (lambda (e) (if (= (@ e which) 32) (setf shift-p t))))
-			      (keyup (lambda (e) (if (= (@ e which) 32) (setf shift-p false))))
-			      (mousemove (lambda (e) 
-					   ($ "#tooltip" (css (create :top (+ 20 (@ e page-y)) :left (+ 20 (@ e page-x))))))))
+	    (ps (doc-ready 
+		 (defvar shift-p false)
+		 (defvar modified-player-credits (parse-int ($ "#player-credits" (text))))
+		 (defvar modified-player-cargo (parse-int ($ "#player-cargo-cap" (text))))
+		 
+		 ;;setting up the "3D" map
+		 ($ ".galaxy-box" 
+		    (mousemove 
+		     (lambda (e)
+		       (unless shift-p
+			 (let* ((local-x (- (@ e page-x) ($ ".galaxy-box" (offset) left)))
+				(local-y (- (@ e page-y) ($ ".galaxy-box" (offset) top))))
+			   ($ ".layer" 
+			      (each (\ (update-layer this local-x local-y))))
 			   
-			   ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
-
 			   (loop for i from 1 to (@ ($ ".planet") length)
-			      do (planet-tooltip (+ ".top-layer .p-" i) i)))
+			      do ($ (+ ".top-layer .p-" i) (offset ($ (+ ".layer .p-" i) (offset))))))))))
+		 
+		 ($ document 
+		    (keydown (lambda (e) (if (= (@ e which) 32) (setf shift-p t))))
+		    (keyup (lambda (e) (if (= (@ e which) 32) (setf shift-p false))))
+		    (mousemove (lambda (e) 
+				 ($ "#tooltip" (css (create :top (+ 20 (@ e page-y)) :left (+ 20 (@ e page-x))))))))
+		 
+		 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
+		 
+		 (loop for i from 1 to (@ ($ ".planet") length)
+		    do (planet-tooltip (+ ".top-layer .p-" i) i))
+
+		 ;;setting up the market/inventory sliders and buttons
+		 (tooltip ".refuel-button" ($ "#refuel-tooltip" (text)))
+		 ($ ".player-info a, input:submit, button" (css (create :font-size "small")) (button))
+
+		 ($ ".player-info .inventory-slider" 
+		    (each (\ (let ((max (parse-int ($ this (text)))))
+			       (tooltip this ($ this (siblings "input.num-field") (val)))
+			       ($ this 
+				  (empty)
+				  (slider (create :max max :range "min"
+						  :slide (lambda (e ui) 
+							   ($ this (siblings "input.num-field") (val (@ ui value)))
+							   ($ "#tooltip" (html (@ ui value))))
+						  :stop (\ ($ "#tooltip" (hide))))))))))
+		    
+		 ($ "#market-inventory .inventory-slider" 
+		    (each (\ (let* ((num-left (parse-int ($ this (text))))
+				    (unit-price (parse-int ($ this (parents "tr") (children ".listing-price") (text))))
+				    (max (chain -math (min num-left modified-player-cargo (/ modified-player-credits unit-price)))))
+			       (tooltip this ($ this (siblings "input.num-field") (val)))
+			       ($ this 
+				  (empty)
+				  (slider (create :max max :range "min"
+						  :slide (lambda (e ui) 
+							   ($ this (siblings "input.num-field") (val (@ ui value)))
+							   ($ "#tooltip" (html (@ ui value))))
+						  :stop (\ ($ "#tooltip" (hide)))))))))))
+
+		;; JS functions
+		(defun update-slider-max (a-slider) 
+		  (let* ((num-left (parse-int ($ this (parents "tr") (children ".listing-price") (text))))
+			 (unit-price (parse-int ($ this (parents "tr") (children ".listing-price") (text))))
+			 (max (chain -math (min num-left modified-player-cargo (/ modified-player-credits unit-price)))))
+		    ($ a-slider (slider "option" "max" max))))
 
 		(defun planet-tooltip (planet id)
 		  ($ planet

@@ -209,13 +209,17 @@
 				 :fuel-cap 300
 				 :fuel 300)))
 
-(defun generate-planet (plan-id)
+(defun generate-galaxy (num-planets)
+  (loop for i from 1 to num-planets
+     collect (generate-planet i 500)))
+
+(defun generate-planet (plan-id (&optional galaxy-dimension))
   (let* ((rad (roll-dice 4 12))
 	 (tech (roll-dice 3 4))
 	 (prod (round (roll-dice 2 6 (+ rad tech)))))
     (make-planet :id plan-id :name (string-capitalize (grammar->string *planet-name-grammar*))
 		 :description (grammar->string *planet-desc-grammar*)
-		 :radius rad :x (random 500) :y (random 500) :z (random 500)
+		 :radius rad :x (random galaxy-dimension) :y (random galaxy-dimension) :z (random galaxy-dimension)
 		 :market (generate-market rad tech prod)
 		 :tech-level tech
 		 :productivity prod)))

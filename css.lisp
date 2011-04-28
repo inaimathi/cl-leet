@@ -53,7 +53,7 @@
 
 (compile-css "css/default-theme/theme.css"
 	     `((body :background-image "url(/css/default-theme/pattern.png)")
-	       (.galaxy-display :background-image "url(/css/default-theme/galaxy-display.png)" :height 665px :width 620px :position absolute :padding "35px 0px 0px 20px")
+	       (.galaxy-display :background-image "url(/css/default-theme/galaxy-display.png)" :height 670px :width 620px :position absolute :padding "20px 0px 0px 20px" :border-bottom "2px solid #222" :border-right "2px solid #222")
 	       (.viewport :background-image "url(/css/default-theme/screen-reflection.png)")
 
 	       (".panel p" :padding-left 30px :padding-right 30px)

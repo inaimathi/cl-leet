@@ -1,5 +1,8 @@
 body { background-image: url(/css/default-theme/pattern.png); }
-.galaxy-display { background-image: url(/css/default-theme/galaxy-display.png); height: 670px; width: 620px; position: absolute; padding: 20px 0px 0px 20px; border-bottom: 2px solid #222; border-right: 2px solid #222; }
+.galaxy-display { background-image: url(/css/default-theme/galaxy-display.png); border-bottom: 2px solid #222; border-right: 2px solid #222; height: 670px; width: 620px; position: absolute; padding: 20px 0px 0px 20px; }
 .viewport { background-image: url(/css/default-theme/screen-reflection.png); }
 .panel p { padding-left: 30px; padding-right: 30px; }
-.planet-info, .player-info { background-image: url(/css/default-theme/side-panel.png); }
+.planet-info, .player-info { background-image: url(/css/default-theme/side-panel.png); border-bottom: 2px solid #222; border-right: 2px solid #222; }
+.ui-button { background-image: url(/css/default-theme/brushed-metal-dark.png); border-radius: 15px; color: #fff; border: none; -webkit-box-shadow: 2px 2px 0px 2px #222; -moz-box-shadow: 2px 2px 0px 2px #222; box-shadow: 2px 2px 0px 2px #222; margin: 3px; }
+.ui-button.ui-button-disabled:hover { color: #fff; -webkit-box-shadow: 2px 2px 0px 2px #222; -moz-box-shadow: 2px 2px 0px 2px #222; box-shadow: 2px 2px 0px 2px #222; }
+.ui-button:hover { color: #f90; -webkit-box-shadow: 0px 0px 0px 1px #f90; -moz-box-shadow: 0px 0px 0px 1px #f90; box-shadow: 0px 0px 0px 1px #f90; }

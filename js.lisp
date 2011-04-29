@@ -14,6 +14,9 @@
 (defpsmacro doc-ready (&body body)
   `($ document (ready (\ ,@body))))
 
+(defpsmacro math (method &rest args)
+  `(chain -math (,method ,@args)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; view components
 (defun planet-json (a-cap p)
   `(create :name ,(planet-name p)
@@ -39,8 +42,8 @@
 (compile-js "js/cl-leet.js"
 	    (ps (doc-ready 
 		 (defvar shift-p false)
-		 (defvar modified-player-credits (parse-int ($ "#player-credits" (text))))
-		 (defvar modified-player-cargo (parse-int ($ "#player-cargo-cap" (text))))
+		 (defvar player-credits (parse-int ($ "#player-credits" (text))))
+		 (defvar player-cargo-space (- (parse-int ($ "#player-cargo-cap" (text))) (parse-int ($ "#player-cargo" (text)))))
 		 
 		 ;;setting up the "3D" map
 		 ($ ".viewport" 
@@ -67,8 +70,9 @@
 		    do (planet-tooltip (+ ".top-layer .p-" i) i))
 
 		 ;;setting up the market/inventory sliders and buttons
-		 (tooltip ".refuel-button" ($ "#refuel-tooltip" (text)))
+		 (tooltip "a.refuel-button" ($ "#refuel-tooltip" (text)))
 		 ($ ".player-info a, input:submit, button" (css (create :font-size "small")) (button))
+		 ($ "span.refuel-button" (button (create :disabled t)))
 
 		 ($ ".player-info .inventory-slider" 
 		    (each (\ (let ((max (parse-int ($ this (text)))))
@@ -84,7 +88,7 @@
 		 ($ "#market-inventory .inventory-slider" 
 		    (each (\ (let* ((num-left (parse-int ($ this (text))))
 				    (unit-price (parse-int ($ this (parents "tr") (children ".listing-price") (text))))
-				    (max (chain -math (min num-left modified-player-cargo (/ modified-player-credits unit-price)))))
+				    (max (math min num-left player-cargo-space (math floor (/ player-credits unit-price)))))
 			       (tooltip this ($ this (siblings "input.num-field") (val)))
 			       ($ this 
 				  (empty)
@@ -98,7 +102,7 @@
 		(defun update-slider-max (a-slider) 
 		  (let* ((num-left (parse-int ($ this (parents "tr") (children ".listing-price") (text))))
 			 (unit-price (parse-int ($ this (parents "tr") (children ".listing-price") (text))))
-			 (max (chain -math (min num-left modified-player-cargo (/ modified-player-credits unit-price)))))
+			 (max (math min num-left player-cargo-space (/ player-credits unit-price))))
 		    ($ a-slider (slider "option" "max" max))))
 
 		(defun planet-tooltip (planet id)

@@ -48,3 +48,7 @@
 	      collect `(getf ,place ,i))))
 
 (defun mean (&rest numbers) (round (/ (apply #'+ numbers) (length numbers))))
+
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+     ,@body))

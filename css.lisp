@@ -17,11 +17,25 @@
   (let ((px (format nil "~apx" d)))
     (list :width px :height px)))
 
+(defun css-box-shadow (directive) (list :-webkit-box-shadow directive :-moz-box-shadow directive :box-shadow directive))
 (defvar css-side-panel '(:padding 5px :width 310px :margin-bottom 10px :font-size small))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; operations for themes
+(defvar *current-theme* "/css/default-theme/")
+(defmacro with-theme (a-theme &body body)
+  (with-gensyms (prev-theme result)
+    `(let ((,prev-theme *current-theme*))
+       (setf *current-theme* ,a-theme)
+       (let ((,result ,@body))
+	 (setf *current-theme* ,prev-theme)
+	 ,result))))
+
+(defun theme-img (name &optional (theme *current-theme*)) (list :background-image (format nil "url(~a~a)" *current-theme* name)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; compile statements
 (compile-css "css/cl-leet.css"
 	     `((body :font-family sans-serif)
-	       (.panel :position absolute :left 660px)
+	       (.panel :position absolute :left 655px)
 	       
 	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
 	       ("#tooltip h3" :margin 0px :padding 0px)
@@ -51,11 +65,16 @@
 
 	       (".planet:hover, .planet.local:hover, .planet.current:hover" :background-color \#666 :opacity 1)))
 
+(defvar css-box-border (list :border-bottom "2px solid #222" :border-right "2px solid #222"))
 (compile-css "css/default-theme/theme.css"
-	     `((body :background-image "url(/css/default-theme/pattern.png)")
-	       (.galaxy-display :background-image "url(/css/default-theme/galaxy-display.png)" :height 670px :width 620px :position absolute :padding "20px 0px 0px 20px" :border-bottom "2px solid #222" :border-right "2px solid #222")
-	       (.viewport :background-image "url(/css/default-theme/screen-reflection.png)")
+	     `((body ,@(theme-img "pattern.png"))
+	       (.galaxy-display ,@(theme-img "galaxy-display.png") ,@css-box-border :height 670px :width 620px :position absolute :padding "20px 0px 0px 20px")
+	       (.viewport ,@(theme-img "screen-reflection.png"))
 
 	       (".panel p" :padding-left 30px :padding-right 30px)
 
-	       (".planet-info, .player-info" :background-image "url(/css/default-theme/side-panel.png)")))
+	       (".planet-info, .player-info" ,@(theme-img "side-panel.png") ,@css-box-border)
+
+	       (.ui-button ,@(theme-img "brushed-metal-dark.png") :border-radius 15px :color "#fff" :border "none" ,@(css-box-shadow "2px 2px 0px 2px #222") :margin 3px)
+	       (".ui-button.ui-button-disabled:hover" :color "#fff" ,@(css-box-shadow "2px 2px 0px 2px #222"))
+	       (".ui-button:hover" :color "#f90" ,@(css-box-shadow "0px 0px 0px 1px #f90"))))

@@ -71,11 +71,10 @@
 	 (fuel-available (listing-amount local-fuel))
 	 (f (min fuel-needed fuel-afford fuel-available)))
     (html-to-stout
-      (:span :class "refuel-button"
-	     (if (= 0 f)
-		 (htm "Refuel")
-		 (htm (:a :class "refuel-button" :href (format nil "/buy?tradegood=Fuel&num=~a" f) (str "Refuel"))
-		      (:span :id "refuel-tooltip" (str (format nil "~a fuel for ~a credits" f (* f (listing-price local-fuel)))))))))))
+      (if (= 0 f)
+	  (htm (:span :class "refuel-button" "Refuel"))
+	  (htm (:a :class "refuel-button" :href (format nil "/buy?tradegood=Fuel&num=~a" f) (str "Refuel"))
+	       (:span :id "refuel-tooltip" (str (format nil "~a fuel for ~a credits" f (* f (listing-price local-fuel))))))))))
 
 (defun echo-galaxy-map (a-cap)
   (html-to-stout

@@ -211,7 +211,7 @@
 
 (defun generate-galaxy (num-planets)
   (loop for i from 1 to num-planets
-     collect (generate-planet i 500)))
+     collect (generate-planet i 1500)))
 
 (defun generate-planet (plan-id &optional (galaxy-dimension 500))
   (let* ((rad (roll-dice 4 12))

@@ -82,5 +82,5 @@
 	:syn-planet '("planet" "world" "place" "little planet" "dump")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generated Data
-(defparameter *galaxy* (generate-galaxy 30))
+(defparameter *galaxy* (generate-galaxy 100))
 (defparameter *captain* (generate-captain))

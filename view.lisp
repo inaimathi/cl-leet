@@ -78,20 +78,23 @@
 
 (defun echo-galaxy-map (a-cap)
   (html-to-stout
-    (let ((current (captain-current-planet a-cap))
-	  (locals (list-local-planets a-cap))
-	  (gal (list-galaxy))
-	  (viewport-width 600))
+    (let* ((current (captain-current-planet a-cap))
+	   (view-center (list (planet-x current) (planet-y current)))
+	   (locals (list-local-planets a-cap))
+	   (gal (list-galaxy))
+	   (viewport-width 600))
       (htm (:div :class "galaxy-display"
 		 (:div :class "viewport"
 		       (:script :type "text/javascript"
 				(str (ps* (js-planets a-cap *galaxy*))))
-		       (dolist (d (list 350 400 450 500 550))
+		       (dolist (d (list 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 1050))
 			 (let ((visual-d (* 2 (- d 300))))
 			   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
 				      (dolist (p (remove-if-not (lambda (p) (and (< (planet-z p) visual-d) (> (planet-z p) (- visual-d 100)))) gal))
-					(if (member (planet-name p) locals :test #'string=)
-					    (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
-						     :class (css-planet-class p current locals) :style (css-transform-planet d p)))
-					    (htm (:div :class (css-planet-class p current locals) :style (css-transform-planet d p)))))))))
-		       (:div :class "top-layer" :style (inline-css `(:z-index ,viewport-width ,@(css-square viewport-width))))))))))
+					(let ((planet-class (css-planet-class p current locals))
+					      (planet-style (css-transform-planet d p :viewport-width 600 :center-on view-center)))
+					  (if (member (planet-name p) locals :test #'string=)
+					      (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
+						       :class planet-class :style planet-style))
+					      (htm (:div :class planet-class :style planet-style)))))))))
+		       (:div :class "top-layer" :style (inline-css `(,@(css-square viewport-width))))))))))

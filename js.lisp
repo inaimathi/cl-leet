@@ -44,7 +44,8 @@
 		 (defvar shift-p false)
 		 (defvar player-credits (parse-int ($ "#player-credits" (text))))
 		 (defvar player-cargo-space (- (parse-int ($ "#player-cargo-cap" (text))) (parse-int ($ "#player-cargo" (text)))))
-		 
+		 (defvar galaxy-length (@ ($ ".planet" length)))
+
 		 ;;setting up the "3D" map
 		 ($ ".viewport" 
 		    (mousemove 
@@ -55,7 +56,7 @@
 			   ($ ".layer" 
 			      (each (\ (update-layer this local-x local-y))))
 			   
-			   (loop for i from 1 to (@ ($ ".planet") length)
+			   (loop for i from 1 to galaxy-length
 			      do ($ (+ ".top-layer .p-" i) (offset ($ (+ ".layer .p-" i) (offset))))))))))
 		 
 		 ($ document 
@@ -66,7 +67,7 @@
 		 
 		 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
 		 
-		 (loop for i from 1 to (@ ($ ".planet") length)
+		 (loop for i from 1 to galaxy-length
 		    do (planet-tooltip (+ ".top-layer .p-" i) i))
 
 		 ;;setting up the market/inventory sliders and buttons

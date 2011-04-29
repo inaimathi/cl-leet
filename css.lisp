@@ -1,10 +1,11 @@
 (in-package :cl-leet)
 
-(defun css-transform-planet (layer-size planet &optional (gal-size 500))
-  (let ((ratio (/ layer-size gal-size)))
+(defun css-transform-planet (layer-size planet &key (viewport-width 600) (center-on (list 0 0)))
+  (let ((ratio (/ layer-size viewport-width)))
     (flet ((px (directive) (format nil "~apx" (round (* ratio directive)))))
-      (inline-css (list :left (px (planet-x planet)) :top (px (planet-y planet))
-			:border-radius (round (* ratio (planet-radius planet))) :height (px (* 2 (planet-radius planet))) :width (px (* 2 (planet-radius planet))))))))
+      (inline-css (list :left (px (+ (round (/ viewport-width 2)) (- (planet-x planet) (car center-on)))) 
+			:top (px (+ (round (/ viewport-width 2)) (- (planet-y planet) (cadr center-on))))
+			:height (px (* 2 (planet-radius planet))) :width (px (* 2 (planet-radius planet))))))))
 
 (defun css-planet-class (plt current-plt local-plt-list)
   (format nil "planet p-~a~@[ ~a~]"
@@ -37,7 +38,7 @@
 	     `((body :font-family sans-serif)
 	       (.panel :position absolute :left 655px)
 	       
-	       (\#tooltip :position absolute :z-index 19001 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
+	       (\#tooltip :position absolute :z-index 9001 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
 	       ("#tooltip h3" :margin 0px :padding 0px)
 	       ("#tooltip p" :margin-top 0px :padding-top 0px)
 	       ("#tooltip ul" :list-style-type none :padding 0px :margin "10px 0px 0px 0px")
@@ -59,7 +60,9 @@
 	       (.viewport :width 600px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
 	       (".layer, .top-layer" :border "1px solid #aaa" :position absolute)
 
-	       (.planet :position absolute :background-color \#00f :border "1px solid #00c" :border-radius 40px)
+	       (.top-layer :z-index 9000 :overflow hidden)
+
+	       (.planet :position absolute :background-color \#00f :border "1px solid #00c" :border-radius 80px)
 	       (".planet.local" :background-color \#0f0 :border "1px solid #0c0")
 	       (".planet.current" :background-color \#f00 :border "1px solid #c00")
 

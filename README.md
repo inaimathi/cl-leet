@@ -4,7 +4,7 @@ Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo
 but no longer shares any code.
 
 # THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
-##### but it has been upgraded from "mostly playable but ugly" to "almost completely playable and passably looking". It's still snippy about purchasing/conveying in some edge cases, but it shold be ok for the most part.
+##### but it has been upgraded from "almost completely playable and passably looking" to "playable and pretty-ish".
 
 To use it 
 

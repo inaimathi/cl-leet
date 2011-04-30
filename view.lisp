@@ -28,6 +28,8 @@
 	    (:div :class "planet-info" 
 	    	  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
 	    	       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
+		       (:p (:span :class "label" "Local Goods: ") (str (format nil "~{~a~^, ~}" (planet-local-goods p))))
+		       (when (planet-banned-goods p) (htm (:p (:span :class "label" "Banned Goods: ") (str (format nil "~{~a~^, ~}" (planet-banned-goods p))))))
 	    	       (:p (:span :class "label" "Tech Level: ") (str (planet-tech-level p))))
 		  (:div :id "market-inventory"
 			(echo-inventory (planet-market (captain-current-planet a-cap)))))))))

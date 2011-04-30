@@ -43,6 +43,12 @@
 			(make-list num-dice :initial-element die-type))))
     (apply #'+ (cons (or mod 0) rolls))))
 
+(defun pick (a-list) (nth (random (length a-list)) a-list))
+
+(defun pick-n (a-list num-elems)
+  (loop repeat num-elems
+       collect (pick a-list)))
+
 (defmacro gets (place &rest indicators)
   `(list ,@(loop for i in indicators
 	      collect `(getf ,place ,i))))

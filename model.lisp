@@ -113,14 +113,14 @@
 
 (defun galaxy-produce! ()
   (dolist (a-planet *galaxy*)
-    (market-produce! (planet-productivity a-planet) (planet-market a-planet))))
+    (planet-produce! a-planet)))
 
-(defun market-produce! (productivity a-market)
-  (dolist (l a-market)
+(defun planet-produce! (a-planet)
+  (dolist (l (planet-market a-planet))
     (let* ((g (lookup-tradegood (listing-name l)))
 	   (tech-level (max 1 (tradegood-tech-level g)))
-	   (produced (+ (roll-dice 2 20) (round (/ productivity tech-level))))
-	   (new-price (mean (apply #'roll-dice (tradegood-price g)) (listing-price l))))
+	   (produced (+ (roll-dice 2 20) (round (/ (planet-productivity a-planet) tech-level))))
+	   (new-price (mean (generate-price g a-planet) (listing-price l))))
       (setf (listing-amount l) (+ (listing-amount l) (if (fuel? g) (* 2 produced) produced))
 	    (listing-price l) new-price))))
 	      
@@ -144,6 +144,9 @@
 	 (distance (planet-distance current-planet p))
 	 (fuel-range (/ fuel (ship-fuel-consumption (captain-ship a-cap)))))
     (>= fuel-range distance)))
+
+(defun banned? (t-name a-planet) (find t-name (planet-banned-goods a-planet)))
+(defun local? (t-name a-planet) (find t-name (planet-local-goods a-planet)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Additional Getters
 (defun going-rate (a-planet t-name)
@@ -214,34 +217,43 @@
      collect (generate-planet i 1500)))
 
 (defun generate-planet (plan-id &optional (galaxy-dimension 500))
-  (let* ((rad (roll-dice 4 12))
-	 (tech (roll-dice 3 4))
-	 (prod (round (roll-dice 2 6 (+ rad tech)))))
-    (make-planet :id plan-id :name (string-capitalize (grammar->string *planet-name-grammar*))
-		 :description (grammar->string *planet-desc-grammar*)
-		 :radius rad :x (random galaxy-dimension) :y (random galaxy-dimension) :z (random galaxy-dimension)
-		 :market (generate-market rad tech prod)
-		 :tech-level tech
-		 :productivity prod)))
+  (flet ((unique-names (t-goods) (remove-duplicates (mapcar #'tradegood-name t-goods) :test #'string=)))
+    (let* ((rad (roll-dice 4 12))
+	   (tech (roll-dice 3 4))
+	   (prod (round (roll-dice 2 6 (+ rad tech))))
+	   (possible-goods (remove-if-not (lambda (g) (>= tech (tradegood-tech-level g))) *tradegoods*))
+	   (local (unique-names (pick-n possible-goods (roll-dice 1 6 +1))))
+	   (banned (unique-names (pick-n *tradegoods* (roll-dice 1 4 -1))))
+	   (a-planet (make-planet :id plan-id :name (string-capitalize (grammar->string *planet-name-grammar*))
+				  :description (grammar->string *planet-desc-grammar*)
+				  :radius rad :x (random galaxy-dimension) :y (random galaxy-dimension) :z (random galaxy-dimension)
+				  :banned-goods banned :local-goods local
+				  :tech-level tech
+				  :productivity prod)))
+      (setf (planet-market a-planet) (generate-market a-planet possible-goods))
+      a-planet)))
 
-(defun generate-market (rad tech prod)
-  (let ((possible-goods (remove-if-not (lambda (g) (>= tech (tradegood-tech-level g))) *tradegoods*)))
-    (mapcar (lambda (g)
-	      (let* ((amt (round (max 0 (/ (* prod tech) (max 1 (tradegood-tech-level g))))))
-		     (pri (round (apply #'roll-dice (tradegood-price g)))))
-		(make-listing :name (tradegood-name g) :amount amt :price pri)))
-	    possible-goods)))
+(defun generate-market (a-planet possible-goods) ;; rad tech prod banned local
+  (mapcar (lambda (g)
+	    (let* ((amt (round (max 0 (/ (* (planet-productivity a-planet) (planet-tech-level a-planet)) (max 1 (tradegood-tech-level g))))))
+		   (pri (generate-price g a-planet)))
+	      (make-listing :name (tradegood-name g) :amount amt :price pri)))
+	  possible-goods))
+
+(defun generate-price (a-tradegood a-planet)
+  (let ((price (round (apply #'roll-dice (tradegood-price a-tradegood)))))
+    (cond ((banned? (tradegood-name a-tradegood) a-planet) (+ (roll-dice 3 20 10) price))
+	  ((local? (tradegood-name a-tradegood) a-planet) (round (/ price (planet-tech-level a-planet))))
+	  (t price))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Grammar functions
-(defun pick-g (key grammar) 
-  (let ((choices (getf grammar key)))
-    (nth (random (length choices)) choices)))
+(defun grammar-pick (key grammar) (pick (getf grammar key)))
 
 (defun grammar->string (grammar) (expand-production :root grammar))
 
 (defun expand-production (production grammar)
   (cond ((stringp production) production)
-	((symbolp production) (expand-production (pick-g production grammar) grammar))
+	((symbolp production) (expand-production (grammar-pick production grammar) grammar))
 	((listp production) 
 	 (reduce (lambda (a b) 
 		   (concatenate 'string a (expand-production b grammar))) 

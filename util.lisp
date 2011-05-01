@@ -38,10 +38,8 @@
     (coerce (mapcar #'code-char (coerce msg 'list)) 'string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;other
-(defun roll-dice (num-dice die-type &optional mod) ;;The simplest non-uniform dice roller I could think up without resorting to the grab-bag. Can you tell I'm a recovering D&D nerd yet?
-  (let* ((rolls (mapcar (lambda (die) (+ 1 (random die)))
-			(make-list num-dice :initial-element die-type))))
-    (apply #'+ (cons (or mod 0) rolls))))
+(defun roll-dice (num-dice die-type &optional (mod 0))
+  (+ mod (loop repeat num-dice summing (+ 1 (random die-type)))))
 
 (defun pick (a-list) (nth (random (length a-list)) a-list))
 

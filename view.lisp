@@ -53,7 +53,7 @@
   (redirect "/"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; interface components
-(defun echo-inventory (list-of-listings &key (empty "The cargo hold is empty") (form 'buy))
+(defun echo-inventory (list-of-listings &key (empty "Your cargo hold is empty") (form 'buy))
   (html-to-stout
     (if list-of-listings
 	(htm (:div :class "inventory"

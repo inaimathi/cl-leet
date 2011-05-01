@@ -46,6 +46,11 @@
 	       ("#tooltip ul" :list-style-type none :padding 0px :margin "10px 0px 0px 0px")
 
 	       (.inventory :height 150px :overflow auto)
+
+	       ;; (".inventory table" :width 300px)
+	       ;; (".inventory table thead" :display block :background-color \#000 :color \#fff :font-weight bold :width 100%)
+	       ;; (".inventory table tbody" :display block :height 150px :overflow auto :width 100%)
+
 	       (.inventory-slider :display block :float left :width 60px :margin-top 8px)
 
 	       ;; player info

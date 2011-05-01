@@ -2,7 +2,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Structs
 (defstruct tradegood price tech-level complement-type name unit type)
-(defstruct listing name amount price)
+(defstruct listing name amount price tech-level)
 
 (defstruct planet id name description 
 	   radius x y z 
@@ -61,15 +61,18 @@
 	 (a-listing (lookup-listing t-name market)))
     (if a-listing
 	(setf (listing-amount a-listing) (+ (listing-amount a-listing) num))
-	(progn (setf (planet-market a-planet) (cons (make-listing :name (string-capitalize t-name) :amount num :price sell-price) market))
-	       (incf (planet-tech-level a-planet) (roll-dice 1 4))))))
+	(let ((g (lookup-tradegood t-name)))
+	  (progn (setf (planet-market a-planet) 
+		       (sort (cons (make-listing :name (tradegood-name g) :amount num :price sell-price :tech-level (tradegood-tech-level g)) market)
+			     (lambda (a b) (> (listing-tech-level a) (listing-tech-level b)))))
+		 (incf (planet-tech-level a-planet) (roll-dice 1 4)))))))
 
 (defun add-to-cargo! (a-cap t-name num price)
   "Add [num] [t-good] to [a-cap]s inventory"
   (let ((a-listing (lookup-listing t-name (ship-cargo (captain-ship a-cap))))
 	(ship (captain-ship a-cap))
-	(good (lookup-tradegood t-name)))
-    (cond ((and (fuel? good) (> (ship-fuel-space ship) 0)); Fill out fuel-cells before filling out cargo hold if there's space
+	(g (lookup-tradegood t-name)))
+    (cond ((and (fuel? g) (> (ship-fuel-space ship) 0)); Fill out fuel-cells before filling out cargo hold if there's space
 	   (let ((f-space (ship-fuel-space ship)))
 	     (if (>= f-space num)
 		 (setf (ship-fuel ship) (+ (ship-fuel ship) num))
@@ -216,10 +219,10 @@
   (loop for i from 1 to num-planets
      collect (generate-planet i 1500)))
 
-(defun partition-galaxy (a-galaxy)
-  (loop for d from 100 to 1500 by 100
+(defun partition-galaxy (a-galaxy &optional (step 100))
+  (loop for d from step to 1600 by step
      collect (remove-if-not (lambda (p) 
-			      (and (< (planet-z p) d) (> (planet-z p) (- d 100))))
+			      (and (< (planet-z p) d) (> (planet-z p) (- d step))))
 			    a-galaxy)))
 
 (defun generate-planet (plan-id &optional (galaxy-dimension 500))
@@ -243,7 +246,7 @@
   (mapcar (lambda (g)
 	    (let* ((amt (round (max 0 (/ (* (planet-productivity a-planet) (planet-tech-level a-planet)) (max 1 (tradegood-tech-level g))))))
 		   (pri (generate-price g a-planet)))
-	      (make-listing :name (tradegood-name g) :amount amt :price pri)))
+	      (make-listing :name (tradegood-name g) :amount amt :price pri :tech-level (tradegood-tech-level g))))
 	  possible-goods))
 
 (defun generate-price (a-tradegood a-planet)

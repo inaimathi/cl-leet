@@ -1,10 +1,10 @@
 (in-package :cl-leet)
 
-(defun css-transform-planet (layer-size planet &key (viewport-width 600) (center-on (list 0 0)))
+(defun css-transform-planet (layer-size planet &key (viewport-width 600) (viewport-height viwport-width) (center-on (list 0 0)))
   (let ((ratio (/ layer-size viewport-width)))
     (flet ((px (directive) (format nil "~apx" (round (* ratio directive)))))
       (inline-css (list :left (px (+ (round (/ viewport-width 2)) (- (planet-x planet) (car center-on)))) 
-			:top (px (+ (round (/ viewport-width 2)) (- (planet-y planet) (cadr center-on))))
+			:top (px (+ (round (/ viewport-height 2)) (- (planet-y planet) (cadr center-on))))
 			:height (px (* 2 (planet-radius planet))) :width (px (* 2 (planet-radius planet))))))))
 
 (defun css-planet-class (plt current-plt local-plt-list)
@@ -14,9 +14,9 @@
 		((member (planet-name plt) local-plt-list :test #'string=) "local")
 		(t nil))))
 
-(defun css-square (d)
-  (let ((px (format nil "~apx" d)))
-    (list :width px :height px)))
+(defun px (term) (format nil "~apx" term))
+(defun css-rect (w h) (list :width (px w) :height (px h)))
+(defun css-square (w) (css-rect w w))
 
 (defun css-box-shadow (directive) (list :-webkit-box-shadow directive :-moz-box-shadow directive :box-shadow directive))
 (defvar css-control-panel '(:padding 5px :width 320px :margin-right 10px :font-size small :float left))

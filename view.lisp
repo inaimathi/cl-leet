@@ -89,14 +89,14 @@
       (htm (:div :class "galaxy-display"
 		 (:div :class "viewport"
 		       (:script :type "text/javascript" (str (ps* (js-planets a-cap *galaxy*))))
-		       (loop for d from 350 to 1050 by 50
+		       (loop for d from 350 to 1050 by 100
 			  for layer in *partitioned-galaxy*  
-			  do (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
+			  do (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-rect d (round (/ d 2)))))
 					(dolist (p layer)
 					  (let ((planet-class (css-planet-class p current locals))
-						(planet-style (css-transform-planet d p :viewport-width 600 :center-on view-center)))
+						(planet-style (css-transform-planet d p :viewport-width 600 :viewport-height 300 :center-on view-center)))
 					    (if (member (planet-name p) locals :test #'string=)
 						(htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
 							 :class planet-class :style planet-style))
 						(htm (:div :class planet-class :style planet-style))))))))
-		 (:div :class "top-layer" :style (inline-css `(,@(css-square viewport-width))))))))))
+		       (:div :class "top-layer" :style (inline-css `(,@(css-square viewport-width))))))))))

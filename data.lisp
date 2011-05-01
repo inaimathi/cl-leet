@@ -2,17 +2,17 @@
 
 ;; Basic Tradegood Data ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (This is up here instead of with the generated data because the market generator needs it)
-(defvar *tradegoods*
-  (list (make-tradegood :price '(4 12) :unit "ton" :type 'goods :tech-level 0 :name "Minerals")
-	(make-tradegood :price '(8 20) :unit "group" :type 'goods :tech-level 0 :name "Slaves")
-	(make-tradegood :price '(4 6) :unit "litre" :type 'fuel :tech-level 1 :name "Fuel")
-	(make-tradegood :price '(6 4) :unit "hammock" :type 'goods :tech-level 2 :name "Food")
-	(make-tradegood :price '(4 20 6) :unit "bottle" :type 'goods :tech-level 3 :name "Liquor")
-	(make-tradegood :price '(3 6 24) :unit "roll" :type 'goods :tech-level 4 :name "Textiles")
-	(make-tradegood :price '(10 12 12) :unit "unit" :type 'goods :tech-level 6 :name "Firearms")
-	(make-tradegood :price '(14 20 20) :unit "sack" :type 'goods :tech-level 6 :name "Luxuries")
-	(make-tradegood :price '(12 12 10) :unit "unit" :type 'goods :tech-level 7 :name "Machinery")
-	(make-tradegood :price '(3 60 12) :unit "chip" :type 'goods :tech-level 8 :name "Computers")))
+(defparameter *tradegoods*
+  (list (make-tradegood :price (quote (3 60 12)) :unit chip :type (quote goods) :tech-level 8 :name Computers) 
+	(make-tradegood :price (quote (12 12 10)) :unit unit :type (quote goods) :tech-level 7 :name Machinery)
+	(make-tradegood :price (quote (14 20 20)) :unit sack :type (quote goods) :tech-level 6 :name Luxuries)
+	(make-tradegood :price (quote (10 12 12)) :unit unit :type (quote goods) :tech-level 6 :name Firearms)
+	(make-tradegood :price (quote (3 6 24)) :unit roll :type (quote goods) :tech-level 4 :name Textiles)
+	(make-tradegood :price (quote (4 20 6)) :unit bottle :type (quote goods) :tech-level 3 :name Liquor)
+	(make-tradegood :price (quote (6 4)) :unit hammock :type (quote goods) :tech-level 2 :name Food)
+	(make-tradegood :price (quote (4 6)) :unit litre :type (quote fuel) :tech-level 1 :name Fuel)
+	(make-tradegood :price (quote (8 20)) :unit group :type (quote goods) :tech-level 0 :name Slaves)
+	(make-tradegood :price (quote (4 12)) :unit ton :type (quote goods) :tech-level 0 :name Minerals)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Grammars
 (defparameter *planet-name-grammar*
@@ -82,7 +82,7 @@
 	:syn-planet '("planet" "world" "place" "little planet" "dump")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generated Data
-(defparameter *galaxy* (generate-galaxy 100))
-(defparameter *partitioned-galaxy* (partition-galaxy *galaxy*))
+(defparameter *galaxy* (generate-galaxy 50))
+(defparameter *partitioned-galaxy* (partition-galaxy *galaxy* 200))
 
 (defparameter *captain* (generate-captain))

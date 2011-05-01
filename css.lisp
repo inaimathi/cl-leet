@@ -19,7 +19,7 @@
     (list :width px :height px)))
 
 (defun css-box-shadow (directive) (list :-webkit-box-shadow directive :-moz-box-shadow directive :box-shadow directive))
-(defvar css-side-panel '(:padding 5px :width 310px :margin-bottom 10px :font-size small))
+(defvar css-control-panel '(:padding 5px :width 320px :margin-right 10px :font-size small :float left))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; operations for themes
 (defvar *current-theme* "/css/default-theme/")
@@ -36,31 +36,32 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; compile statements
 (compile-css "css/cl-leet.css"
 	     `((body :font-family sans-serif)
-	       (.panel :position absolute :left 655px)
+	       (.panel :position absolute :top 590px :left 40px :z-index 9001)
+	       (.top-panel ,@css-control-panel :position absolute :top 0px :left 450px :z-index 9001)
 	       
-	       (\#tooltip :position absolute :z-index 9001 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
+	       ;; tooltip style
+	       (\#tooltip :position absolute :z-index 9002 :background-color \#000 :padding 5px :max-width 250px :color \#ddd :border "1px solid #fff" :display none)
 	       ("#tooltip h3" :margin 0px :padding 0px)
 	       ("#tooltip p" :margin-top 0px :padding-top 0px)
 	       ("#tooltip ul" :list-style-type none :padding 0px :margin "10px 0px 0px 0px")
 
-	       (\#refuel-tooltip :display none)
+	       (.inventory :height 150px :overflow auto)
+	       (.inventory-slider :display block :float left :width 60px :margin-top 8px)
 
 	       ;; player info
-	       (.player-info ,@css-side-panel)
+	       (.player-info ,@css-control-panel)
 	       (".player-info p" :margin-top 0px)
+	       (\#refuel-tooltip :display none)
 
 	       ;; planet info
-	       (.planet-info ,@css-side-panel)
+	       (.planet-info ,@css-control-panel)
 	       (.planet-name :font-weight bold)
 	       (".planet-info p" :margin-top 0px)
 
-	       (".inventory-slider" :display block :float left :width 80px :margin-top 8px)
-
 	       ;; galaxy display
-	       (.viewport :width 600px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
-	       (".layer, .top-layer" :border "1px solid #aaa" :position absolute)
-
-	       (.top-layer :z-index 9000 :overflow hidden)
+	       (.viewport :width 1000px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
+	       (.layer :position absolute :border "1px solid #333")
+	       (.top-layer :z-index 9000 :position absolute)
 
 	       (.planet :position absolute :background-color \#00f :border "1px solid #00c" :border-radius 80px)
 	       (".planet.local" :background-color \#0f0 :border "1px solid #0c0")
@@ -71,8 +72,8 @@
 (defvar css-box-border (list :border-bottom "2px solid #222" :border-right "2px solid #222"))
 (compile-css "css/default-theme/theme.css"
 	     `((body ,@(theme-img "pattern.png"))
-	       (.galaxy-display ,@(theme-img "galaxy-display.png") ,@css-box-border :height 670px :width 620px :position absolute :padding "20px 0px 0px 20px")
-	       (.viewport ,@(theme-img "screen-reflection.png"))
+;;	       (.galaxy-display ,@(theme-img "galaxy-display.png") ,@css-box-border :height 670px :width 620px :position absolute :padding "20px 0px 0px 20px")
+	       (.viewport ,@(theme-img "screen-reflection.png") :background-repeat no-repeat)
 
 	       (".panel p" :padding-left 30px :padding-right 30px)
 

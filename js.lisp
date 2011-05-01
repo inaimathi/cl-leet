@@ -31,6 +31,13 @@
 					    ,(tradegood-tech-level (lookup-tradegood (listing-name g)))))
 				   (planet-market p)))))
 
+;; (defun planet-json (a-cap p)
+;;   (html-to-str (:h3 (str (planet-name p)))
+;; 	       (:p (str (planet-description p)))
+;; 	       (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (str (planet-fuel-cost a-cap p)))
+;; 	       (:ul (loop for g in (planet-market p)
+;; 		       do (htm (:li (str (listing-name g))))))))
+
 (defun js-planets (a-cap gal)
   `(defvar js-galaxy
      (list ,@(loop for p in gal
@@ -74,7 +81,7 @@
 
 		 ;;setting up the market/inventory sliders and buttons
 		 (tooltip "a.refuel-button" ($ "#refuel-tooltip" (text)))
-		 ($ ".player-info a, input:submit, button" (css (create :font-size "small")) (button))
+		 ($ ".panel a, .top-panel a, input:submit, button" (css (create :font-size "small")) (button))
 		 ($ "span.refuel-button" (button (create :disabled t)))
 
 		 ($ ".player-info .inventory-slider" 

@@ -216,6 +216,12 @@
   (loop for i from 1 to num-planets
      collect (generate-planet i 1500)))
 
+(defun partition-galaxy (a-galaxy)
+  (loop for d from 100 to 1500 by 100
+     collect (remove-if-not (lambda (p) 
+			      (and (< (planet-z p) d) (> (planet-z p) (- d 100))))
+			    a-galaxy)))
+
 (defun generate-planet (plan-id &optional (galaxy-dimension 500))
   (flet ((unique-names (t-goods) (remove-duplicates (mapcar #'tradegood-name t-goods) :test #'string=)))
     (let* ((rad (roll-dice 4 12))

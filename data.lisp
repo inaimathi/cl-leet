@@ -83,4 +83,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generated Data
 (defparameter *galaxy* (generate-galaxy 100))
+(defparameter *partitioned-galaxy* (partition-galaxy *galaxy*))
+
 (defparameter *captain* (generate-captain))

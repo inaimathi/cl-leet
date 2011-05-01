@@ -18,13 +18,13 @@
     (page-template (:title "Welcome")
       (echo-galaxy-map a-cap)
       (:div :id "tooltip")
+      (:div :class "top-panel" (echo-refuel a-cap) (:a :href "/new-game" "New Game"))
       (:div :class "panel"
 	    (:div :class "player-info" 
 	    	  (:p (:span :class "label" "Credits: ") (:span :id "player-credits" (str (captain-credits a-cap))))
 	    	  (:p (:span :class "label" "Fuel: ") (str (format nil "~a / ~a" (ship-fuel s) (ship-fuel-cap s))))
 	    	  (:p (:span :class "label" "Cargo: ") (:span :id "player-cargo" (str (ship-cargo-total s))) "/" (:span :id "player-cargo-cap" (str (ship-cargo-cap s))))
-	    	  (echo-inventory (ship-cargo (captain-ship a-cap)) :form 'sell)
-	    	  (echo-refuel a-cap) (:a :href "/new-game" "New Game"))
+	    	  (echo-inventory (ship-cargo (captain-ship a-cap)) :form 'sell))
 	    (:div :class "planet-info" 
 	    	  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
 	    	       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
@@ -56,14 +56,16 @@
 (defun echo-inventory (list-of-listings &key (empty "The cargo hold is empty") (form 'buy))
   (html-to-stout
     (if list-of-listings
-	(htm (:table (:tr (:td "Name") (:td "# Stocked") (:td "Price") (when form (htm (:td)))
-			  (dolist (i list-of-listings)
-			    (htm (:tr (:td (str (listing-name i))) (:td :class "listing-amount" (str (listing-amount i))) (:td :class "listing-price" (str (listing-price i)))
-				      (when form (htm (:td (:form :action (format nil "/~(~a~)" form)
-								  (:input :name "tradegood" :type "hidden" :value (listing-name i))
-								  (:input :class "num-field" :name "num" :type "hidden" :value 0)
-								  (:span :class "inventory-slider" (str (listing-amount i)))
-								  (:input :type "submit" :value (str (string-capitalize form)))))))))))))
+	(htm (:div :class "inventory"
+		   (:table (:thead (:tr (:td "Name") (:td "# Stocked") (:td "Price") (when form (htm (:td)))))
+			   (dolist (i list-of-listings)
+			     (htm (:tr (:td (str (listing-name i))) (:td :class "listing-amount" (str (listing-amount i))) (:td :class "listing-price" (str (listing-price i)))
+				       (when form (htm (:td (:form :action (format nil "/~(~a~)" form)
+								   (:input :name "tradegood" :type "hidden" :value (listing-name i))
+								   (:input :class "num-field" :name "num" :type "hidden" :value 0)
+								   (:span :class "inventory-slider" (str (listing-amount i)))
+								   (:input :type "submit" :value (str (string-capitalize form))))))))))
+			   (:tfoot))))
 	(htm (:p (str empty))))))
 
 (defun echo-refuel (a-cap)
@@ -83,20 +85,18 @@
     (let* ((current (captain-current-planet a-cap))
 	   (view-center (list (planet-x current) (planet-y current)))
 	   (locals (list-local-planets a-cap))
-	   (gal (list-galaxy))
 	   (viewport-width 600))
       (htm (:div :class "galaxy-display"
 		 (:div :class "viewport"
-		       (:script :type "text/javascript"
-				(str (ps* (js-planets a-cap *galaxy*))))
-		       (dolist (d (list 350 400 450 500 550 600 650 700 750 800 850 900 950 1000 1050))
-			 (let ((visual-d (* 2 (- d 300))))
-			   (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
-				      (dolist (p (remove-if-not (lambda (p) (and (< (planet-z p) visual-d) (> (planet-z p) (- visual-d 100)))) gal))
-					(let ((planet-class (css-planet-class p current locals))
-					      (planet-style (css-transform-planet d p :viewport-width 600 :center-on view-center)))
-					  (if (member (planet-name p) locals :test #'string=)
-					      (htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
-						       :class planet-class :style planet-style))
-					      (htm (:div :class planet-class :style planet-style)))))))))
-		       (:div :class "top-layer" :style (inline-css `(,@(css-square viewport-width))))))))))
+		       (:script :type "text/javascript" (str (ps* (js-planets a-cap *galaxy*))))
+		       (loop for d from 350 to 1050 by 50
+			  for layer in *partitioned-galaxy*  
+			  do (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-square d)))
+					(dolist (p layer)
+					  (let ((planet-class (css-planet-class p current locals))
+						(planet-style (css-transform-planet d p :viewport-width 600 :center-on view-center)))
+					    (if (member (planet-name p) locals :test #'string=)
+						(htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
+							 :class planet-class :style planet-style))
+						(htm (:div :class planet-class :style planet-style))))))))
+		 (:div :class "top-layer" :style (inline-css `(,@(css-square viewport-width))))))))))

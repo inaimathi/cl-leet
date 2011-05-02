@@ -1,7 +1,12 @@
-body { background-image: url(/css/default-theme/pattern.png); }
-.viewport { background-image: url(/css/default-theme/screen-reflection.png); background-repeat: no-repeat; }
-.panel p { padding-left: 30px; padding-right: 30px; }
-.planet-info, .player-info { background-image: url(/css/default-theme/side-panel.png); border-bottom: 2px solid #222; border-right: 2px solid #222; }
-.ui-button { background-image: url(/css/default-theme/brushed-metal-dark.png); border-radius: 15px; color: #fff; border: none; -webkit-box-shadow: 2px 2px 0px 2px #222; -moz-box-shadow: 2px 2px 0px 2px #222; box-shadow: 2px 2px 0px 2px #222; margin: 3px; }
-.ui-button.ui-button-disabled:hover { color: #fff; -webkit-box-shadow: 2px 2px 0px 2px #222; -moz-box-shadow: 2px 2px 0px 2px #222; box-shadow: 2px 2px 0px 2px #222; }
-.ui-button:hover { color: #f90; -webkit-box-shadow: 0px 0px 0px 1px #f90; -moz-box-shadow: 0px 0px 0px 1px #f90; box-shadow: 0px 0px 0px 1px #f90; }
+body { background-image: url(/css/default-theme/background.png); background-repeat: no-repeat; background-position: top center; margin: 0px; padding: 0px; }
+.viewport { background-image: url(/css/default-theme/screen-reflection.png); background-repeat: no-repeat; background-repeat: no-repeat; top: 10px; }
+.top-panel { background-image: url(/css/default-theme/top-panel.png); background-repeat: no-repeat; background-position: bottom center; width: 400px; margin-left: -280px; padding-bottom: 10px; padding-left: 80px; }
+.panel { width: 1300px; left: 50%; margin-left: -550px; }
+.player-info { background-image: url(/css/default-theme/console1.png); background-repeat: no-repeat; color: #fff; font-family: monospace; padding: 30px; height: 210px; }
+.player-info .inventory { height: 100px; }
+.planet-info { background-image: url(/css/default-theme/console2.png); background-repeat: no-repeat; color: #fff; font-family: monospace; padding: 30px; height: 300px; margin-left: 240px; }
+.planet-info .inventory { height: 120px; }
+.prop-1 { background-image: url(/css/default-theme/wheel.png); background-repeat: no-repeat; position: absolute; width: 330px; left: 50%; margin-left: -180px; top: 460px; height: 370px; z-index: 9003; }
+.inventory { border: 1px dotted #fff; width: 300px; margin: 0px; padding: 0px; }
+input.ui-button { padding: 3px; margin: 5px; background: #000; color: #fff; border: 1px solid #fff; }
+input.ui-button:hover { background: #fff; color: #000; }

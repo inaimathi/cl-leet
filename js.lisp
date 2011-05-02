@@ -6,42 +6,19 @@
   (with-open-file (stream file-name :direction :output :if-exists :supersede :if-does-not-exist :create)
     (format stream js)))
 
-(defpsmacro $ (selector &body chains)
-  `(chain (j-query ,selector) ,@chains))
+(defpsmacro $ (selector &body chains) `(chain (j-query ,selector) ,@chains))
 
 (defpsmacro \ (&body body) `(lambda () ,@body))
 
-(defpsmacro doc-ready (&body body)
-  `($ document (ready (\ ,@body))))
+(defpsmacro doc-ready (&body body) `($ document (ready (\ ,@body))))
 
-(defpsmacro math (method &rest args)
-  `(chain -math (,method ,@args)))
+(defpsmacro math (method &rest args) `(chain -math (,method ,@args)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; view components
-(defun planet-json (a-cap p)
-  `(create :name ,(planet-name p)
-	   :description ,(planet-description p)
-	   :radius ,(planet-radius p)
-	   :fuel ,(planet-fuel-cost a-cap p)
-	   :banned ,(when (planet-banned-goods p) (format nil "~{~a~^, ~}" (planet-banned-goods p)))
-	   :local ,(format nil "~{~a~^, ~}" (planet-local-goods p))
-	   :market (list ,@(mapcar (lambda (g) 
-				     `(list ,(listing-name g) 
-					    ,(listing-price g) 
-					    ,(tradegood-tech-level (lookup-tradegood (listing-name g)))))
-				   (planet-market p)))))
-
-;; (defun planet-json (a-cap p)
-;;   (html-to-str (:h3 (str (planet-name p)))
-;; 	       (:p (str (planet-description p)))
-;; 	       (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (str (planet-fuel-cost a-cap p)))
-;; 	       (:ul (loop for g in (planet-market p)
-;; 		       do (htm (:li (str (listing-name g))))))))
-
 (defun js-planets (a-cap gal)
   `(defvar js-galaxy
      (list ,@(loop for p in gal
-		collect (planet-json a-cap p)))))
+		collect (format nil (planet-tooltip-template p) (planet-fuel-cost a-cap p))))))
 
 (defpsmacro tooltip (selector contents)
   `($ ,selector (hover (\ ($ "#tooltip" (show) (html ,contents)))
@@ -77,7 +54,7 @@
 		 ($ ".planet" (each (\ ($ this (clone) (prepend-to ($ ".top-layer" (first)))))))
 		 
 		 (loop for i from 1 to galaxy-length
-		    do (planet-tooltip (+ ".top-layer .p-" i) i))
+		    do (setup-planet-tooltip (+ ".top-layer .p-" i) i))
 
 		 ;;setting up the market/inventory sliders and buttons
 		 (tooltip "a.refuel-button" ($ "#refuel-tooltip" (text)))
@@ -115,18 +92,13 @@
 			 (max (math min num-left player-cargo-space (/ player-credits unit-price))))
 		    ($ a-slider (slider "option" "max" max))))
 
-		(defun planet-tooltip (planet id)
+		(defun setup-planet-tooltip (planet id)
 		  ($ planet
 		     (css (create :opacity "0.2" :background-color "#000" :border-color "transparent" :z-index 9001))
 		     (hover (\ ($ planet (css (create :opacity "1" :background-color "#666")))
 		  	       ($ "#tooltip" 
 		  		  (show)
-		  		  (html (who-ps-html (:h3 (@ js-galaxy (- id 1) name))
-		  				     (:p (@ js-galaxy (- id 1) description))
-		  				     (:span :class "label" "Fuel Cost: ") (:span :class "fuel" (@ js-galaxy (- id 1) fuel))(:br)
-						     (:span :class "label" "Local: ") (:span :class "fuel" (@ js-galaxy (- id 1) local))(:br)
-						     (:span :class "label" "Banned: ") (:span :class "fuel" (@ js-galaxy (- id 1) banned))
-		  				     (:ul (chain (market-html (@ js-galaxy (- id 1) market)) (join "")))))))
+		  		  (html (@ js-galaxy (- id 1)))))
 		  	    (\ ($ planet (css (create :opacity "0.2" :background-color "#000")))
 		  	       ($ "#tooltip" (hide))))))
 

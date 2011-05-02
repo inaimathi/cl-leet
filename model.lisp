@@ -8,6 +8,7 @@
 	   radius x y z 
 	   tech-level productivity market
 	   local-goods banned-goods 
+	   tooltip-template
 	   (:copier 'copy-planet))
 
 (defun copy-planet (p)
@@ -64,7 +65,8 @@
 	(let ((g (lookup-tradegood t-name)))
 	  (progn (setf (planet-market a-planet) 
 		       (sort (cons (make-listing :name (tradegood-name g) :amount num :price sell-price :tech-level (tradegood-tech-level g)) market)
-			     (lambda (a b) (> (listing-tech-level a) (listing-tech-level b)))))
+			     (lambda (a b) (> (listing-tech-level a) (listing-tech-level b))))
+		       (planet-tooltip-template a-planet) (generate-tooltip a-planet))
 		 (incf (planet-tech-level a-planet) (roll-dice 1 4)))))))
 
 (defun add-to-cargo! (a-cap t-name num price)
@@ -150,6 +152,10 @@
 
 (defun banned? (t-name a-planet) (find t-name (planet-banned-goods a-planet)))
 (defun local? (t-name a-planet) (find t-name (planet-local-goods a-planet)))
+(defun good-status (t-name a-planet)
+  "Returns the banned/local/nil status of [t-name] on [a-planet]"
+  (cond ((banned? t-name a-planet) "banned")
+	((local? t-name a-planet) "local")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Additional Getters
 (defun going-rate (a-planet t-name)
@@ -233,7 +239,8 @@
 				  :banned-goods banned :local-goods local
 				  :tech-level tech
 				  :productivity prod)))
-      (setf (planet-market a-planet) (generate-market a-planet possible-goods))
+      (setf (planet-market a-planet) (generate-market a-planet possible-goods)
+	    (planet-tooltip-template a-planet) (generate-tooltip a-planet))
       a-planet)))
 
 (defun generate-market (a-planet possible-goods) ;; rad tech prod banned local
@@ -248,6 +255,13 @@
     (cond ((banned? (tradegood-name a-tradegood) a-planet) (+ (roll-dice 3 20 10) price))
 	  ((local? (tradegood-name a-tradegood) a-planet) (round (/ price (planet-tech-level a-planet))))
 	  (t price))))
+
+(defun generate-tooltip (p)
+  (html-to-str (:h3 (str (planet-name p)))
+	       (:p (str (planet-description p)))
+	       (:span :class "label" "Fuel Cost: ") (:span :class "fuel" "~a")
+	       (:ul (loop for g in (planet-market p)
+		       do (htm (:li :class (good-status (listing-name g) p) (str (listing-name g))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Cache-functions                              
 (defun partition-galaxy (a-galaxy &optional (step 100))

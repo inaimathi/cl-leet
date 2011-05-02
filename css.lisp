@@ -45,6 +45,9 @@
 	       ("#tooltip p" :margin-top 0px :padding-top 0px)
 	       ("#tooltip ul" :list-style-type none :padding 0px :margin "10px 0px 0px 0px")
 
+	       ("#tooltip li.banned" :color \#f00)
+	       ("#tooltip li.local" :color \#0f0)
+
 	       (.inventory :height 150px :overflow auto)
 	       ;; (".inventory table" :width 300px)
 	       ;; (".inventory table thead" :display block :background-color \#000 :color \#fff :font-weight bold :width 100%)
@@ -84,7 +87,7 @@
 	       (.player-info ,@(theme-img "console1.png") ,@css-console-screen :height 210px)
 	       (".player-info .inventory" :height 100px)
 	       
-	       (.planet-info ,@(theme-img "console2.png") ,@css-console-screen :height 300px :margin-left 240px)
+	       (.planet-info ,@(theme-img "console2.png") ,@css-console-screen :height 300px :width 310px :margin-left 240px)
 	       (".planet-info .inventory" :height 120px)
 
 	       (.prop-1 ,@(theme-img "wheel.png") :position absolute :width 330px :left 50% :margin-left -180px :top 460px :height 370px :z-index 9003)
@@ -92,4 +95,8 @@
 	       (.inventory :border "1px dotted #fff" :width 300px :margin 0px :padding 0px)
 
 	       ("input.ui-button" :padding 3px :margin 5px :background \#000 :color \#fff :border "1px solid #fff")
-	       ("input.ui-button:hover" :background \#fff :color \#000)))
+	       ("input.ui-button:hover" :background \#fff :color \#000)
+
+	       (.inventory-slider :height 5px :background \#000 :margin-top 12px :border "1px dotted #fff" :border-radius 0px)
+	       (".ui-slider-handle.ui-state-default" :background \#000 :border-radius 0px :height 13px :width 13px :cursor pointer)
+	       (".ui-slider-handle.ui-state-hover" :background \#fff)))

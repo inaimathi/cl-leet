@@ -84,8 +84,7 @@
   (html-to-stout
     (let* ((current (captain-current-planet a-cap))
 	   (view-center (list (planet-x current) (planet-y current)))
-	   (locals (list-local-planets a-cap))
-	   (viewport-width 600))
+	   (locals (list-local-planets a-cap)))
       (htm (:div :class "galaxy-display"
 		 (:div :class "viewport"
 		       (:script :type "text/javascript" (str (ps* (js-planets a-cap *galaxy*))))
@@ -94,9 +93,9 @@
 			  do (htm (:div :class "layer" :style (inline-css `(:z-index ,d ,@(css-rect d (round (/ d 2)))))
 					(dolist (p layer)
 					  (let ((planet-class (css-planet-class p current locals))
-						(planet-style (css-transform-planet d p :viewport-width 600 :viewport-height 300 :center-on view-center)))
+						(planet-style (css-transform-planet d p :viewport-width 1000 :viewport-height 500 :center-on view-center)))
 					    (if (member (planet-name p) locals :test #'string=)
 						(htm (:a :href (format nil "/travel?planet-name=~a" (string-to-base64-string (planet-name p) :uri t))
 							 :class planet-class :style planet-style))
 						(htm (:div :class planet-class :style planet-style))))))))
-		       (:div :class "top-layer" :style (inline-css `(,@(css-square viewport-width))))))))))
+		       (:div :class "top-layer" :style (inline-css `(,@(css-rect 1000 500))))))))))

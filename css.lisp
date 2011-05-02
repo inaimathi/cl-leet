@@ -36,7 +36,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; compile statements
 (compile-css "css/cl-leet.css"
 	     `((body :font-family sans-serif)
-	       (.panel :position absolute :top 590px :left 40px :z-index 9001)
+	       (.panel :position absolute :top 490px :left 40px :z-index 9001)
 	       (.top-panel ,@css-control-panel :position absolute :top 0px :left 450px :z-index 9001)
 	       
 	       ;; tooltip style
@@ -64,7 +64,7 @@
 	       (".planet-info p" :margin-top 0px)
 
 	       ;; galaxy display
-	       (.viewport :width 1000px :height 600px :position absolute :overflow hidden :background-color \#000 :display block)
+	       (.viewport :width 1000px :height 500px :position absolute :overflow hidden :background-color \#000 :display block)
 	       (.layer :position absolute :border "1px solid #333")
 	       (.top-layer :z-index 9000 :position absolute)
 

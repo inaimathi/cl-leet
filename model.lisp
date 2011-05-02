@@ -219,12 +219,6 @@
   (loop for i from 1 to num-planets
      collect (generate-planet i 1500)))
 
-(defun partition-galaxy (a-galaxy &optional (step 100))
-  (loop for d from step to 1600 by step
-     collect (remove-if-not (lambda (p) 
-			      (and (< (planet-z p) d) (> (planet-z p) (- d step))))
-			    a-galaxy)))
-
 (defun generate-planet (plan-id &optional (galaxy-dimension 500))
   (flet ((unique-names (t-goods) (remove-duplicates (mapcar #'tradegood-name t-goods) :test #'string=)))
     (let* ((rad (roll-dice 4 12))
@@ -254,6 +248,13 @@
     (cond ((banned? (tradegood-name a-tradegood) a-planet) (+ (roll-dice 3 20 10) price))
 	  ((local? (tradegood-name a-tradegood) a-planet) (round (/ price (planet-tech-level a-planet))))
 	  (t price))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Cache-functions                              
+(defun partition-galaxy (a-galaxy &optional (step 100))
+  (loop for d from step to 1600 by step
+     collect (remove-if-not (lambda (p) 
+			      (and (< (planet-z p) d) (> (planet-z p) (- d step))))
+			    a-galaxy)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Grammar functions
 (defun grammar-pick (key grammar) (pick (getf grammar key)))

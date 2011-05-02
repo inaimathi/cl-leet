@@ -27,12 +27,12 @@
 	    	  (echo-inventory (ship-cargo (captain-ship a-cap)) :form 'sell))
 	    (:div :class "planet-info" 
 	    	  (htm (:p (:span :class "planet-name" (str (planet-name p))) (str (planet-description p)))
-	    	       (:p (:span :class "label" "Radius: ") (str (planet-radius p)))
+	    	       (:p (:span :class "label" "Radius: ") (str (planet-radius p)) (:span :class "label" "Tech Level: ") (str (planet-tech-level p)))
 		       (:p (:span :class "label" "Local Goods: ") (str (format nil "~{~a~^, ~}" (planet-local-goods p))))
-		       (when (planet-banned-goods p) (htm (:p (:span :class "label" "Banned Goods: ") (str (format nil "~{~a~^, ~}" (planet-banned-goods p))))))
-	    	       (:p (:span :class "label" "Tech Level: ") (str (planet-tech-level p))))
+		       (when (planet-banned-goods p) (htm (:p (:span :class "label" "Banned Goods: ") (str (format nil "~{~a~^, ~}" (planet-banned-goods p)))))))
 		  (:div :id "market-inventory"
-			(echo-inventory (planet-market (captain-current-planet a-cap)))))))))
+			(echo-inventory (planet-market (captain-current-planet a-cap))))))
+      (:div :class "prop-1"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; action handlers
 (define-easy-handler (new-game :uri "/new-game") ()

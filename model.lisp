@@ -207,13 +207,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Generators
 (defun generate-captain ()
   (make-captain :credits 10000
-		:current-planet (copy-planet (car *galaxy*))
+		:current-planet (copy-planet (pick *galaxy*))
 		:trade-history nil
 		:ship (make-ship :cargo-cap 50
 				 :cargo nil
 				 :fuel-consumption 1
-				 :fuel-cap 300
-				 :fuel 300)))
+				 :fuel-cap 400
+				 :fuel 400)))
 
 (defun generate-galaxy (num-planets)
   (loop for i from 1 to num-planets

@@ -4,7 +4,7 @@ Based on Elite for Emacs ([project page](http://members.fortunecity.com/salkosuo
 but no longer shares any code.
 
 # THIS PROJECT IS STILL IN EARLY DEVELOPMENT STAGES
-##### but it has been upgraded from "almost playable and passably looking" to "playable and pretty-ish"
+##### but it has been downgraded from "playable and pretty-ish" to "playable and under construction" following a bout of insomnia and some Inkscape fun. The "under construction" refers to visual elements only, it should still run fine
 
 To use it 
 
